@@ -1,0 +1,16 @@
+*~
+/*-[0-9][0-9].xml
+archive.json
+*.html
+*.pdf
+*.redxml
+.refcache
+report.xml
+*.swp
+.tags
+.targets.mk
+*.txt
+*.upload
+venv/
+lib
+draft-engelbart-rtp-over-quic.xml
