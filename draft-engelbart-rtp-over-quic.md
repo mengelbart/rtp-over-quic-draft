@@ -1,6 +1,8 @@
 ---
 title: "RTP over QUIC"
 docname: draft-engelbart-rtp-over-quic-latest
+category: info
+date: {DATE}
 
 ipr: trust200902
 area: General
@@ -9,6 +11,13 @@ keyword: Internet-Draft
 stand_alone: yes
 smart_quotes: no
 pi: [toc, sortrefs, symrefs]
+
+author:
+ -
+    ins: M. Engelbart
+    name: Mathis Engelbart
+    organization: TUM
+    email: mathis.engelbart@tum.de
 
 normative:
   RFC2119:
