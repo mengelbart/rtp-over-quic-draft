@@ -87,6 +87,33 @@ when, and only when, they appear in all capitals, as shown here.
 
 # Protocol Overview
 
+This document introduces a mapping of the Real-time Transport Protocol (RTP) to the QUIC transport
+protocol. QUIC supports two transport methods: reliable streams and unreliable datagrams
+{{QUIC-TRANSPORT}}, {{QUIC-DATAGRAM}}. RTP over QUIC uses the unreliable datagrams to transport
+real-time data.
+
+{{!RFC3550}} specifies that RTP sessions need to be transmitted on different transport addresses to
+allow multiplexing between them. RTP over QUIC uses a different approach, in order to leverage the
+advantages of QUIC connections without managing a separate QUIC connection per RTP session. QUIC
+does not provide multiplexing between different flows on datagrams, but recommends the use of
+variable-length integers to prepend each datagram with a unique flow identifier for multiplexing
+flows. RTP over QUIC uses a flow identifier as a replacement for network address and port number, to
+multiplex many RTP sessions over the same QUIC connection.
+
+A congestion controller can be plugged in, to adapt the media bitrate to the available bandwidth.
+This document does not mandate any congestion control algorithm, some examples include
+Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self- Clocked Rate Adaptation for
+Multimedia (SCReAM) {{!RFC8298}}. These congestion control algorithms require some feedback about
+the performance of the network in order to calculate target bitrates. Traditionally this feedback is
+generated at the receiver and sent back to the sender via RTCP. Since QUIC also collects some
+metrics about the networks performance, these metrics can be used to generate the required feedback
+at the sender-side and provide it to the congestion controller, to avoid the additional overhead of
+the RTCP stream.
+
+> **TODO:** Should the congestion controller work independently from the congestion
+> controller used in QUIC, because the QUIC connection can simultaneously be used for other data
+> streams, that need to be congestion controlled, too?
+
 # Local Interfaces
 ## QUIC Interface
 ## Congestion Controller Interface {#cc-interface}
