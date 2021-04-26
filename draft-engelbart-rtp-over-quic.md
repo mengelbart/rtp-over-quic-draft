@@ -151,6 +151,27 @@ QUIC-RECOVERY}} to the application.
 
 ## Congestion Controller Interface {#cc-interface}
 
+There are different congestion control algorithms proposed by RMCAT to implement application layer
+congestion control for real-time communications. These algorithms keep track of the sent packets and
+typically require a list of received packets together with the timestamps at which they were
+received by a receiver to estimate the current bandwidth utilization and whether a media encoder can
+be configured to produce output at a higher or lower rate.
+
+> **TODO:** we require a CC algorithm to work with a list of received packets and their
+> corresponding delays. These delays are probably estimated by using the QUIC RTT and the recorded
+> sent-time. If the CC algorithms use these values only to calculate an RTT and delay-variation, we
+> could instead just use the values which QUIC already records.
+
+A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
+estimation using the following inputs:
+
+* A list of packets that were acknowledged by the receiver
+* For each acknowledged packet, a delay between the sent- and receive-times of the packet
+* Optionally ECN marks
+
+A congestion controller MUST expose a maximum bitrate to which an encoder can safely be configured
+without overloading the network. Additionally a congestion controller may provide a pacing
+mechanism.
 
 ## Codec Interface {#encoder-interface}
 
