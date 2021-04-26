@@ -154,6 +154,12 @@ QUIC-RECOVERY}} to the application.
 
 ## Codec Interface {#encoder-interface}
 
+An application is expected to adapt the media bitrate to the observed available bandwidth by setting
+the media encoder to the target bitrate that is computed by the congestion controller. Thus, the
+media encoder needs to offer a way to update the target bitrate accordingly. An implementation can
+either expose the most recent bitrate estimation produced by the congestion controller, or directly
+take a callback to update the encoder bitrate which is called whenever the congestion controller
+updates its target bitrate.
 
 # Packet Format {#packet-format}
 
