@@ -160,6 +160,20 @@ QUIC-RECOVERY}} to the application.
 
 ## Encoding: Binary representation
 
+All packets are sent as datagrams with the following format:
+
+~~~
+Datagram Payload {
+  Flow Identifier (i),
+  RTP/RTCP Packet (..)
+}
+~~~
+{: #fig-datagram-payload title="Datagram Payload Format"}
+
+For multiplexing streams on the same QUIC connection, each RTP packet is prefixed with a flow
+identifier. This flow identifier serves as a replacement for using different transport addresses per
+stream. A flow identifier is a QUIC variable length integer which must be unique per stream.
+
 ## "How to transport / encapsulate"
 
 # Protocol Operation
