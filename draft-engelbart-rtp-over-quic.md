@@ -42,6 +42,23 @@ normative:
         org: Mozilla
         role: editor
 
+  QUIC-RECOVERY:
+    title: "QUIC Loss Detection and Congestion Control"
+    date: {DATE}
+    seriesinfo:
+      Internet-Draft: draft-ietf-quic-recovery-34
+    author:
+      -
+        ins: J. Iyengar
+        name: Jana Iyengar
+        org: Google
+        role: editor
+      -
+        ins: I. Swett
+        name: Ian Swett
+        org: Google
+        role: editor
+
   QUIC-DATAGRAM:
     title: "An Unreliable Datagram Extension to QUIC"
     date: {DATE}
@@ -116,8 +133,21 @@ the RTCP stream.
 
 # Local Interfaces
 
+RTP over QUIC requires different components like QUIC implementations, congestion controllers and
+media encoders to work together. The interfaces of these components have to fulfill certain
+requirements which are described in this section.
 
 ## QUIC Interface
+
+If the used QUIC implementation is not directly incorporated into the RTP over QUIC mapping
+implementation, it has to fulfill the following interface requirements. The QUIC implementation MUST
+support QUICs unreliable datagrams and it MUST provide a way to signal acknowledgements or losses of
+datagrams to the application. Since datagram frames cannot be fragmented, the QUIC implementation
+MUST provide a way to query the maximum datagram size, so that an application can create RTP packets
+that always fit into a datagram.
+
+Additionally, a QUIC implementation MUST expose the smoothed RTT as descirbed in {{Section 5 of
+QUIC-RECOVERY}} to the application.
 
 ## Congestion Controller Interface {#cc-interface}
 
