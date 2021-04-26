@@ -115,15 +115,91 @@ the RTCP stream.
 > streams, that need to be congestion controlled, too?
 
 # Local Interfaces
+
+
 ## QUIC Interface
+
 ## Congestion Controller Interface {#cc-interface}
+
+
 ## Codec Interface {#encoder-interface}
+
+
 # Packet Format {#packet-format}
+
+
 ## Encoding: Binary representation
 
 ## "How to transport / encapsulate"
 
 # Protocol Operation
+
+This section describes how senders and receivers can exchange RTP packets using QUIC. While the
+receiver side is very simple, the sender side has to keep track of sent packets and corresponding
+acknowledgement to implement congestion control.
+
+RTP/RTCP packets that are submitted to an RTP over QUIC implementation are buffered in a queue. The
+congestion controller defines the rate at which the next packet is dequeued and sent over the QUIC
+connection. Before a packet is sent, it is prefixed with the flow identifier described in
+{{packet-format}} and encapsulated in a QUIC datagram.
+
+The implementation has to keep track of sent packets in order to build the feedback for a congestion
+controller described in {{cc-interface}}. Each sent packet is mapped to the datagram in which it was
+sent over QUIC and when the QUIC implementation signals an acknowledgement for a specific datagram,
+the packet that was sent in this datagram is marked as received. Together with the received mark, an
+estimation of the delay at which the packet was received by the peer is stored. This estimation can
+be calculated from the RTT exposed by QUIC.
+
+> **TODO:** RTT may be better replaced by an explicit timestamp
+
+The list of received packets and delays can be passed to the congestion controller at a frequency
+specified by the used algorithm.
+
+The congestion controller regularly outputs a target bitrate, which is forwarded to the encoder
+using the interface described in {{encoder-interface}}.
+
+~~~
++------------+ Media  +-------------+
+|  Encoder   |------->| Application |
+|            |        |             |
++------------+        +-------------+
+      ^                      |
+      |                      |
+      | Set             RTP/ |
+      | Target          RTCP |
+      | bitrate              |
+      |                      v        Target
+      |               +-------------+ Bitrate   +-------------+
+      +---------------|  RTP over   |<----------| Congestion  |
+                      |    QUIC     | Feedback  | Controller  |
+                      +-------------+---------->+-------------+
+                           |   ^
+                   Flow ID |   | Datagram
+                  prefixed |   | ACK/Lost-
+                  RTP/RTCP |   | notification
+                   packets |   | +
+                           |   | RTT
+                           v   |
+                      +-------------+
+                      |    QUIC     |
+                      |             |
+                      +-------------+
+~~~
+{: #fig-send-flow title="RTP over QUIC send flow"}
+
+On receiving a datagram, a RTP over QUIC implementation strips off and parses the flow identifier to
+identify the stream to which the received RTP packet belongs. The remaining content of the datagram
+is then passed to the RTP session which was assigned the given flow identifier.
+
+> **TODO:** Decide what to do whith unknown flow IDs and streams that do not belong to RTP
+> over QUIC in the case where an application sends other data apart from RTP in datagrams over the
+> same QUIC connection. Some options are:
+
+> * If no RTP session with the flow identifier was registered, the packet is dropped.
+> * An error can be signaled to the application.
+> * The content can be forwarded to the application without being associated to a RTP stream. (This
+>   would probably require a way to assign flow IDs more gerenally than per RTP stream)
+
 # Enhancements
 
 ## Timestamp Draft
