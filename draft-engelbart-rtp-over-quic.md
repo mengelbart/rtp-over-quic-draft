@@ -160,6 +160,10 @@ that always fit into a datagram.
 Additionally, a QUIC implementation MUST expose the smoothed RTT as descirbed in {{Section 5 of
 QUIC-RECOVERY}} to the application.
 
+{{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats ECN marks if ECN is supported by the
+network path. If ECN counts can be exported from a QUIC implementation, these may be used to improve
+congestion control as described in the next section.
+
 ## Congestion Controller Interface {#cc-interface}
 
 There are different congestion control algorithms proposed by RMCAT to implement application layer
@@ -174,7 +178,8 @@ estimation using the following inputs:
 * A list of packets that were acknowledged by the receiver
 * For each acknowledged packet, a delay between the sent- and receive-times of the packet
 * Minimum and average RTT estimations and the RTT variation as calculated by QUIC {{QUIC-RECOVERY}}
-* ECN marks
+* Optionally ECN marks may be used, if supported by the network and exposed by the QUIC
+  implementation.
 
 A congestion controller MUST expose a maximum bitrate to which an encoder can safely be configured
 without overloading the network. Additionally a congestion controller may provide a pacing
