@@ -175,6 +175,7 @@ be configured to produce output at a higher or lower rate.
 A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
 estimation using the following inputs:
 
+* A current timestamp
 * A list of packets that were acknowledged by the receiver
 * For each acknowledged packet, a delay between the sent- and receive-times of the packet
 * Minimum and average RTT estimations and the RTT variation as calculated by QUIC {{QUIC-RECOVERY}}
