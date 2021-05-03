@@ -285,6 +285,23 @@ is then passed to the RTP session which was assigned the given flow identifier.
 
 > **TODO:** How to deal with different applications using Datagrams on the same QUIC connection?
 
+# Used RTP/RTCP packet types
+
+Any RTP packet can be sent over QUIC and no RTCP packets are used by default. Since QUIC already
+includes some features which are usually implemented by certain RTCP messages, RTP over QUIC
+implementations should not need to implement the following RTCP messages:
+
+* PT=205, FMT=1, Name=Generic NACK: Provides Negative Acknowledgements {{!RFC4585}}. Acknowledgement
+  and loss notifications are already provided by the QUIC connection.
+* PT=205, FMT=8, Name=RTCP-ECN-FB: Provides RTCP ECN Feedback {{!RFC6679}}. If supported, ECN
+  may directly be exposed by the used QUIC implementation.
+* PT=205, FMT=11, Name=CCFB: RTP Congestion Control Feedback which contains receive marks,
+  timestamps and ECN notifications for each received packet {{!RFC8888}}. This can be inferred from
+  QUIC as described in {{protocol-operation}}.
+* PT=210, FMT=all, Name=Token, {{!RFC6284}} specifies a way to dynamically assign ports for RTP
+  receivers. Since QUIC connections manage ports on their own, this is not required for RTP over
+  QUIC.
+
 # Enhancements
 
 The RTT measured by QUIC may not be very precise because it can be influenced by delayed ACKs. An
@@ -296,7 +313,8 @@ timestamp in the received packet. The one way delay can then be used as a replac
 receive time estimation derived from the RTT as described in {{protocol-operation}}.
 
 > **TODO:** Using OWD in ACKS tells a sender the OWD from receiver to sender, but we might be more
-> interested in OWD from sender to receiver so maybe we need some RTCP feedback?
+> interested in OWD from sender to receiver so maybe we need to specify some RTCP feedback in the
+> previous section?
 
 # Discussion
 
