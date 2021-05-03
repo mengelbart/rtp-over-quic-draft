@@ -81,6 +81,17 @@ normative:
         org: Google LLC
         role: editor
 
+  QUIC-TS:
+    title: "Quic Timestamps For Measuring One-Way Delays"
+    date: {DATE}
+    seriesinfo:
+      Internet-Draft: draft-huitema-quic-ts-05
+    author:
+      -
+        ins: C. Huitema
+        name: Christian Huitema
+        org: Private Octopus Inc.
+        role: editor
 informative:
 
 
@@ -203,7 +214,7 @@ stream. A flow identifier is a QUIC variable length integer which must be unique
 
 ## "How to transport / encapsulate"
 
-# Protocol Operation
+# Protocol Operation {#protocol-operation}
 
 This section describes how senders and receivers can exchange RTP packets using QUIC. While the
 receiver side is very simple, the sender side has to keep track of sent packets and corresponding
@@ -220,8 +231,6 @@ sent over QUIC and when the QUIC implementation signals an acknowledgement for a
 the packet that was sent in this datagram is marked as received. Together with the received mark, an
 estimation of the delay at which the packet was received by the peer is stored. This estimation can
 be calculated from the RTT exposed by QUIC.
-
-> **TODO:** RTT may be better replaced by an explicit timestamp
 
 The list of received packets and delays can be passed to the congestion controller at a frequency
 specified by the used algorithm.
@@ -273,9 +282,16 @@ is then passed to the RTP session which was assigned the given flow identifier.
 
 # Enhancements
 
-## Timestamp Draft
+The RTT measured by QUIC may not be very precise because it can be influenced by delayed ACKs. An
+alternative the RTT is to explicitly measure a one way delay. {{QUIC-TS}} suggests an extension for
+QUIC to implement one way delay measurements using a timestamp carried in a special QUIC frame. The
+new frame carries the time at which a packet was sent. This timestamp can be used by the receiver to
+estimate a one way delay as the difference between the time at which a packet was received and the
+timestamp in the received packet. The one way delay can then be used as a replacement for the
+receive time estimation derived from the RTT as described in {{protocol-operation}}.
 
-## Delayed ACKs
+> **TODO:** Using OWD in ACKS tells a sender the OWD from receiver to sender, but we might be more
+> interested in OWD from sender to receiver so maybe we need some RTCP feedback?
 
 # Discussion
 
