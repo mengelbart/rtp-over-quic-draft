@@ -275,14 +275,11 @@ On receiving a datagram, a RTP over QUIC implementation strips off and parses th
 identify the stream to which the received RTP packet belongs. The remaining content of the datagram
 is then passed to the RTP session which was assigned the given flow identifier.
 
-> **TODO:** Decide what to do whith unknown flow IDs and streams that do not belong to RTP
-> over QUIC in the case where an application sends other data apart from RTP in datagrams over the
-> same QUIC connection. Some options are:
+# SDP Signalling
 
-> * If no RTP session with the flow identifier was registered, the packet is dropped.
-> * An error can be signaled to the application.
-> * The content can be forwarded to the application without being associated to a RTP stream. (This
->   would probably require a way to assign flow IDs more gerenally than per RTP stream)
+> **TODO:** Describe how SDP can be used to setup session, e.g. assign flow IDs.
+
+> **TODO:** How to deal with different applications using Datagrams on the same QUIC connection?
 
 # Enhancements
 
