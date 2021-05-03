@@ -168,17 +168,13 @@ typically require a list of received packets together with the timestamps at whi
 received by a receiver to estimate the current bandwidth utilization and whether a media encoder can
 be configured to produce output at a higher or lower rate.
 
-> **TODO:** we require a CC algorithm to work with a list of received packets and their
-> corresponding delays. These delays are probably estimated by using the QUIC RTT and the recorded
-> sent-time. If the CC algorithms use these values only to calculate an RTT and delay-variation, we
-> could instead just use the values which QUIC already records.
-
 A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
 estimation using the following inputs:
 
 * A list of packets that were acknowledged by the receiver
 * For each acknowledged packet, a delay between the sent- and receive-times of the packet
-* Optionally ECN marks
+* Minimum and average RTT estimations and the RTT variation as calculated by QUIC {{QUIC-RECOVERY}}
+* ECN marks
 
 A congestion controller MUST expose a maximum bitrate to which an encoder can safely be configured
 without overloading the network. Additionally a congestion controller may provide a pacing
@@ -229,10 +225,12 @@ The implementation has to keep track of sent packets in order to build the feedb
 controller described in {{cc-interface}}. Each sent packet is mapped to the datagram in which it was
 sent over QUIC and when the QUIC implementation signals an acknowledgement for a specific datagram,
 the packet that was sent in this datagram is marked as received. Together with the received mark, an
-estimation of the delay at which the packet was received by the peer is stored. This estimation can
-be calculated from the RTT exposed by QUIC.
+estimation of the delay at which the packet was received by the peer can be stored. This estimation
+can be calculated from the RTT exposed by QUIC.
 
-The list of received packets and delays can be passed to the congestion controller at a frequency
+Depending on the requirements of the used congestion controll algorithm, a feedback report including
+the information described in {{cc-interface}} can then be generated and passed to the congestion
+controller. The feedback report can be passed to the congestion controller at a frequency
 specified by the used algorithm.
 
 The congestion controller regularly outputs a target bitrate, which is forwarded to the encoder
