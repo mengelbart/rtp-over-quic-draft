@@ -157,7 +157,7 @@ datagrams to the application. Since datagram frames cannot be fragmented, the QU
 MUST provide a way to query the maximum datagram size, so that an application can create RTP packets
 that always fit into a datagram.
 
-Additionally, a QUIC implementation MUST expose the smoothed RTT as descirbed in {{Section 5 of
+Additionally, a QUIC implementation MUST expose the smoothed RTT as described in {{Section 5 of
 QUIC-RECOVERY}} to the application.
 
 {{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats ECN marks if ECN is supported by the
