@@ -157,34 +157,37 @@ datagrams to the application. Since datagram frames cannot be fragmented, the QU
 MUST provide a way to query the maximum datagram size, so that an application can create RTP packets
 that always fit into a datagram.
 
-Additionally, a QUIC implementation MUST expose the smoothed RTT as described in {{Section 5 of
-QUIC-RECOVERY}} to the application.
+Additionally, a QUIC implementation MUST expose the recorded RTT statistics as described in
+{{Section 5 of QUIC-RECOVERY}} to the application. These statistics include the minium observed RTT
+over a period of time (min_rtt), exponentially-weighted moving average (smoothed_rtt) and the mean
+deviation (rttvar). These values are necessary to perform congestion control as explained in
+{{cc-interface}}.
 
 {{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats ECN marks if ECN is supported by the
 network path. If ECN counts can be exported from a QUIC implementation, these may be used to improve
-congestion control as described in the next section.
+congestion control, too.
 
 ## Congestion Controller Interface {#cc-interface}
 
 There are different congestion control algorithms proposed by RMCAT to implement application layer
-congestion control for real-time communications. These algorithms keep track of the sent packets and
-typically require a list of received packets together with the timestamps at which they were
-received by a receiver to estimate the current bandwidth utilization and whether a media encoder can
-be configured to produce output at a higher or lower rate.
+congestion control for real-time communications. To estimate the currently available bandwidth,
+these algorithms keep track of the sent packets and typically require a list of received packets
+together with the timestamps at which they were received by a receiver. The bandwidth estimation can
+then be used to decide, whether the media encoder can be configured to produce output at a higher or
+lower rate.
 
 A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
 estimation using the following inputs:
 
 * A current timestamp
 * A list of packets that were acknowledged by the receiver
-* For each acknowledged packet, a delay between the sent- and receive-times of the packet
+* For each acknowledged packet, a delay between the sent- and receive-timestamps of the packet
 * Minimum and average RTT estimations and the RTT variation as calculated by QUIC {{QUIC-RECOVERY}}
 * Optionally ECN marks may be used, if supported by the network and exposed by the QUIC
   implementation.
 
-A congestion controller MUST expose a maximum bitrate to which an encoder can safely be configured
-without overloading the network. Additionally a congestion controller may provide a pacing
-mechanism.
+A congestion controller MUST expose a target bitrate to which the encoder should be configured and
+may additionally provide a pacing mechanism.
 
 ## Codec Interface {#encoder-interface}
 
@@ -220,7 +223,7 @@ stream. A flow identifier is a QUIC variable length integer which must be unique
 
 This section describes how senders and receivers can exchange RTP packets using QUIC. While the
 receiver side is very simple, the sender side has to keep track of sent packets and corresponding
-acknowledgement to implement congestion control.
+acknowledgements to implement congestion control.
 
 RTP/RTCP packets that are submitted to an RTP over QUIC implementation are buffered in a queue. The
 congestion controller defines the rate at which the next packet is dequeued and sent over the QUIC
@@ -229,10 +232,11 @@ connection. Before a packet is sent, it is prefixed with the flow identifier des
 
 The implementation has to keep track of sent packets in order to build the feedback for a congestion
 controller described in {{cc-interface}}. Each sent packet is mapped to the datagram in which it was
-sent over QUIC and when the QUIC implementation signals an acknowledgement for a specific datagram,
-the packet that was sent in this datagram is marked as received. Together with the received mark, an
-estimation of the delay at which the packet was received by the peer can be stored. This estimation
-can be calculated from the RTT exposed by QUIC.
+sent over QUIC. When the QUIC implementation signals an acknowledgement for a specific datagram, the
+packet that was sent in this datagram is marked as received. Together with the received mark, an
+estimation of the delay at which the packet was received by the peer can be stored. Assuming the RTT
+is divided equally between the link from the sender to the receiver and the link back to the sender,
+this estimation can be calculated using the RTT exposed by QUIC divided by two.
 
 Depending on the requirements of the used congestion controll algorithm, a feedback report including
 the information described in {{cc-interface}} can then be generated and passed to the congestion
