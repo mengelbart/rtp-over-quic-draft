@@ -236,9 +236,6 @@ its `target_bitrate`.
 
 # Packet Format {#packet-format}
 
-
-## Encoding: Binary representation
-
 All packets MUST be sent as datagrams with the following format:
 
 ~~~
@@ -263,8 +260,6 @@ RTP and RTCP packets of different RTP sessions MUST be sent using different flow
 Differentiating RTP/RTCP datagrams of different RTP sessions from non-RTP/RTCP datagrams is
 the responsibility of the application by means of appropriate use of flow identifiers and
 the corresponding signaling.
-
-## "How to transport / encapsulate"
 
 RTP senders SHOULD consider the header overhead assosiated with QUIC datagrams and sure that
 the RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
