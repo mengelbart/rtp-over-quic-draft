@@ -261,7 +261,7 @@ Differentiating RTP/RTCP datagrams of different RTP sessions from non-RTP/RTCP d
 the responsibility of the application by means of appropriate use of flow identifiers and
 the corresponding signaling.
 
-RTP senders SHOULD consider the header overhead assosiated with QUIC datagrams and sure that
+RTP senders SHOULD consider the header overhead associated with QUIC datagrams and ensure that
 the RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
 
 What else?
