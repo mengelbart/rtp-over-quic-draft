@@ -98,7 +98,10 @@ informative:
 
 --- abstract
 
-TODO Abstract
+This document specifies a minimal mapping for encapsulating RTP and
+RTCP packets within QUIC.  It also discusses how to leverage state
+from the QUIC implementation in the endpoints to reduce the exchange
+of RTCP packets.
 
 --- middle
 
