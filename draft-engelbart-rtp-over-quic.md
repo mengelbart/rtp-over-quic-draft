@@ -264,12 +264,6 @@ the corresponding signaling.
 RTP senders SHOULD consider the header overhead associated with QUIC datagrams and ensure that
 the RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
 
-What else?
-
-* When to send a packet? (re congestion control)
-* ...
-
-
 # Protocol Operation {#protocol-operation}
 
 This section describes how senders and receivers can exchange RTP packets using QUIC. While the
