@@ -407,9 +407,9 @@ received and the timestamp in the received packet. The one way delay can then be
 replacement for the receive time estimation derived from the RTT as described in
 {{protocol-operation}} to create the `pkt_delay_list`.
 
-> **TODO:** Using OWD in ACKS tells a sender the OWD from receiver to sender, but we might be more
-> interested in OWD from sender to receiver so maybe we need to specify some RTCP feedback in the
-> previous section?
+> **TODO:** Even with one-way delay measurements it is still not possible to identify exact
+> timestamps for individual packets, since the timestamp may be sent with an ACK that acks more than
+> one earlier packet.
 
 # Discussion
 
