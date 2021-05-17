@@ -107,7 +107,31 @@ of RTCP packets.
 
 # Introduction
 
-TODO Introduction
+The Real-time Transport Protocol (RTP) {{!RFC3550}} is generally used
+to carry real-time media for conversational media sessions, such as
+video conferences, across the Internet.  Since RTP requires real-time
+delivery and is tolerant to packet losses, the default underlying
+transport protocol has been UDP, recently with DTLS on top to secure
+the media exchange and occasionallly TCP (and possibly TLS) as
+fallback.  With the advent of QUIC and, most notably, its unreliable
+DATAGRAM extension, another secure transport protocol becomes
+avaialble.  QUIC and its DATAGRAMs combine desirable properties for
+real-time traffic (e.g., no unnecessary retransmissions, avoiding
+head-of-line blocking) with a secure end-to-end transport that is
+also expected to work well through NATs and firewalls.
+
+Moreover, with QUIC's multiplexing capabilities, reliable and
+unreliable transport connections as, e.g., needed for WebRTC, can be
+established with only a single port used at either end of the
+connection.  This document defines a mapping of how to carry RTP over
+QUIC.  The focus is on RTP and RTCP packet mapping and on reducing the
+amount of RTCP traffic by leveraging state information readily
+available within a QUIC endpoint.  This document also briefly touches
+upon how to signal media over QUIC using the Session Description
+Protocol (SDP) {{!RFC4566}}.
+
+The scope of this document is limited to unicast RTP/RTCP.
+
 
 # Terminology and Notation
 
