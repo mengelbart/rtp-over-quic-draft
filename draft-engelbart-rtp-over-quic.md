@@ -186,8 +186,8 @@ that always fit into a datagram.
 
 Additionally, a QUIC implementation MUST expose the recorded RTT statistics as described in
 {{Section 5 of QUIC-RECOVERY}} to the application. These statistics include the minium observed RTT
-over a period of time (min_rtt), exponentially-weighted moving average (smoothed_rtt) and the mean
-deviation (rttvar). These values are necessary to perform congestion control as explained in
+over a period of time (`min_rtt`), exponentially-weighted moving average (`smoothed_rtt`) and the mean
+deviation (`rtt_var`). These values are necessary to perform congestion control as explained in
 {{cc-interface}}.
 
 {{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats ECN marks if ECN is supported by the
@@ -206,24 +206,29 @@ lower rate.
 A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
 estimation using the following inputs:
 
-* A current timestamp
-* A list of packets that were acknowledged by the receiver
-* For each acknowledged packet, a delay between the sent- and receive-timestamps of the packet
-* Minimum and average RTT estimations and the RTT variation as calculated by QUIC {{QUIC-RECOVERY}}
-* Optionally ECN marks may be used, if supported by the network and exposed by the QUIC
+* `t_current`: A current timestamp
+* `pkt_status_list`: A list of packets that were acknowledged by the receiver
+* `pkt_delay_list`: For each acknowledged packet, a delay between the sent- and receive-timestamps
+  of the packet
+* The RTT estimations calculated by QUIC as described in {{Section 5 of QUIC-RECOVERY}}:
+  * `min_rtt`: The miminum RTT observed by QUIC over a period of time
+  * `smoothed_rtt`: An exponentially-weighted moving average of the observed RTT values
+  * `rtt_var`: The mean deviation in the observed rtt values
+* `ecn`: Optionally ECN marks may be used, if supported by the network and exposed by the QUIC
   implementation.
 
-A congestion controller MUST expose a target bitrate to which the encoder should be configured and
-may additionally provide a pacing mechanism.
+A congestion controller MUST expose a `target_bitrate` to which the encoder should be configured to
+fully utilize the available bandwidth. Additionally, the congestion controller may provide a pacing
+mechanism.
 
 ## Codec Interface {#encoder-interface}
 
 An application is expected to adapt the media bitrate to the observed available bandwidth by setting
-the media encoder to the target bitrate that is computed by the congestion controller. Thus, the
-media encoder needs to offer a way to update the target bitrate accordingly. An implementation can
-either expose the most recent bitrate estimation produced by the congestion controller, or directly
-take a callback to update the encoder bitrate which is called whenever the congestion controller
-updates its target bitrate.
+the media encoder to the `target_bitrate` that is computed by the congestion controller. Thus, the
+media encoder needs to offer a way to update its bitrate accordingly. An implementation can either
+expose the most recent `target_bitrate` produced by the congestion controller, or directly take a
+callback to update the encoder bitrate which is called whenever the congestion controller updates
+its `target_bitrate`.
 
 # Packet Format {#packet-format}
 
@@ -283,14 +288,18 @@ sent over QUIC. When the QUIC implementation signals an acknowledgement for a sp
 packet that was sent in this datagram is marked as received. Together with the received mark, an
 estimation of the delay at which the packet was received by the peer can be stored. Assuming the RTT
 is divided equally between the link from the sender to the receiver and the link back to the sender,
-this estimation can be calculated using the RTT exposed by QUIC divided by two.
+this estimation can be calculated using the RTT exposed by QUIC divided by two. This mapping can
+later be used to create the `pkt_status_list` and the `pkt_delay_list` as described in
+{{cc-interface}}.
 
-Depending on the requirements of the used congestion controll algorithm, a feedback report including
-the information described in {{cc-interface}} can then be generated and passed to the congestion
-controller. The feedback report can be passed to the congestion controller at a frequency
+In a regular interval, the `pkt_status_list` and the `pkt_delay_list` MUST be passed to the
+congestion controller together with the current timestamp `t_current` and the RTT statistics
+`min_rtt`, `smoothed_rtt` and `rtt_var`. If available, the feedback MAY also contain the ECN marks.
+
+The feedback report can be passed to the congestion controller at a frequency
 specified by the used algorithm.
 
-The congestion controller regularly outputs a target bitrate, which is forwarded to the encoder
+The congestion controller regularly outputs the `target_bitrate`, which is forwarded to the encoder
 using the interface described in {{encoder-interface}}.
 
 ~~~
@@ -385,13 +394,14 @@ implementations should not need to implement the following RTCP messages:
 
 # Enhancements
 
-The RTT measured by QUIC may not be very precise because it can be influenced by delayed ACKs. An
-alternative the RTT is to explicitly measure a one way delay. {{QUIC-TS}} suggests an extension for
-QUIC to implement one way delay measurements using a timestamp carried in a special QUIC frame. The
-new frame carries the time at which a packet was sent. This timestamp can be used by the receiver to
-estimate a one way delay as the difference between the time at which a packet was received and the
-timestamp in the received packet. The one way delay can then be used as a replacement for the
-receive time estimation derived from the RTT as described in {{protocol-operation}}.
+The RTT statistics collected by QUIC may not be very precise because it can be influenced by delayed
+ACKs. An alternative the RTT is to explicitly measure a one way delay. {{QUIC-TS}} suggests an
+extension for QUIC to implement one way delay measurements using a timestamp carried in a special
+QUIC frame. The new frame carries the time at which a packet was sent. This timestamp can be used by
+the receiver to estimate a one way delay as the difference between the time at which a packet was
+received and the timestamp in the received packet. The one way delay can then be used as a
+replacement for the receive time estimation derived from the RTT as described in
+{{protocol-operation}} to create the `pkt_delay_list`.
 
 > **TODO:** Using OWD in ACKS tells a sender the OWD from receiver to sender, but we might be more
 > interested in OWD from sender to receiver so maybe we need to specify some RTCP feedback in the
