@@ -157,7 +157,7 @@ multiplex many RTP sessions over the same QUIC connection.
 
 A congestion controller can be plugged in, to adapt the media bitrate to the available bandwidth.
 This document does not mandate any congestion control algorithm, some examples include
-Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self- Clocked Rate Adaptation for
+Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for
 Multimedia (SCReAM) {{!RFC8298}}. These congestion control algorithms require some feedback about
 the performance of the network in order to calculate target bitrates. Traditionally this feedback is
 generated at the receiver and sent back to the sender via RTCP. Since QUIC also collects some
@@ -302,7 +302,7 @@ using the interface described in {{encoder-interface}}.
 ~~~
 {: #fig-send-flow title="RTP over QUIC send flow"}
 
-On receiving a datagram, a RTP over QUIC implementation strips off and parses the flow identifier to
+On receiving a datagram, an RTP over QUIC implementation strips off and parses the flow identifier to
 identify the stream to which the received RTP packet belongs. The remaining content of the datagram
 is then passed to the RTP session which was assigned the given flow identifier.
 
