@@ -252,7 +252,7 @@ stream. A flow identifier is a QUIC variable length integer which must be unique
 RTP and RTCP packets of a single RTP session MAY be sent using the same flow identifier (following
 the procedures defined in {{!RFC5761}}, or they MAY be sent using different flow identifiers.
 The respective mode of operation MUST be indicated using the appropriate signaling, e.g.,
-when using SDP as discussed in section {#sdp}.
+when using SDP as discussed in {{sdp}}.
 
 RTP and RTCP packets of different RTP sessions MUST be sent using different flow identifiers.
 
@@ -335,7 +335,7 @@ On receiving a datagram, an RTP over QUIC implementation strips off and parses t
 identify the stream to which the received RTP packet belongs. The remaining content of the datagram
 is then passed to the RTP session which was assigned the given flow identifier.
 
-# SDP Signalling
+# SDP Signalling {#sdp}
 
 QUIC is a connection-based protocol that supports connectionless transmissions of DATAGRAM frames
 within an established connection.  As noted above, demultiplexing DATAGRAMS intended for different
