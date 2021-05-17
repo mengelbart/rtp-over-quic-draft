@@ -218,8 +218,12 @@ estimation using the following inputs:
   implementation.
 
 A congestion controller MUST expose a `target_bitrate` to which the encoder should be configured to
-fully utilize the available bandwidth. Additionally, the congestion controller may provide a pacing
-mechanism.
+fully utilize the available bandwidth.
+
+It is assumed that the congestion controller provides a pacing mechanism to determine when a packet
+can be send and to avoid bursts. All of the currently proposed congestion control algorithms for
+real-time communications provide such a pacing mechanism. The use of congestion controllers which
+don't provide a pacing mechanism is out of scope of this document.
 
 ## Codec Interface {#encoder-interface}
 
