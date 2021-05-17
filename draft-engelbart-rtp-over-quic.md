@@ -308,6 +308,40 @@ is then passed to the RTP session which was assigned the given flow identifier.
 
 # SDP Signalling
 
+QUIC is a connection-based protocol that supports connectionless transmissions of DATAGRAM frames
+within an established connection.  As noted above, demultiplexing DATAGRAMS intended for different
+purposes is up to the application using QUIC.
+
+There are three necessary steps to carry out jointly between the
+communicating peers to enable RTP over QUIC:
+
+1. The peers need to decide whether to establish a new QUIC connection or whether to re-use an
+   existing one.  In case of establishing a new connection, the initiator and the responder
+   (client and server) need to be determined.  Signaling for this step MUST follow {{!RFC4572}}
+   on SDP attributes for connection-oriented media.
+
+2. The peers must provide a mapping of RTP sessions to flow identifiers, which is conceptually
+   similar to signaling port numbers for demultiplexing.  To this end, all media specified in
+   SDP to use the same QUIC connection MUST share a common c= line to signal the IP address
+   and MUST all use the same port number -- that of the QUIC connection -- in the m= line.
+
+   Flow identifiers MUST be treated independently for each direction of transmission, so that
+   an endpoint MAY choose its own flow identifies and only uses SDP to inform its peer which
+   RTP sessions use which flow identifiers.
+
+   To this end, SDP MUST be used to indicate the repsective flow identifiers for RTP and RTCP
+   of the different RTP sessions (for which we borrow inspiration from {{!RFC3605}}).
+
+   **TODO:** check {{!RFC8122}} {{!RFC8843}}
+
+3. The peers MUST agree, for each RTP session, where or not to apply RTP/RTCP multiplexing.
+   If multiplexing RTP and RTCP shall take place on the same flow identifier, this MUST be
+   indicated using the attribute a=rtcp-mux.
+
+   If RTP/RTCP multiplexing is used, the flow identifiers for the RTP and the RTCP flows
+   MUST be identical.
+
+
 > **TODO:** Describe how SDP can be used to setup session, e.g. assign flow IDs.
 
 > **TODO:** How to deal with different applications using Datagrams on the same QUIC connection?
