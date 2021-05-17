@@ -230,7 +230,7 @@ updates its target bitrate.
 
 ## Encoding: Binary representation
 
-All packets are sent as datagrams with the following format:
+All packets MUST be sent as datagrams with the following format:
 
 ~~~
 Datagram Payload {
@@ -244,7 +244,27 @@ For multiplexing streams on the same QUIC connection, each RTP packet is prefixe
 identifier. This flow identifier serves as a replacement for using different transport addresses per
 stream. A flow identifier is a QUIC variable length integer which must be unique per stream.
 
+RTP and RTCP packets of a single RTP session MAY be sent using the same flow identifier (following
+the procedures defined in {{!RFC5761}}, or they MAY be sent using different flow identifiers.
+The respective mode of operation MUST be indicated using the appropriate signaling, e.g.,
+when using SDP as discussed in section {#sdp}.
+
+RTP and RTCP packets of different RTP sessions MUST be sent using different flow identifiers.
+
+Differentiating RTP/RTCP datagrams of different RTP sessions from non-RTP/RTCP datagrams is
+the responsibility of the application by means of appropriate use of flow identifiers and
+the corresponding signaling.
+
 ## "How to transport / encapsulate"
+
+RTP senders SHOULD consider the header overhead assosiated with QUIC datagrams and sure that
+the RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
+
+What else?
+
+* When to send a packet? (re congestion control)
+* ...
+
 
 # Protocol Operation {#protocol-operation}
 
