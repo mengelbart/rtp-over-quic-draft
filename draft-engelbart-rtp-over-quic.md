@@ -334,39 +334,89 @@ QUIC is a connection-based protocol that supports connectionless transmissions o
 within an established connection.  As noted above, demultiplexing DATAGRAMS intended for different
 purposes is up to the application using QUIC.
 
-There are three necessary steps to carry out jointly between the
+There are several necessary steps to carry out jointly between the
 communicating peers to enable RTP over QUIC:
+
+0. The protocol identifier for the m= lines MUST be "QUIC/RTP", combined as per {{!RFC4566}}
+   with the respective audiovisual profile: for example, "QUIC/RTP/AVP".
 
 1. The peers need to decide whether to establish a new QUIC connection or whether to re-use an
    existing one.  In case of establishing a new connection, the initiator and the responder
-   (client and server) need to be determined.  Signaling for this step MUST follow {{!RFC4572}}
-   on SDP attributes for connection-oriented media.
+   (client and server) need to be determined.  Signaling for this step MUST follow {{!RFC8122}}
+   on SDP attributes for connection-oriented media for the a=setup, a=connection, and
+   a=fingerprint attributes.  They MUST use the appropriate protocol identification as per 0.
 
-2. The peers must provide a mapping of RTP sessions to flow identifiers, which is conceptually
-   similar to signaling port numbers for demultiplexing.  To this end, all media specified in
-   SDP to use the same QUIC connection MUST share a common c= line to signal the IP address
-   and MUST all use the same port number -- that of the QUIC connection -- in the m= line.
+2. The peers must provide a identifying RTP sessions carried in QUIC DATAGRAMS.
+   To enable using a common transport connection for one, two, or more media sessions in
+   the first place, the BUNDLE grouping framework MUST be used {{!RFC8843}}.  All media sections
+   belonging to a bundle group, except the first one, MUST set the port in the m= line to zero
+   and MUST include the a=bundle-only attribute.
+   
+   For disambiguating different RTP session, a reference needs to be provided for each m= line to
+   allow associating this specific media session with a flow identifier.  This could be
+   achieved following different approaches:
+   
+   * Simply reusing the a=extmap attribute {{!RFC8285}} and relying on RTP header extensions
+     for demultiplexing different media packets carried in QUIC DATAGRAM frames.
+     
+   * Defining a variant or different flavor of the a=extmap attribute {{!RFC8285}} that binds
+     media sessions to flow identifiers used in QUIC DATAGRAMS.
 
-   Flow identifiers MUST be treated independently for each direction of transmission, so that
-   an endpoint MAY choose its own flow identifies and only uses SDP to inform its peer which
-   RTP sessions use which flow identifiers.
+   Editor's note: It is likely preferable to use multiplexing using QUIC DATAGRAM flow
+   identifiers because this multiplexing mechanisms will also across RTP and non-RTP media
+   streams.
+
+   In either case, the corresponding identifiers MUST be treated independently for each
+   direction of transmission, so that an endpoint MAY choose its own identifies and only
+   uses SDP to inform its peer which RTP sessions use which identifiers.
 
    To this end, SDP MUST be used to indicate the repsective flow identifiers for RTP and RTCP
    of the different RTP sessions (for which we borrow inspiration from {{!RFC3605}}).
 
-   **TODO:** check {{!RFC8122}} {{!RFC8843}}
-
-3. The peers MUST agree, for each RTP session, where or not to apply RTP/RTCP multiplexing.
+3. The peers MUST agree, for each RTP session, whether or not to apply RTP/RTCP multiplexing.
    If multiplexing RTP and RTCP shall take place on the same flow identifier, this MUST be
    indicated using the attribute a=rtcp-mux.
 
-   If RTP/RTCP multiplexing is used, the flow identifiers for the RTP and the RTCP flows
-   MUST be identical.
+A sample session setup offer (liberally borrowed and extended from {{!RFC8843}} and {{!RFC8122}}
+could look as follows:
 
+~~~
+SDP Offer
 
-> **TODO:** Describe how SDP can be used to setup session, e.g. assign flow IDs.
+     v=0
+     o=alice 2890844526 2890844526 IN IP6 2001:db8::3
+     s=
+     c=IN IP6 2001:db8::3
+     t=0 0
+     a=group:BUNDLE abc xyz
 
-> **TODO:** How to deal with different applications using Datagrams on the same QUIC connection?
+     m=audio 10000 QUIC/RTP/AVP 0 8 97
+     a=setup:actpass
+     a=connection:new
+     a=fingerprint:SHA-256 \
+        12:DF:3E:5D:49:6B:19:E5:7C:AB:4A:AD:B9:B1:3F:82:18:3B:54:02:12:DF: \
+        3E:5D:49:6B:19:E5:7C:AB:4A:AD
+     b=AS:200
+     a=mid:abc
+     a=rtcp-mux
+     a=rtpmap:0 PCMU/8000
+     a=rtpmap:8 PCMA/8000
+     a=rtpmap:97 iLBC/8000
+     a=extmap:1 urn:ietf:params:<tdb>
+
+     m=video 0 QUIC/RTP/AVP 31 32
+     b=AS:1000
+     a=bundle-only
+     a=mid:bar
+     a=rtcp-mux
+     a=rtpmap:31 H261/90000
+     a=rtpmap:32 MPV/90000
+     a=extmap:2 urn:ietf:params:<tbd>
+
+~~~
+
+Signaling details to be worked out.
+
 
 # Used RTP/RTCP packet types
 
