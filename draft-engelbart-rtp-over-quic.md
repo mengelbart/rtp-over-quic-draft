@@ -165,7 +165,7 @@ metrics about the networks performance, these metrics can be used to generate th
 at the sender-side and provide it to the congestion controller, to avoid the additional overhead of
 the RTCP stream.
 
-> **TODO:** Should the congestion controller work independently from the congestion
+> **Editor's note:** Should the congestion controller work independently from the congestion
 > controller used in QUIC, because the QUIC connection can simultaneously be used for other data
 > streams, that need to be congestion controlled, too?
 
@@ -344,25 +344,25 @@ communicating peers to enable RTP over QUIC:
    existing one.  In case of establishing a new connection, the initiator and the responder
    (client and server) need to be determined.  Signaling for this step MUST follow {{!RFC8122}}
    on SDP attributes for connection-oriented media for the a=setup, a=connection, and
-   a=fingerprint attributes.  They MUST use the appropriate protocol identification as per 0.
+   a=fingerprint attributes.  They MUST use the appropriate protocol identification as per 1.
 
-2. The peers must provide a identifying RTP sessions carried in QUIC DATAGRAMS.
+2. The peers must provide a means for identifying RTP sessions carried in QUIC DATAGRAMS.
    To enable using a common transport connection for one, two, or more media sessions in
    the first place, the BUNDLE grouping framework MUST be used {{!RFC8843}}.  All media sections
    belonging to a bundle group, except the first one, MUST set the port in the m= line to zero
    and MUST include the a=bundle-only attribute.
-   
+
    For disambiguating different RTP session, a reference needs to be provided for each m= line to
    allow associating this specific media session with a flow identifier.  This could be
    achieved following different approaches:
-   
+
    * Simply reusing the a=extmap attribute {{!RFC8285}} and relying on RTP header extensions
      for demultiplexing different media packets carried in QUIC DATAGRAM frames.
-     
+
    * Defining a variant or different flavor of the a=extmap attribute {{!RFC8285}} that binds
      media sessions to flow identifiers used in QUIC DATAGRAMS.
 
-   Editor's note: It is likely preferable to use multiplexing using QUIC DATAGRAM flow
+   > **Editor's note:** It is likely preferable to use multiplexing using QUIC DATAGRAM flow
    identifiers because this multiplexing mechanisms will also across RTP and non-RTP media
    streams.
 
@@ -381,39 +381,37 @@ A sample session setup offer (liberally borrowed and extended from {{!RFC8843}} 
 could look as follows:
 
 ~~~
-SDP Offer
+v=0
+o=alice 2890844526 2890844526 IN IP6 2001:db8::3
+s=
+c=IN IP6 2001:db8::3
+t=0 0
+a=group:BUNDLE abc xyz
 
-     v=0
-     o=alice 2890844526 2890844526 IN IP6 2001:db8::3
-     s=
-     c=IN IP6 2001:db8::3
-     t=0 0
-     a=group:BUNDLE abc xyz
+m=audio 10000 QUIC/RTP/AVP 0 8 97
+a=setup:actpass
+a=connection:new
+a=fingerprint:SHA-256 \
+ 12:DF:3E:5D:49:6B:19:E5:7C:AB:4A:AD:B9:B1:3F:82:18:3B:54:02:12:DF: \
+ 3E:5D:49:6B:19:E5:7C:AB:4A:AD
+b=AS:200
+a=mid:abc
+a=rtcp-mux
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:97 iLBC/8000
+a=extmap:1 urn:ietf:params:<tbd>
 
-     m=audio 10000 QUIC/RTP/AVP 0 8 97
-     a=setup:actpass
-     a=connection:new
-     a=fingerprint:SHA-256 \
-        12:DF:3E:5D:49:6B:19:E5:7C:AB:4A:AD:B9:B1:3F:82:18:3B:54:02:12:DF: \
-        3E:5D:49:6B:19:E5:7C:AB:4A:AD
-     b=AS:200
-     a=mid:abc
-     a=rtcp-mux
-     a=rtpmap:0 PCMU/8000
-     a=rtpmap:8 PCMA/8000
-     a=rtpmap:97 iLBC/8000
-     a=extmap:1 urn:ietf:params:<tdb>
-
-     m=video 0 QUIC/RTP/AVP 31 32
-     b=AS:1000
-     a=bundle-only
-     a=mid:bar
-     a=rtcp-mux
-     a=rtpmap:31 H261/90000
-     a=rtpmap:32 MPV/90000
-     a=extmap:2 urn:ietf:params:<tbd>
-
+m=video 0 QUIC/RTP/AVP 31 32
+b=AS:1000
+a=bundle-only
+a=mid:bar
+a=rtcp-mux
+a=rtpmap:31 H261/90000
+a=rtpmap:32 MPV/90000
+a=extmap:2 urn:ietf:params:<tbd>
 ~~~
+{: #sdp-example title="SDP Offer"}
 
 Signaling details to be worked out.
 
@@ -446,7 +444,7 @@ received and the timestamp in the received packet. The one way delay can then be
 replacement for the receive time estimation derived from the RTT as described in
 {{protocol-operation}} to create the `pkt_delay_list`.
 
-> **TODO:** Even with one-way delay measurements it is still not possible to identify exact
+> **Editor's note:** Even with one-way delay measurements it is still not possible to identify exact
 > timestamps for individual packets, since the timestamp may be sent with an ACK that acks more than
 > one earlier packet.
 
@@ -456,8 +454,7 @@ replacement for the receive time estimation derived from the RTT as described in
 
 # Security Considerations
 
-TODO Security
-
+TBD
 
 # IANA Considerations
 
