@@ -92,6 +92,19 @@ normative:
         name: Christian Huitema
         org: Private Octopus Inc.
         role: editor
+
+  H3-DATAGRAM:
+    title: "Using QUIC Datagrams with HTTP/3"
+    date: {DATE}
+    seriesinfo:
+      Internet-Draft: draft-schinazi-quic-h3-datagram-05
+    author:
+      -
+        ins: D. Schinazi
+        name: David Schinazi
+        org: Google LLC
+        role: editor
+
 informative:
 
 
@@ -150,10 +163,11 @@ real-time data.
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different transport addresses to
 allow multiplexing between them. RTP over QUIC uses a different approach, in order to leverage the
 advantages of QUIC connections without managing a separate QUIC connection per RTP session. QUIC
-does not provide multiplexing between different flows on datagrams, but recommends the use of
-variable-length integers to prepend each datagram with a unique flow identifier for multiplexing
-flows. RTP over QUIC uses a flow identifier as a replacement for network address and port number, to
-multiplex many RTP sessions over the same QUIC connection.
+does not provide demultiplexing between different flows on datagrams, but suggest that an
+application implements a demultiplexing mechanism if it is required. An example of such a mechanism
+are flow identifiers prepended to each datagram as described in {{H3-DATAGRAM}}. RTP over QUIC uses
+a flow identifier as a replacement for network address and port number, to multiplex many RTP
+sessions over the same QUIC connection.
 
 A congestion controller can be plugged in, to adapt the media bitrate to the available bandwidth.
 This document does not mandate any congestion control algorithm, some examples include
