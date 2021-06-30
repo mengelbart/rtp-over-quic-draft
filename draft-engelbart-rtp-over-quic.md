@@ -163,10 +163,10 @@ real-time data.
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different transport addresses to
 allow multiplexing between them. RTP over QUIC uses a different approach, in order to leverage the
 advantages of QUIC connections without managing a separate QUIC connection per RTP session. QUIC
-does not provide demultiplexing between different flows on datagrams, but suggest that an
+does not provide demultiplexing between different flows on datagrams, but suggests that an
 application implements a demultiplexing mechanism if it is required. An example of such a mechanism
-are flow identifiers prepended to each datagram as described in {{H3-DATAGRAM}}. RTP over QUIC uses
-a flow identifier as a replacement for network address and port number, to multiplex many RTP
+are flow identifiers prepended to each datagram frame as described in {{H3-DATAGRAM}}. RTP over QUIC
+uses a flow identifier as a replacement for network address and port number, to multiplex many RTP
 sessions over the same QUIC connection.
 
 A congestion controller can be plugged in, to adapt the media bitrate to the available bandwidth.
@@ -196,7 +196,7 @@ implementation, it has to fulfill the following interface requirements. The QUIC
 support QUICs unreliable datagrams and it MUST provide a way to signal acknowledgements or losses of
 datagrams to the application. Since datagram frames cannot be fragmented, the QUIC implementation
 MUST provide a way to query the maximum datagram size, so that an application can create RTP packets
-that always fit into a datagram.
+that always fit into a QUIC datagram frame.
 
 Additionally, a QUIC implementation MUST expose the recorded RTT statistics as described in
 {{Section 5 of QUIC-RECOVERY}} to the application. These statistics include the minium observed RTT
@@ -212,22 +212,22 @@ congestion control, too.
 
 There are different congestion control algorithms proposed by RMCAT to implement application layer
 congestion control for real-time communications. To estimate the currently available bandwidth,
-these algorithms keep track of the sent packets and typically require a list of received packets
-together with the timestamps at which they were received by a receiver. The bandwidth estimation can
-then be used to decide, whether the media encoder can be configured to produce output at a higher or
-lower rate.
+these algorithms keep track of the sent packets and typically require a list of successfully
+delivered packets together with the timestamps at which they were received by a receiver. The
+bandwidth estimation can then be used to decide, whether the media encoder can be configured to
+produce output at a higher or lower rate.
 
 A congestion controller used for RTP over QUIC should be able to compute an adequate bandwidth
 estimation using the following inputs:
 
 * `t_current`: A current timestamp
-* `pkt_status_list`: A list of packets that were acknowledged by the receiver
-* `pkt_delay_list`: For each acknowledged packet, a delay between the sent- and receive-timestamps
-  of the packet
+* `pkt_status_list`: A list of RTP packets that were acknowledged by the receiver
+* `pkt_delay_list`: For each acknowledged RTP packet, a delay between the sent- and
+  receive-timestamps of the packet
 * The RTT estimations calculated by QUIC as described in {{Section 5 of QUIC-RECOVERY}}:
   * `min_rtt`: The miminum RTT observed by QUIC over a period of time
   * `smoothed_rtt`: An exponentially-weighted moving average of the observed RTT values
-  * `rtt_var`: The mean deviation in the observed rtt values
+  * `rtt_var`: The mean deviation in the observed RTT values
 * `ecn`: Optionally ECN marks may be used, if supported by the network and exposed by the QUIC
   implementation.
 
@@ -243,14 +243,14 @@ don't provide a pacing mechanism is out of scope of this document.
 
 An application is expected to adapt the media bitrate to the observed available bandwidth by setting
 the media encoder to the `target_bitrate` that is computed by the congestion controller. Thus, the
-media encoder needs to offer a way to update its bitrate accordingly. An implementation can either
-expose the most recent `target_bitrate` produced by the congestion controller, or directly take a
-callback to update the encoder bitrate which is called whenever the congestion controller updates
-its `target_bitrate`.
+media encoder needs to offer a way to update its bitrate accordingly. A RTP over QUIC implementation
+can either expose the most recent `target_bitrate` produced by the congestion controller to the
+application, or accept a callback from the application, which updates the encoder bitrate whenever
+the congestion controller updates the `target_bitrate`.
 
 # Packet Format {#packet-format}
 
-All packets MUST be sent as datagrams with the following format:
+All RTP packets MUST be sent in QUIC datagram frames with the following format:
 
 ~~~
 Datagram Payload {
@@ -289,8 +289,8 @@ congestion controller defines the rate at which the next packet is dequeued and 
 connection. Before a packet is sent, it is prefixed with the flow identifier described in
 {{packet-format}} and encapsulated in a QUIC datagram.
 
-The implementation has to keep track of sent packets in order to build the feedback for a congestion
-controller described in {{cc-interface}}. Each sent packet is mapped to the datagram in which it was
+The implementation has to keep track of sent RTP packets in order to build the feedback for a congestion
+controller described in {{cc-interface}}. Each sent RTP packet is mapped to the datagram in which it was
 sent over QUIC. When the QUIC implementation signals an acknowledgement for a specific datagram, the
 packet that was sent in this datagram is marked as received. Together with the received mark, an
 estimation of the delay at which the packet was received by the peer can be stored. Assuming the RTT
@@ -377,7 +377,7 @@ communicating peers to enable RTP over QUIC:
      media sessions to flow identifiers used in QUIC DATAGRAMS.
 
    > **Editor's note:** It is likely preferable to use multiplexing using QUIC DATAGRAM flow
-   identifiers because this multiplexing mechanisms will also across RTP and non-RTP media
+   identifiers because this multiplexing mechanisms will also work across RTP and non-RTP media
    streams.
 
    In either case, the corresponding identifiers MUST be treated independently for each
