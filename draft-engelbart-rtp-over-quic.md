@@ -153,11 +153,44 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
+The following terms are used:
+
+Congestion Controller:
+: QUIC specifies a congestion controller in {{Section 7 of QUIC-RECOVERY}} but the specific
+requirements for interactive real-time media, lead to the development of dedicated congestion
+control algorithms. The term congestion controller in this document refers to these alorithms which
+are dedicated to real-time applications and may be used next to or instead of the congestion
+controller specified by {{QUIC-RECOVERY}}.
+
+Datagram:
+: Datagrams exist in UDP as well as in QUICs unreliable datagram extension. If not explicitly noted
+differently, the term datagram in this document refers to a QUIC Datagram as defined in
+{{QUIC-DATAGRAM}}.
+
+Endpoint:
+: A QUIC server or client that participates in a RTP over QUIC session.
+
+Frame:
+: A QUIC frame as defined in {{QUIC-TRANSPORT}}.
+
+Media Encoder:
+: An entity that is used by an application to produce a stream of encoded media, which can be
+packetized in RTP packets to be transmitted over QUIC.
+
+Receiver:
+: An endpoint that receives media in RTP packets and may send or receive RTCP packets.
+
+Sender:
+: An endpoint sends media in RTP packets and may send or receive RTCP packets.
+
+Packet diagrams in this document use the format defined in {{Section 1.3 of QUIC-TRANSPORT}} to
+illustrate the order and size of fields.
+
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to the QUIC transport
 protocol. QUIC supports two transport methods: reliable streams and unreliable datagrams
-{{QUIC-TRANSPORT}}, {{QUIC-DATAGRAM}}. RTP over QUIC uses the unreliable datagrams to transport
+{{QUIC-TRANSPORT}}, {{QUIC-DATAGRAM}}. RTP over QUIC uses unreliable QUIC datagrams to transport
 real-time data.
 
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different transport addresses to
@@ -193,10 +226,10 @@ requirements which are described in this section.
 
 If the used QUIC implementation is not directly incorporated into the RTP over QUIC mapping
 implementation, it has to fulfill the following interface requirements. The QUIC implementation MUST
-support QUICs unreliable datagrams and it MUST provide a way to signal acknowledgements or losses of
-datagrams to the application. Since datagram frames cannot be fragmented, the QUIC implementation
-MUST provide a way to query the maximum datagram size, so that an application can create RTP packets
-that always fit into a QUIC datagram frame.
+support QUICs unreliable datagram extension and it MUST provide a way to signal acknowledgements or
+losses of QUIC datagrams to the application. Since datagram frames cannot be fragmented, the QUIC
+implementation MUST provide a way to query the maximum datagram size, so that an application can
+create RTP packets that always fit into a QUIC datagram frame.
 
 Additionally, a QUIC implementation MUST expose the recorded RTT statistics as described in
 {{Section 5 of QUIC-RECOVERY}} to the application. These statistics include the minium observed RTT
@@ -204,9 +237,9 @@ over a period of time (`min_rtt`), exponentially-weighted moving average (`smoot
 deviation (`rtt_var`). These values are necessary to perform congestion control as explained in
 {{cc-interface}}.
 
-{{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats ECN marks if ECN is supported by the
-network path. If ECN counts can be exported from a QUIC implementation, these may be used to improve
-congestion control, too.
+{{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats Explicit Congestion Notifications
+(ECN) if it is supported by the network path. If ECN counts can be exported from a QUIC
+implementation, these may be used to improve congestion control, too.
 
 ## Congestion Controller Interface {#cc-interface}
 
@@ -260,9 +293,10 @@ Datagram Payload {
 ~~~
 {: #fig-datagram-payload title="Datagram Payload Format"}
 
-For multiplexing streams on the same QUIC connection, each RTP packet is prefixed with a flow
-identifier. This flow identifier serves as a replacement for using different transport addresses per
-stream. A flow identifier is a QUIC variable length integer which must be unique per stream.
+For multiplexing RTP sessions on the same QUIC connection, each RTP/RTCP packet is prefixed with a
+flow identifier. This flow identifier serves as a replacement for using different transport
+addresses per session. A flow identifier is a QUIC variable length integer which must be unique per
+stream.
 
 RTP and RTCP packets of a single RTP session MAY be sent using the same flow identifier (following
 the procedures defined in {{!RFC5761}}, or they MAY be sent using different flow identifiers.
