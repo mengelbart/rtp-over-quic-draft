@@ -168,7 +168,7 @@ differently, the term datagram in this document refers to a QUIC Datagram as def
 {{QUIC-DATAGRAM}}.
 
 Endpoint:
-: A QUIC server or client that participates in a RTP over QUIC session.
+: A QUIC server or client that participates in an RTP over QUIC session.
 
 Frame:
 : A QUIC frame as defined in {{QUIC-TRANSPORT}}.
@@ -276,14 +276,14 @@ don't provide a pacing mechanism is out of scope of this document.
 
 An application is expected to adapt the media bitrate to the observed available bandwidth by setting
 the media encoder to the `target_bitrate` that is computed by the congestion controller. Thus, the
-media encoder needs to offer a way to update its bitrate accordingly. A RTP over QUIC implementation
+media encoder needs to offer a way to update its bitrate accordingly. An RTP over QUIC implementation
 can either expose the most recent `target_bitrate` produced by the congestion controller to the
 application, or accept a callback from the application, which updates the encoder bitrate whenever
 the congestion controller updates the `target_bitrate`.
 
 # Packet Format {#packet-format}
 
-All RTP packets MUST be sent in QUIC datagram frames with the following format:
+All RTP and RTCP packets MUST be sent in QUIC datagram frames with the following format:
 
 ~~~
 Datagram Payload {
@@ -309,14 +309,14 @@ Differentiating RTP/RTCP datagrams of different RTP sessions from non-RTP/RTCP d
 the responsibility of the application by means of appropriate use of flow identifiers and
 the corresponding signaling.
 
-RTP senders SHOULD consider the header overhead associated with QUIC datagrams and ensure that
-the RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
+Senders SHOULD consider the header overhead associated with QUIC datagrams and ensure that the
+RTP/RTCP packets including their payloads, QUIC, and IP headers will fit into path MTU.
 
 # Protocol Operation {#protocol-operation}
 
-This section describes how senders and receivers can exchange RTP packets using QUIC. While the
-receiver side is very simple, the sender side has to keep track of sent packets and corresponding
-acknowledgements to implement congestion control.
+This section describes how senders and receivers can exchange RTP and RTCP packets using QUIC. While
+the receiver side is very simple, the sender side has to keep track of sent packets and
+corresponding acknowledgements to implement congestion control.
 
 RTP/RTCP packets that are submitted to an RTP over QUIC implementation are buffered in a queue. The
 congestion controller defines the rate at which the next packet is dequeued and sent over the QUIC
@@ -372,9 +372,9 @@ using the interface described in {{encoder-interface}}.
 ~~~
 {: #fig-send-flow title="RTP over QUIC send flow"}
 
-On receiving a datagram, an RTP over QUIC implementation strips off and parses the flow identifier to
-identify the stream to which the received RTP packet belongs. The remaining content of the datagram
-is then passed to the RTP session which was assigned the given flow identifier.
+On receiving a datagram, an RTP over QUIC implementation strips off and parses the flow identifier
+to identify the stream to which the received RTP or RTCP packet belongs. The remaining content of
+the datagram is then passed to the RTP session which was assigned the given flow identifier.
 
 # SDP Signalling {#sdp}
 
