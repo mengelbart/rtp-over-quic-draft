@@ -22,7 +22,7 @@ author:
     ins: M. Engelbart
     name: Mathis Engelbart
     organization: Technical University Munich
-    email: mathis.engelbart@tum.de
+    email: mathis.engelbart@gmail.com
 
 normative:
   QUIC-DATAGRAM:
