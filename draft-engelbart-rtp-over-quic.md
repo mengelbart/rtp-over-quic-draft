@@ -25,40 +25,6 @@ author:
     email: mathis.engelbart@tum.de
 
 normative:
-  QUIC-TRANSPORT:
-    title: "QUIC: A UDP-Based Multiplexed and Secure Transport"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-ietf-quic-transport-34
-    author:
-      -
-        ins: J. Iyengar
-        name: Jana Iyengar
-        org: Google
-        role: editor
-      -
-        ins: M. Thomson
-        name: Martin Thomson
-        org: Mozilla
-        role: editor
-
-  QUIC-RECOVERY:
-    title: "QUIC Loss Detection and Congestion Control"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-ietf-quic-recovery-34
-    author:
-      -
-        ins: J. Iyengar
-        name: Jana Iyengar
-        org: Google
-        role: editor
-      -
-        ins: I. Swett
-        name: Ian Swett
-        org: Google
-        role: editor
-
   QUIC-DATAGRAM:
     title: "An Unreliable Datagram Extension to QUIC"
     date: {DATE}
@@ -141,7 +107,7 @@ QUIC.  The focus is on RTP and RTCP packet mapping and on reducing the
 amount of RTCP traffic by leveraging state information readily
 available within a QUIC endpoint.  This document also briefly touches
 upon how to signal media over QUIC using the Session Description
-Protocol (SDP) {{!RFC4566}}.
+Protocol (SDP) {{!RFC8866}}.
 
 The scope of this document is limited to unicast RTP/RTCP.
 
@@ -156,11 +122,11 @@ when, and only when, they appear in all capitals, as shown here.
 The following terms are used:
 
 Congestion Controller:
-: QUIC specifies a congestion controller in {{Section 7 of QUIC-RECOVERY}} but the specific
+: QUIC specifies a congestion controller in {{Section 7 of RFC9002}} but the specific
 requirements for interactive real-time media, lead to the development of dedicated congestion
 control algorithms. The term congestion controller in this document refers to these alorithms which
 are dedicated to real-time applications and may be used next to or instead of the congestion
-controller specified by {{QUIC-RECOVERY}}.
+controller specified by {{!RFC9002}}.
 
 Datagram:
 : Datagrams exist in UDP as well as in QUICs unreliable datagram extension. If not explicitly noted
@@ -171,7 +137,7 @@ Endpoint:
 : A QUIC server or client that participates in an RTP over QUIC session.
 
 Frame:
-: A QUIC frame as defined in {{QUIC-TRANSPORT}}.
+: A QUIC frame as defined in {{!RFC9000}}.
 
 Media Encoder:
 : An entity that is used by an application to produce a stream of encoded media, which can be
@@ -183,14 +149,14 @@ Receiver:
 Sender:
 : An endpoint sends media in RTP packets and may send or receive RTCP packets.
 
-Packet diagrams in this document use the format defined in {{Section 1.3 of QUIC-TRANSPORT}} to
+Packet diagrams in this document use the format defined in {{Section 1.3 of RFC9000}} to
 illustrate the order and size of fields.
 
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to the QUIC transport
 protocol. QUIC supports two transport methods: reliable streams and unreliable datagrams
-{{QUIC-TRANSPORT}}, {{QUIC-DATAGRAM}}. RTP over QUIC uses unreliable QUIC datagrams to transport
+{{!RFC9000}}, {{QUIC-DATAGRAM}}. RTP over QUIC uses unreliable QUIC datagrams to transport
 real-time data.
 
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different transport addresses to
@@ -232,12 +198,12 @@ implementation MUST provide a way to query the maximum datagram size, so that an
 create RTP packets that always fit into a QUIC datagram frame.
 
 Additionally, a QUIC implementation MUST expose the recorded RTT statistics as described in
-{{Section 5 of QUIC-RECOVERY}} to the application. These statistics include the minium observed RTT
+{{Section 5 of RFC9002}} to the application. These statistics include the minium observed RTT
 over a period of time (`min_rtt`), exponentially-weighted moving average (`smoothed_rtt`) and the mean
 deviation (`rtt_var`). These values are necessary to perform congestion control as explained in
 {{cc-interface}}.
 
-{{Section 7.1 of QUIC-RECOVERY}} also specifies how QUIC treats Explicit Congestion Notifications
+{{Section 7.1 of RFC9002}} also specifies how QUIC treats Explicit Congestion Notifications
 (ECN) if it is supported by the network path. If ECN counts can be exported from a QUIC
 implementation, these may be used to improve congestion control, too.
 
@@ -257,7 +223,7 @@ estimation using the following inputs:
 * `pkt_status_list`: A list of RTP packets that were acknowledged by the receiver
 * `pkt_delay_list`: For each acknowledged RTP packet, a delay between the sent- and
   receive-timestamps of the packet
-* The RTT estimations calculated by QUIC as described in {{Section 5 of QUIC-RECOVERY}}:
+* The RTT estimations calculated by QUIC as described in {{Section 5 of RFC9002}}:
   * `min_rtt`: The miminum RTT observed by QUIC over a period of time
   * `smoothed_rtt`: An exponentially-weighted moving average of the observed RTT values
   * `rtt_var`: The mean deviation in the observed RTT values
@@ -385,7 +351,7 @@ purposes is up to the application using QUIC.
 There are several necessary steps to carry out jointly between the
 communicating peers to enable RTP over QUIC:
 
-0. The protocol identifier for the m= lines MUST be "QUIC/RTP", combined as per {{!RFC4566}}
+0. The protocol identifier for the m= lines MUST be "QUIC/RTP", combined as per {{!RFC8866}}
    with the respective audiovisual profile: for example, "QUIC/RTP/AVP".
 
 1. The peers need to decide whether to establish a new QUIC connection or whether to re-use an
