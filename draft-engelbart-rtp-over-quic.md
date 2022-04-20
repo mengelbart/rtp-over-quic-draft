@@ -1,15 +1,15 @@
 ---
 title: "RTP over QUIC"
 docname: draft-engelbart-rtp-over-quic-latest
-category: info
+category: std
 date: {DATE}
 
 ipr: trust200902
-area: General
+area: ART
+workgroup: AVTCORE
 keyword: Internet-Draft
 
 stand_alone: yes
-smart_quotes: no
 pi: [toc, sortrefs, symrefs]
 
 author:
@@ -23,112 +23,6 @@ author:
     name: Mathis Engelbart
     organization: Technical University Munich
     email: mathis.engelbart@gmail.com
-
-normative:
-  draft-ietf-quic-datagram-10:
-    title: "An Unreliable Datagram Extension to QUIC"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-ietf-quic-datagram-10
-    author:
-      -
-        ins: T. Pauly
-        name: Tommy Pauly
-        org: Apple Inc.
-        role: editor
-      -
-        ins: E. Kinnear
-        name: Eric Kinnear
-        org: Apple Inc.
-        role: editor
-      -
-        ins: D. Schinazi
-        name: David Schinazi
-        org: Google LLC
-        role: editor
-
-  draft-huitema-quic-ts-05:
-    title: "Quic Timestamps For Measuring One-Way Delays"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-huitema-quic-ts-05
-    author:
-      -
-        ins: C. Huitema
-        name: Christian Huitema
-        org: Private Octopus Inc.
-        role: editor
-
-  draft-schinazi-quic-h3-datagram-05:
-    title: "Using QUIC Datagrams with HTTP/3"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-schinazi-quic-h3-datagram-05
-    author:
-      -
-        ins: D. Schinazi
-        name: David Schinazi
-        org: Google LLC
-        role: editor
-
-  draft-smith-quic-receive-ts-00:
-    title: "QUIC Extension for Reporting Packet Receive Timestamps"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-smith-quic-receive-ts-00
-    author:
-      -
-        ins: C. Smith
-        name: Connor Smith
-        org: Magic Leap, Inc.
-        role: editor
-      -
-        ins: I. Swett
-        name: Ian Swett
-        org: Google LLC
-        role: editor
-
-  draft-ietf-quic-ack-frequency-01:
-    title: "QUIC Acknowledgement Frequency"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-ietf-quic-ack-frequency-01
-    author:
-      -
-        ins: J. Iyengar
-        name: Jana Iyengar
-        org: Fastly
-        role: editor
-      -
-        ins: I. Swett
-        name: Ian Swett
-        org: Google
-        role: editor
-
-informative:
-  draft-hurst-quic-rtp-tunnelling-01:
-    title: "QRT: QUIC RTP Tunnelling"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-hurst-quic-rtp-tunnelling-01
-    author:
-      -
-        ins: S. Hurst
-        name: Sam Hurst
-        org: BBC Research & Development
-        role: editor
-
-  draft-dawkins-avtcore-sdp-rtp-quic:
-    title: "SDP Offer/Answer for RTP using QUIC as Transport"
-    date: {DATE}
-    seriesinfo:
-      Internet-Draft: draft-dawkins-avtcore-sdp-rtp-quic-00
-    author:
-      -
-        ins: 
-        name: Spencer Dawkins
-        org: Tencent America LLC
-        role: editor
 
 --- abstract
 
@@ -147,8 +41,8 @@ video conferences, across the Internet.  Since RTP requires real-time
 delivery and is tolerant to packet losses, the default underlying
 transport protocol has been UDP, recently with DTLS on top to secure
 the media exchange and occasionally TCP (and possibly TLS) as
-a fallback.  With the advent of QUIC and, most notably, its unreliable
-DATAGRAM extension, another secure transport protocol becomes
+a fallback.  With the advent of QUIC {{!RFC9000}} and, most notably, its unreliable
+DATAGRAM extension {{!RFC9221}}, another secure transport protocol becomes
 available.  QUIC and its DATAGRAMs combine desirable properties for
 real-time traffic (e.g., no unnecessary retransmissions, avoiding
 head-of-line blocking) with a secure end-to-end transport that is
@@ -167,7 +61,7 @@ Protocol (SDP) {{!RFC8866}}.
 The scope of this document is limited to unicast RTP/RTCP.
 
 Note that this draft is similar in spirit to but differs in numerous ways from
-{{draft-hurst-quic-rtp-tunnelling-01}}.
+{{?I-D.draft-hurst-quic-rtp-tunnelling}}.
 
 
 # Terminology and Notation
@@ -188,7 +82,7 @@ controller refers to these algorithms dedicated to real-time applications.
 Datagram:
 : Datagrams exist in UDP as well as in QUICs unreliable datagram extension. If not explicitly noted
 differently, the term datagram in this document refers to a QUIC Datagram as defined in
-{{draft-ietf-quic-datagram-10}}.
+{{!RFC9221}}.
 
 Endpoint:
 : A QUIC server or client that participates in an RTP over QUIC session.
@@ -213,7 +107,7 @@ illustrate the order and size of fields.
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
 the QUIC transport protocol. QUIC supports two transport methods: reliable
-streams and unreliable datagrams {{!RFC9000}}, {{draft-ietf-quic-datagram-10}}.
+streams and unreliable datagrams {{!RFC9000}}, {{!RFC9221}}.
 RTP over QUIC uses unreliable QUIC datagrams to transport real-time data, and
 thus, the QUIC implementation MUST support QUICs unreliable datagram extension.
 Since datagram frames cannot be fragmented, the QUIC implementation MUST also
@@ -227,7 +121,7 @@ managing a separate QUIC connection per RTP session. QUIC does not provide
 demultiplexing between different flows on datagrams but suggests that an
 application implement a demultiplexing mechanism if required. An example of such
 a mechanism are flow identifiers prepended to each datagram frame as described
-in {{draft-schinazi-quic-h3-datagram-05}}. RTP over QUIC uses a flow identifier
+in {{!I-D.draft-schinazi-quic-h3-datagram}}. RTP over QUIC uses a flow identifier
 to replace the network address and port number to multiplex many RTP sessions
 over the same QUIC connection.
 
@@ -349,17 +243,17 @@ adequate bandwidth estimation using the following inputs:
 
 The only value of these inputs not currently available in QUIC is the
 `pkt_arrival`. The exact arrival times of QUIC Datagrams can be obtained by
-using the QUIC extension described in {{draft-smith-quic-receive-ts-00}} or
-{{draft-huitema-quic-ts-05}}.
+using the QUIC extension described in {{!I-D.draft-smith-quic-receive-ts}} or
+{{!I-D.draft-huitema-quic-ts}}.
 
 QUIC allows acknowledgments to be sent with some delay, which could cause
 problems for delay-based congestion control algorithms. Sender and receiver can
-use {{draft-ietf-quic-ack-frequency-01}} to avoid feedback inaccuracies caused
+use {{!I-D.draft-ietf-quic-ack-frequency}} to avoid feedback inaccuracies caused
 by delayed acknowledgments.
 
 If the QUIC extensions described in
-{{draft-smith-quic-receive-ts-00}}/{{draft-huitema-quic-ts-05}} and
-{{draft-ietf-quic-ack-frequency-01}} are not supported by sender and receiver,
+{{!I-D.draft-smith-quic-receive-ts}}/{{!I-D.draft-huitema-quic-ts}} and
+{{!I-D.draft-ietf-quic-ack-frequency}} are not supported by sender and receiver,
 it is RECOMMENDED to use RTCP feedback reports instead of thee QUIC connection
 statistics for congestion control.
 
@@ -419,7 +313,7 @@ encoder bitrate whenever the congestion controller updates the `target_bitrate`.
 
 # SDP Signalling {#sdp}
 
-> **Editor's note:** See also {{draft-dawkins-avtcore-sdp-rtp-quic}}.
+> **Editor's note:** See also {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
 
 QUIC is a connection-based protocol that supports connectionless transmissions of DATAGRAM frames
 within an established connection.  As noted above, demultiplexing DATAGRAMS intended for different
