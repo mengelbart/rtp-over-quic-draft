@@ -101,10 +101,6 @@ Receiver:
 Sender:
 : An endpoint that sends media in RTP packets and may send or receive RTCP packets.
 
-Congestion Control:
-
-Bandwidth Estimation:
-
 Packet diagrams in this document use the format defined in {{Section 1.3 of RFC9000}} to
 illustrate the order and size of fields.
 
@@ -163,10 +159,9 @@ RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-For multiplexing RTP sessions on the same QUIC connection, each RTP/RTCP packet
-is prefixed with a flow identifier. This flow identifier serves as a replacement
-for using different transport addresses per session. A flow identifier is a QUIC
-variable-length integer which must be unique per stream.
+For multiplexing different RTP and other data streams on the same QUIC
+connection, each RTP/RTCP packet is prefixed with a flow identifier. A flow
+identifier is a QUIC variable-length integer which must be unique per stream.
 
 RTP and RTCP packets of a single RTP session MAY be sent using the same flow
 identifier (following the procedures defined in {{!RFC5761}}, or they MAY be
@@ -191,16 +186,24 @@ The RTP Control Protocol (RTCP) allows RTP senders and receivers to exchange
 control information to monitor connection statistics and to identify and
 synchronize streams. Many of the statistics contained in RTCP packets overlap
 with the connection statistics collected by a QUIC connection. To avoid using up
-bandwidth for duplicated control information, the information should only be
-sent at one protocol layer. Since QUIC relies on certain control frames to be
-sent, it should be preferred to expose relevant information from the QUIC layer
-to the application instead of exchanging addtional RTCP packets, where possible.
+bandwidth for duplicated control information, the information SHOULD only be
+sent at one protocol layer. QUIC relies on certain control frames to be sent.
+
+In general, applications MAY send RTCP without any restrictions. This document
+specifies a baseline for replacing some of the RTCP packet types by mapping the
+contents to QUIC connection statistics. Future documents can extend this mapping
+for other RTCP format types. It is RECOMMENDED to expose relevant information
+from the QUIC layer to the application instead of exchanging addtional RTCP
+packets, where applicable.
 
 This section discusses what information can be exposed from the QUIC connection
 layer to reduce the RTCP overhead and which type of RTCP messages cannot be
 replaced by similar feedback from the transport layer. The list of RTCP packets
-in this section is not exhaustive and similar considerations should be taken
+in this section is not exhaustive and similar considerations SHOULD be taken
 into account before exchanging any other type of RTCP control packets.
+
+> **TODO**: Define parameters for SDP to signal RTCP vs. QUIC feedback. Could
+> use RTCP by default and add parameters for "can use QUIC statistics for X".
 
 ## Transport Layer Feedback
 
@@ -220,9 +223,7 @@ packet, was acknowledged.
 > about RTP packets in QUIC streams? Do we need to say something like "An RTP
 > packet in a stream is considered acknowledged, when all frames which carried
 > parts of the RTP packet were acknowledged"?
-
-> **TODO**: Insert short paragraph about QUIC extensions that might help improve
-> the feedback.
+> An alternative could be to define partial acknowledgments.
 
 Some of the transport layer feedback that can be implemented in RTCP contains
 information that is not included in QUIC by default, but can be added via QUIC
@@ -235,9 +236,9 @@ delay of acknowledgments sent by the receiver.
 
 * *Receiver Reports* (`PT=201`, `Name=RR`, {{!RFC3550}})
   * *Fraction lost*: The fraction of lost packets can be directly infered from
-    QUIC's acknowledgments. The calculation should include all packets up to the
-    acknowledged RTP packet with the highest sequence number. Later packets
-    should be ignored, since they may still be in flight, unless other QUIC
+    QUIC's acknowledgments. The calculation SHOULD include all packets up to the
+    acknowledged RTP packet with the highest RTP sequence number. Later packets
+    SHOULD be ignored, since they may still be in flight, unless other QUIC
     packets that were sent after the datagram frame, were already acknowledged.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
     loss can be infered from QUIC's acknowledgments including all packets up to
@@ -264,7 +265,7 @@ delay of acknowledgments sent by the receiver.
     defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`) and a
     new report block for the extended reports which are listed below. QUIC
     supports ECN reporting through acknowledgments. If the connection supports
-    ECN, the reporting of ECN counts should be done using QUIC acknowledgments.
+    ECN, the reporting of ECN counts SHOULD be done using QUIC acknowledgments.
 * *Congestion Control Feedback* (`PT=205`, `FMT=11`, `Name=CCFB`, {{!RFC8888}})
   * RTP Congestion Control Feedback contains acknowledgments, arrival timestamps
     and ECN notifications for each received packet. Acknowledgments and ECNs can
@@ -275,7 +276,7 @@ delay of acknowledgments sent by the receiver.
   * Extended Reports offer an extensible framework for a variety of different
     control messages. Some of the standard report blocks which can be
     implemented in extended reports such as loss RLE or ECNs can be implemented
-    in QUIC, too. For other report blocks, it should be evaluated individually,
+    in QUIC, too. For other report blocks, it SHOULD be evaluated individually,
     if the contained information can be transmitted using QUIC instead.
 
 ## Application Layer Repair and other Control Messages
@@ -293,7 +294,7 @@ provide a similar control information, since it does not know about RTP
 timestamps. A QUIC receiver can also not calculate the packet or octet counts,
 since it does not know about lost datagrams. Thus, sender reports are required
 in RTP over QUIC to synchronize streams at the receiver. The sender reports
-should not contain any receiver report blocks, as the information can be infered
+SHOULD not contain any receiver report blocks, as the information can be infered
 from the QUIC transport as explained in the previous section.
 
 Next to carrying transmission statistics, RTCP packets can contain application
@@ -303,7 +304,7 @@ for example the *Source Description* (`PT=202`, `Name=SDES`), *Bye* (`PT=203`,
 {{!RFC3550}} or many of the payload specific feedback messages (`PT=206`)
 defined in {{!RFC4585}}, which can for example be used to control the codec
 behavior of the sender. Since QUIC does not provide any kind of application
-layer control messaging, these RTCP packet types should be used in the same way
+layer control messaging, these RTCP packet types SHOULD be used in the same way
 as they would be used over any other transport protocol.
 
 # Congestion Control {#congestion-control}
@@ -376,10 +377,10 @@ If an application cannot access a bandwidth estimation from the QUIC layer, or
 the QUIC implementation does not support a dealy-based, low-latency congestion
 control algorithm, it can alternatively implement a bandwidth estimation
 algorithm at the application layer. Calculating a bandwidth estimation at the
-application layer can be done using the same bandwidth estimation algorithms.
-The bandwidth estimation algorithm typically needs some feedback on the
-transmission performance. This feedback can be collected following the
-guidelines in {{rtcp}}.
+application layer can be done using the same bandwidth estimation algorithms as
+described in {{cc-quic-layer}} (NADA, SCReAM). The bandwidth estimation
+algorithm typically needs some feedback on the transmission performance. This
+feedback can be collected following the guidelines in {{rtcp}}.
 
 If the application implements full congestion control rather than just a
 bandwidth estimation at the application layer using a congestion controller that
@@ -480,6 +481,17 @@ a=extmap:2 urn:ietf:params:<tbd>
 Signaling details to be worked out.
 
 # Discussion
+
+## Flow Identifier
+
+{{!RFC9221}} suggests to use flow identifiers to multiplex different streams on
+QUIC Datagrams, which is implemented in {{packet-format}}, but it is unclear how
+applications can combine RTP over QUIC with other data streams using the same
+QUIC connections. If the non-RTP data streams use the same flow identifies, too
+and the application can make sure, that flow identifiers are unique, there
+should be no problem. Flow identifiers could be problematic, if different
+specifications for RTP and non-RTP data streams over QUIC mandate different
+incompatible flow identifiers.
 
 ## Impact of Connection Migration
 
