@@ -27,43 +27,39 @@ author:
 
 --- abstract
 
-This document specifies a minimal mapping for encapsulating RTP and
-RTCP packets within QUIC.  It also discusses how to leverage state
-from the QUIC implementation in the endpoints to reduce the exchange
-of RTCP packets.
+This document specifies a minimal mapping for encapsulating RTP and RTCP packets
+within QUIC. It also discusses how to leverage state from the QUIC
+implementation in the endpoints to reduce the exchange of RTCP packets.
 
 --- middle
 
 # Introduction
 
-The Real-time Transport Protocol (RTP) {{!RFC3550}} is generally used
-to carry real-time media for conversational media sessions, such as
-video conferences, across the Internet.  Since RTP requires real-time
-delivery and is tolerant to packet losses, the default underlying
-transport protocol has been UDP, recently with DTLS on top to secure
-the media exchange and occasionally TCP (and possibly TLS) as
-a fallback.  With the advent of QUIC {{!RFC9000}} and, most notably, its unreliable
-DATAGRAM extension {{!RFC9221}}, another secure transport protocol becomes
-available.  QUIC and its DATAGRAMs combine desirable properties for
-real-time traffic (e.g., no unnecessary retransmissions, avoiding
-head-of-line blocking) with a secure end-to-end transport that is
-also expected to work well through NATs and firewalls.
+The Real-time Transport Protocol (RTP) {{!RFC3550}} is generally used to carry
+real-time media for conversational media sessions, such as video conferences,
+across the Internet.  Since RTP requires real-time delivery and is tolerant to
+packet losses, the default underlying transport protocol has been UDP, recently
+with DTLS on top to secure the media exchange and occasionally TCP (and possibly
+TLS) as a fallback.  With the advent of QUIC {{!RFC9000}} and, most notably, its
+unreliable DATAGRAM extension {{!RFC9221}}, another secure transport protocol
+becomes available.  QUIC and its DATAGRAMs combine desirable properties for
+real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
+blocking) with a secure end-to-end transport that is also expected to work well
+through NATs and firewalls.
 
-Moreover, with QUIC's multiplexing capabilities, reliable and
-unreliable transport connections as, e.g., needed for WebRTC, can be
-established with only a single port used at either end of the
-connection.  This document defines a mapping of how to carry RTP over
-QUIC.  The focus is on RTP and RTCP packet mapping and on reducing the
-amount of RTCP traffic by leveraging state information readily
-available within a QUIC endpoint.  This document also briefly touches
-upon how to signal media over QUIC using the Session Description
+Moreover, with QUIC's multiplexing capabilities, reliable and unreliable
+transport connections as, e.g., needed for WebRTC, can be established with only
+a single port used at either end of the connection.  This document defines a
+mapping of how to carry RTP over QUIC. The focus is on RTP and RTCP packet
+mapping and on reducing the amount of RTCP traffic by leveraging state
+information readily available within a QUIC endpoint. This document also briefly
+touches upon how to signal media over QUIC using the Session Description
 Protocol (SDP) {{!RFC8866}}.
 
 The scope of this document is limited to unicast RTP/RTCP.
 
 Note that this draft is similar in spirit to but differs in numerous ways from
 {{?I-D.draft-hurst-quic-rtp-tunnelling}}.
-
 
 # Terminology and Notation
 
@@ -107,13 +103,13 @@ illustrate the order and size of fields.
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
-the QUIC transport protocol. QUIC supports two transport methods: reliable
-streams and unreliable datagrams {{!RFC9000}}, {{!RFC9221}}.
-RTP over QUIC uses unreliable QUIC datagrams to transport real-time data, and
-thus, the QUIC implementation MUST support QUICs unreliable datagram extension.
-Since datagram frames cannot be fragmented, the QUIC implementation MUST also
-provide a way to query the maximum datagram size so that an application can
-create RTP packets that always fit into a QUIC datagram frame.
+the QUIC transport protocol. RTP over QUIC allows the use of QUIC streams and
+unreliable QUIC datagrams to transport real-time data, and thus, the QUIC
+implementation MUST support QUICs unreliable datagram extension, if RTP packets
+should be sent over QUIC datagrams. Since datagram frames cannot be fragmented,
+the QUIC implementation MUST also provide a way to query the maximum datagram
+size so that an application can create RTP packets that always fit into a QUIC
+datagram frame.
 
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different
 transport addresses to allow multiplexing between them. RTP over QUIC uses a
@@ -138,17 +134,23 @@ metrics can be used to generate the required feedback at the sender-side and
 provide it to the congestion controller to avoid the additional overhead of the
 RTCP stream.
 
-# Packet Format {#packet-format}
+# Encapsulation {#encapsulation}
 
-All RTP and RTCP packets MUST be sent in QUIC datagram frames with the following format:
+QUIC supports two transport methods: reliable streams {{!RFC9000}} and
+unreliable datagrams {{!RFC9221}}. This document specifies a mapping of RTP to
+both of the transport modes. The encapsulation format for RTP over QUIC is
+described in {{fig-payload}}.
+
+{{quic-streams}} and {{quic-datagrams}} explain the specifics of mapping of RTP
+to QUIC streams and QUIC datagrams respectively.
 
 ~~~
-Datagram Payload {
+Payload {
   Flow Identifier (i),
   RTP/RTCP Packet (..)
 }
 ~~~
-{: #fig-datagram-payload title="Datagram Payload Format"}
+{: #fig-payload title="RTP over QUIC Payload Format"}
 
 Flow Identifier:
 
@@ -172,13 +174,47 @@ indicated using the appropriate signaling, e.g., when using SDP as discussed in
 RTP and RTCP packets of different RTP sessions MUST be sent using different flow
 identifiers.
 
-Differentiating RTP/RTCP datagrams of different RTP sessions from non-RTP/RTCP
+Differentiating RTP/RTCP packets of different RTP sessions from non-RTP/RTCP
 datagrams is the responsibility of the application by means of appropriate use
 of flow identifiers and the corresponding signaling.
 
-Senders SHOULD consider the header overhead associated with QUIC datagrams and
-ensure that the RTP/RTCP packets, including their payloads, QUIC, and IP
-headers, will fit into path MTU.
+## QUIC Streams {#quic-streams}
+
+An application MUST open a new QUIC stream for each Application Data Unit (ADU).
+Each ADU MUST be encapsulated in a single RTP packet and the application MUST
+not send more than one RTP packet per stream. Opening a new stream for each
+packet adds implicit framing to RTP packets, allows to receive packets without
+strict ordering and gives an application the possibility to cancel certain
+packets.
+
+Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
+that are transmitted reliably and in order, such that a receiving application
+can read a complete packet from the stream. No retransmission has to be
+implemented by the application, since QUIC frames that are lost in transit are
+retransmitted by the QUIC connection. If it is known to either the sender or the
+receiver, that a packet, which was not yet successfully and completely
+transmitted, is no longer needed, either side can close the stream.
+
+> **Editor's Note:** We considered adding a framing like the one described in
+> {{!RFC4571}} to send multiple RTP packets on one stream, but we don't think it
+> is worth the additional overhead only to reduce the number of streams.
+> Moreover, putting multiple ADUs into a single stream would also require
+> defining policies when to use the same (and which) stream and when to open a
+> new one.
+
+## QUIC Datagrams {#quic-datagrams}
+
+RTP packets can be sent in QUIC datagrams. QUIC datagrams are an extension to
+QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame boundaries, thus a
+single RTP packet can be mapped to a single QUIC datagram, without the need for
+an additional framing. Senders SHOULD consider the header overhead associated
+with QUIC datagrams and ensure that the RTP/RTCP packets, including their
+payloads, QUIC, and IP headers, will fit into path MTU.
+
+If an application wishes to retransmit lost RTP packets, the retransmission has
+to be implemented by the application by sending a new datagram for the RTP
+packet, because QUIC datagrams are not retransmitted on loss (see also
+{{transport-layer-feedback}} for loss signaling).
 
 # RTCP {#rtcp}
 
@@ -205,7 +241,7 @@ into account before exchanging any other type of RTCP control packets.
 > **TODO**: Define parameters for SDP to signal RTCP vs. QUIC feedback. Could
 > use RTCP by default and add parameters for "can use QUIC statistics for X".
 
-## Transport Layer Feedback
+## Transport Layer Feedback {#transport-layer-feedback}
 
 This section explains how some of the RTCP packet types which are used to signal
 reception statistics can be replaced by equivalent statistics that are already
@@ -217,13 +253,9 @@ triggered when a datagram frame is received. Thus, a sender can assume that an
 RTP packet arrived at the receiver or was lost in transit, using the QUIC
 acknowledgments of QUIC Datagram frames. In the following, an RTP packet is
 regarded as acknowledged, when the QUIC Datagram frame that carried the RTP
-packet, was acknowledged.
-
-> **TODO**: Mapping ACKs to RTP packets in QUIC Datagrams is easy, but what
-> about RTP packets in QUIC streams? Do we need to say something like "An RTP
-> packet in a stream is considered acknowledged, when all frames which carried
-> parts of the RTP packet were acknowledged"?
-> An alternative could be to define partial acknowledgments.
+packet, was acknowledged. For RTP packets that are sent over QUIC streams, an
+RTP packet can be considered acknowledged, when all frames which carried
+fragments of the RTP packet were acknowledged.
 
 Some of the transport layer feedback that can be implemented in RTCP contains
 information that is not included in QUIC by default, but can be added via QUIC
@@ -485,7 +517,7 @@ Signaling details to be worked out.
 ## Flow Identifier
 
 {{!RFC9221}} suggests to use flow identifiers to multiplex different streams on
-QUIC Datagrams, which is implemented in {{packet-format}}, but it is unclear how
+QUIC Datagrams, which is implemented in {{encapsulation}}, but it is unclear how
 applications can combine RTP over QUIC with other data streams using the same
 QUIC connections. If the non-RTP data streams use the same flow identifies, too
 and the application can make sure, that flow identifiers are unique, there
@@ -502,8 +534,6 @@ TBD
 # IANA Considerations
 
 This document has no IANA actions.
-
-
 
 --- back
 
