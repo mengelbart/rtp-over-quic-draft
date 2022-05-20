@@ -238,9 +238,6 @@ replaced by similar feedback from the transport layer. The list of RTCP packets
 in this section is not exhaustive and similar considerations SHOULD be taken
 into account before exchanging any other type of RTCP control packets.
 
-> **TODO:** Define parameters for SDP to signal RTCP vs. QUIC feedback. Could
-> use RTCP by default and add parameters for "can use QUIC statistics for X".
-
 ## Transport Layer Feedback {#transport-layer-feedback}
 
 This section explains how some of the RTCP packet types which are used to signal
