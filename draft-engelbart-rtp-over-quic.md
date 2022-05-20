@@ -29,7 +29,8 @@ author:
 
 This document specifies a minimal mapping for encapsulating RTP and RTCP packets
 within QUIC. It also discusses how to leverage state from the QUIC
-implementation in the endpoints to reduce the exchange of RTCP packets.
+implementation in the endpoints to reduce the exchange of RTCP packets and how
+to implement congestion control.
 
 --- middle
 
@@ -52,9 +53,9 @@ transport connections as, e.g., needed for WebRTC, can be established with only
 a single port used at either end of the connection.  This document defines a
 mapping of how to carry RTP over QUIC. The focus is on RTP and RTCP packet
 mapping and on reducing the amount of RTCP traffic by leveraging state
-information readily available within a QUIC endpoint. This document also briefly
-touches upon how to signal media over QUIC using the Session Description
-Protocol (SDP) {{!RFC8866}}.
+information readily available within a QUIC endpoint. This document also
+describes different options for implementing congestion control for RTP over
+QUIC.
 
 The scope of this document is limited to unicast RTP/RTCP.
 
@@ -118,7 +119,7 @@ managing a separate QUIC connection per RTP session. QUIC does not provide
 demultiplexing between different flows on datagrams but suggests that an
 application implement a demultiplexing mechanism if required. An example of such
 a mechanism are flow identifiers prepended to each datagram frame as described
-in {{Section 2.1 of !I-D.draft-ietf-masque-h3-datagram}}. RTP over QUIC uses a
+in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RTP over QUIC uses a
 flow identifier to replace the network address and port number to multiplex many
 RTP sessions over the same QUIC connection.
 
@@ -168,8 +169,7 @@ identifier is a QUIC variable-length integer which must be unique per stream.
 RTP and RTCP packets of a single RTP session MAY be sent using the same flow
 identifier (following the procedures defined in {{!RFC5761}}, or they MAY be
 sent using different flow identifiers. The respective mode of operation MUST be
-indicated using the appropriate signaling, e.g., when using SDP as discussed in
-{{sdp}}.
+indicated using the appropriate signaling.
 
 RTP and RTCP packets of different RTP sessions MUST be sent using different flow
 identifiers.
@@ -196,7 +196,7 @@ receiver, that a packet, which was not yet successfully and completely
 transmitted, is no longer needed, either side can close the stream.
 
 > **Editor's Note:** We considered adding a framing like the one described in
-> {{!RFC4571}} to send multiple RTP packets on one stream, but we don't think it
+> {{?RFC4571}} to send multiple RTP packets on one stream, but we don't think it
 > is worth the additional overhead only to reduce the number of streams.
 > Moreover, putting multiple ADUs into a single stream would also require
 > defining policies when to use the same (and which) stream and when to open a
@@ -238,7 +238,7 @@ replaced by similar feedback from the transport layer. The list of RTCP packets
 in this section is not exhaustive and similar considerations SHOULD be taken
 into account before exchanging any other type of RTCP control packets.
 
-> **TODO**: Define parameters for SDP to signal RTCP vs. QUIC feedback. Could
+> **TODO:** Define parameters for SDP to signal RTCP vs. QUIC feedback. Could
 > use RTCP by default and add parameters for "can use QUIC statistics for X".
 
 ## Transport Layer Feedback {#transport-layer-feedback}
@@ -348,16 +348,16 @@ QUIC is a congestion controlled transport protocol. Senders are required to
 employ some form of congestion control. The default congestion control specified
 for QUIC is an alogrithm similar to TCP NewReno, but senders are free to choose
 any congestion control algorithm as long as they follow the guidelines specified
-in {{Section 3 of !RFC8085}}.
+in {{Section 3 of ?RFC8085}}.
 
 RTP does not specify a congestion controller, but provides feedback formats for
 congestion control (e.g. {{!RFC8888}}) as well as different congestion control
-algorithms in separate RFCs (e.g. {{!RFC8298}} and {{!RFC8698}}). The congestion
-control algorithms for RTP are specifically tailored for real-time transmissions
-at low latencies. The available congestion control algorithms for RTP expose a
-`target_bitrate` that can be used to dynamically reconfigure media codecs to
-produce media at a rate that can be sent in real-time under the observed network
-conditions.
+algorithms in separate RFCs (e.g. SCReAM {{!RFC8298}} and NADA {{!RFC8698}}).
+The congestion control algorithms for RTP are specifically tailored for
+real-time transmissions at low latencies. The available congestion control
+algorithms for RTP expose a `target_bitrate` that can be used to dynamically
+reconfigure media codecs to produce media at a rate that can be sent in
+real-time under the observed network conditions.
 
 This section defines two architectures for congestion control and bandwidth
 estimation for RTP over QUIC, but it does not mandate any specific congestion
@@ -369,7 +369,7 @@ congestion control algorithms for real-time communications provide such pacing
 mechanisms. The use of congestion controllers which don't provide a pacing
 mechanism is out of scope of this document.
 
-> **TODO:**: Add considerations for bandwidth shares when a QUIC connection is
+> **TODO:** Add considerations for bandwidth shares when a QUIC connection is
 > shared between RTP and non-RTP streams?
 
 ## Congestion Control at the QUIC layer {#cc-quic-layer}
@@ -391,7 +391,7 @@ expose such an API to the application. If a current bandwidth estimation is not
 available from the QUIC congestion controller, the sender can either implement
 an alternative bandwidth estimation at the application layer as described in
 {{cc-application-layer}} or a receiver can feedback the observed bandwidth
-through RTCP, e.g., using {{!I-D.draft-alvestrand-rmcat-remb}}.
+through RTCP, e.g., using {{?I-D.draft-alvestrand-rmcat-remb}}.
 
 > **Editor's note:** An alternative to the hard requirement to use a timestamp
 > extension could be to use RTCP, but that would mean, that an application has
@@ -406,11 +406,11 @@ through RTCP, e.g., using {{!I-D.draft-alvestrand-rmcat-remb}}.
 ## Congestion Control at the Application Layer {#cc-application-layer}
 
 If an application cannot access a bandwidth estimation from the QUIC layer, or
-the QUIC implementation does not support a dealy-based, low-latency congestion
+the QUIC implementation does not support a delay-based, low-latency congestion
 control algorithm, it can alternatively implement a bandwidth estimation
 algorithm at the application layer. Calculating a bandwidth estimation at the
 application layer can be done using the same bandwidth estimation algorithms as
-described in {{cc-quic-layer}} (NADA, SCReAM). The bandwidth estimation
+described in {{congestion-control}} (NADA, SCReAM). The bandwidth estimation
 algorithm typically needs some feedback on the transmission performance. This
 feedback can be collected following the guidelines in {{rtcp}}.
 
@@ -422,95 +422,6 @@ congestion control, it is RECOMMENDED to disable any other congestion control
 that is possibly running at the QUIC layer. Disabling the additional congestion
 controllers helps to avoid any interference between the different congestion
 controllers.
-
-# SDP Signalling {#sdp}
-
-> **Editor's note:** See also {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
-
-QUIC is a connection-based protocol that supports connectionless transmissions of DATAGRAM frames
-within an established connection.  As noted above, demultiplexing DATAGRAMS intended for different
-purposes is up to the application using QUIC.
-
-There are several necessary steps to carry out jointly between the
-communicating peers to enable RTP over QUIC:
-
-0. The protocol identifier for the m= lines MUST be "QUIC/RTP", combined as per {{!RFC8866}}
-   with the respective audiovisual profile: for example, "QUIC/RTP/AVP".
-
-1. The peers need to decide whether to establish a new QUIC connection or whether to re-use an
-   existing one.  In case of establishing a new connection, the initiator and the responder
-   (client and server) need to be determined.  Signaling for this step MUST follow {{!RFC8122}}
-   on SDP attributes for connection-oriented media for the a=setup, a=connection, and
-   a=fingerprint attributes.  They MUST use the appropriate protocol identification as per 1.
-
-2. The peers must provide a means for identifying RTP sessions carried in QUIC DATAGRAMS.
-   To enable using a common transport connection for one, two, or more media sessions in
-   the first place, the BUNDLE grouping framework MUST be used {{!RFC8843}}.  All media sections
-   belonging to a bundle group, except the first one, MUST set the port in the m= line to zero
-   and MUST include the a=bundle-only attribute.
-
-   For disambiguating different RTP session, a reference needs to be provided for each m= line to
-   allow associating this specific media session with a flow identifier.  This could be
-   achieved following different approaches:
-
-   * Simply reusing the a=extmap attribute {{!RFC8285}} and relying on RTP header extensions
-     for demultiplexing different media packets carried in QUIC DATAGRAM frames.
-
-   * Defining a variant or different flavor of the a=extmap attribute {{!RFC8285}} that binds
-     media sessions to flow identifiers used in QUIC DATAGRAMS.
-
-   > **Editor's note:** It is likely preferable to use multiplexing using QUIC DATAGRAM flow
-   identifiers because this multiplexing mechanisms will also work across RTP and non-RTP media
-   streams.
-
-   In either case, the corresponding identifiers MUST be treated independently for each
-   direction of transmission, so that an endpoint MAY choose its own identifies and only
-   uses SDP to inform its peer which RTP sessions use which identifiers.
-
-   To this end, SDP MUST be used to indicate the respective flow identifiers for RTP and RTCP
-   of the different RTP sessions (for which we borrow inspiration from {{!RFC3605}}).
-
-3. The peers MUST agree, for each RTP session, whether or not to apply RTP/RTCP multiplexing.
-   If multiplexing RTP and RTCP shall take place on the same flow identifier, this MUST be
-   indicated using the attribute a=rtcp-mux.
-
-A sample session setup offer (liberally borrowed and extended from {{!RFC8843}} and {{!RFC8122}}
-could look as follows:
-
-~~~
-v=0
-o=alice 2890844526 2890844526 IN IP6 2001:db8::3
-s=
-c=IN IP6 2001:db8::3
-t=0 0
-a=group:BUNDLE abc xyz
-
-m=audio 10000 QUIC/RTP/AVP 0 8 97
-a=setup:actpass
-a=connection:new
-a=fingerprint:SHA-256 \
- 12:DF:3E:5D:49:6B:19:E5:7C:AB:4A:AD:B9:B1:3F:82:18:3B:54:02:12:DF: \
- 3E:5D:49:6B:19:E5:7C:AB:4A:AD
-b=AS:200
-a=mid:abc
-a=rtcp-mux
-a=rtpmap:0 PCMU/8000
-a=rtpmap:8 PCMA/8000
-a=rtpmap:97 iLBC/8000
-a=extmap:1 urn:ietf:params:<tbd>
-
-m=video 0 QUIC/RTP/AVP 31 32
-b=AS:1000
-a=bundle-only
-a=mid:bar
-a=rtcp-mux
-a=rtpmap:31 H261/90000
-a=rtpmap:32 MPV/90000
-a=extmap:2 urn:ietf:params:<tbd>
-~~~
-{: #sdp-example title="SDP Offer"}
-
-Signaling details to be worked out.
 
 # Discussion
 
