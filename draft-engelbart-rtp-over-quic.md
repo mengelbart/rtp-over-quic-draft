@@ -248,6 +248,12 @@ packet, was acknowledged. For RTP packets that are sent over QUIC streams, an
 RTP packet can be considered acknowledged, when all frames which carried
 fragments of the RTP packet were acknowledged.
 
+When QUIC Streams are used, the application should be aware that the direct
+mapping proposed below may not reflect the real characteristics of the network.
+RTP packet loss can seem lower than actual packet loss due to QUIC's automatic
+retransmissions. Similarly, timing information might be incorrect due to
+retransmissions.
+
 Some of the transport layer feedback that can be implemented in RTCP contains
 information that is not included in QUIC by default, but can be added via QUIC
 extensions. One important example are arrival timestamps, which are not part of
