@@ -95,6 +95,8 @@ Sender:
 Packet diagrams in this document use the format defined in {{Section 1.3 of RFC9000}} to
 illustrate the order and size of fields.
 
+# Scope
+
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
@@ -500,7 +502,13 @@ incompatible flow identifiers.
 
 # Security Considerations
 
-TBD
+RTP over QUIC is subject to the security considerations of RTP described in
+{{Section 9 of !RFC3550}} and the security considerations of any RTP profile in
+use.
+
+The security considerations for the QUIC protocol and datagram extension
+described in {{Section 21 of !RFC9000}}, {{Section 9 of !RFC9001}}, {{Section 8
+of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RTP over QUIC.
 
 # IANA Considerations
 
