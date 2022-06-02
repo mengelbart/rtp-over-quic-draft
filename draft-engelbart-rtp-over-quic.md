@@ -420,6 +420,69 @@ that is possibly running at the QUIC layer. Disabling the additional congestion
 controllers helps to avoid any interference between the different congestion
 controllers.
 
+# API Considerations
+
+The mapping described in the previous sections poses some interface requirements
+on the QUIC implementation. Although a basic mapping should work without any of
+these requirements most of the optimizations regarding congestion control and
+RTCP mapping require certain functionalities to be exposed to the application.
+The following to sections contain a list of information that is required by an
+application to implement different optimizations ({{quic-api-read}}) and
+functions that a QUIC implementation SHOULD expose to an application
+({{quic-api-write}}).
+
+## Information to be exported from QUIC {#quic-api-read}
+
+This section provides a list of items that an application might want to export
+from an underlying QUIC implementation. It is thus RECOMMENDED that a QUIC
+implementation exports the listed items to the application.
+
+* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection
+  can transmit.
+* *Datagram Acknowledgment and Loss*: {{Section 5.2 of !RFC9221}} allows QUIC
+  implementations to notify the application that a QUIC Datagram was
+  acknowledged or that it believes a datagram was lost. The exposed information
+  SHOULD include enough information to allow the application to maintain a
+  mapping between the datagram that was acknowledged/lost and the RTP packet
+  that was sent in that datagram.
+* *Stream States*: The QUIC implementation SHOULD expose to a sender, if all the
+  data that was sent on a stream was successfully delivered or not.
+* *Arrival timestamps*: If the QUIC connection uses a timestamp extension like
+  {{I-D.draft-smith-quic-receive-ts}} or {{I-D.draft-huitema-quic-ts}}, the
+  arrival timestamps or one-way delays SHOULD be exposed to the application.
+* *ECN*: If ECN marks are available, they SHOULD be exposed to the application.
+
+## Functions to be exposed by QUIC {#quic-api-write}
+
+This sections lists functions that a QUIC implementation SHOULD expose to an
+application to implement different features of the mapping described in the
+previous sections of this document.
+
+* *Cancel Streams*: To allow an application to cancel (re)transmission of
+  packets that are no longer needed, the QUIC implementation MUST expose a way
+  to cancel the corresponding QUIC streams.
+* *Select Congestion Controller*: If congestion control is to be implemented at
+  the QUIC connection layer as described in {{cc-quic-layer}}, the application
+  must be able to choose an appropriate congestion control algorithm.
+* *Disable Congestion Controller*: If congestion control is to be implemented at
+  the application layer as described in {{cc-application-layer}}, and the
+  application layer is trusted to apply adequate congestion control, it is
+  RECOMMENDEDto allow the application to disable QUIC layer congestion control
+  entirely.
+
+# Experimental Results
+
+An experimental implementation of the mapping described in this document can be
+found on [Github](https://github.com/mengelbart/rtp-over-quic). The application
+implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
+control at the application layer. It can optionally disable the builtin QUIC
+congestion control (NewReno). The endpoints only use RTCP for congestion control
+feedback, which can optionally be disabled and replaced by the QUIC connection
+statistics as described in {{transport-layer-feedback}}.
+
+Experimental results of the implementation can be found on
+[Github](https://github.com/mengelbart/rtp-over-quic-mininet), too.
+
 # Discussion
 
 ## Flow Identifier
