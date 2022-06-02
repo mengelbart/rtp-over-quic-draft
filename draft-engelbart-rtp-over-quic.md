@@ -71,12 +71,6 @@ when, and only when, they appear in all capitals, as shown here.
 
 The following terms are used:
 
-Congestion Controller:
-: QUIC specifies a congestion controller in {{Section 7 of !RFC9002}}, but the
-specific requirements for interactive real-time media lead to the development of
-dedicated congestion control algorithms. In this document, the term congestion
-controller refers to these algorithms dedicated to real-time applications.
-
 Datagram:
 : Datagrams exist in UDP as well as in QUICs unreliable datagram extension. If not explicitly noted
 differently, the term datagram in this document refers to a QUIC Datagram as defined in
