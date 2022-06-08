@@ -131,6 +131,23 @@ metrics can be used to generate the required feedback at the sender-side and
 provide it to the congestion controller to avoid the additional overhead of the
 RTCP stream.
 
+# Connection Establishment and ALPN
+
+QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
+over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
+{{iana-considerations}}.
+
+> **Editor's note:** "rtp-mux-quic" indicates that RTP and other protocols may
+> be multiplexed on the same QUIC connection using a flow identifier as
+> described in {{encapsulation}}. Applications are responsible for negotiation
+> of protocols in use by appropriate use of a signaling protocol such as SDP.
+
+> **Editor's note:** Consider adding a version specific identifier such as an
+> {{Section 3.1 of ?I-D.draft-ietf-quic-http-32}}.
+
+> **Editor's note:** This implies that applications cannot use RTP over QUIC as
+> specified in this document over WebTransport.
+
 # Encapsulation {#encapsulation}
 
 QUIC supports two transport methods: reliable streams {{!RFC9000}} and
@@ -517,9 +534,24 @@ The security considerations for the QUIC protocol and datagram extension
 described in {{Section 21 of !RFC9000}}, {{Section 9 of !RFC9001}}, {{Section 8
 of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RTP over QUIC.
 
-# IANA Considerations
+# IANA Considerations {#iana-considerations}
 
-This document has no IANA actions.
+## Registration of a RTP over QUIC Identification String
+
+This document creates a new registration for the identification of RTP over QUIC
+in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
+{{?RFC7301}}.
+
+The "rtp-mux-quic" string identifies RTP over QUIC:
+
+  Protocol:
+  : RTP over QUIC
+
+  Identification Sequence:
+  : 0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")
+
+  Specification:
+  : This document
 
 --- back
 
