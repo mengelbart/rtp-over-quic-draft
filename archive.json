@@ -1,0 +1,279 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2021-09-12T00:44:35.378401+00:00",
+  "repo": "mengelbart/rtp-over-quic-draft",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjI4OTU5NzUz",
+      "title": "Draft section about used RTP/RTCP packets and restrictions",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/1",
+      "state": "MERGED",
+      "author": "mengelbart",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-05-03T09:13:51Z",
+      "updatedAt": "2021-05-17T10:29:16Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "15dfd07af0ac380d51b42c952e096d2ee41e3c7e",
+      "headRepository": "mengelbart/rtp-over-quic-draft",
+      "headRefName": "rtcp-restrictions",
+      "headRefOid": "e691a73184a513899fe992c574057897fa342577",
+      "closedAt": "2021-05-08T15:47:21Z",
+      "mergedAt": "2021-05-08T15:47:21Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "c416b71a37b9ff8891c9ba62af876c9e9c25334c"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 2,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjQ1NzY5NzY2",
+      "title": "Add identifiers to the cc interface",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/2",
+      "state": "MERGED",
+      "author": "mengelbart",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-05-17T11:08:02Z",
+      "updatedAt": "2021-05-17T16:53:53Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "386a04a2a6985f77ba9e9e4b4d46f8ba3b890ac8",
+      "headRepository": "mengelbart/rtp-over-quic-draft",
+      "headRefName": "add-interface-identifiers",
+      "headRefOid": "cb6e602846ddc421cad78b5dae14d2f065b7e35a",
+      "closedAt": "2021-05-17T16:31:42Z",
+      "mergedAt": "2021-05-17T16:31:42Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "3fdbd66070a57196e538e1c4eaa389d262d47ebe"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 3,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjY2MDA0MzA4",
+      "title": "Update draft-engelbart-rtp-over-quic.md",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/3",
+      "state": "MERGED",
+      "author": "joerg-ott",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Hi Mathis, some thoughts on SDP signalling and a concrete example are in now. The detailed protocol procedures would likely be quite lengthy, so for an initial draft to see what people think, this might be good enough.",
+      "createdAt": "2021-06-09T15:06:48Z",
+      "updatedAt": "2021-06-09T16:53:49Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "79e265cabab1ee3f33e7cf696ba733bd871ab467",
+      "headRepository": "joerg-ott/rtp-over-quic-draft",
+      "headRefName": "patch-1",
+      "headRefOid": "93749c47fdcc372668de6d4e81cdb6f3626688c8",
+      "closedAt": "2021-06-09T16:53:49Z",
+      "mergedAt": "2021-06-09T16:53:49Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "cb8fdaa379c3f9dea77140481c7f1649fabe0049"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "MDExOlB1bGxSZXF1ZXN0NjgwNjgxMjk1",
+      "title": "Fix typos and clarify some terminology",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/4",
+      "state": "MERGED",
+      "author": "mengelbart",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-06-30T09:18:32Z",
+      "updatedAt": "2021-07-11T16:59:30Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "f7bd274edc900fb100e7a6cd749a98f457831150",
+      "headRepository": "mengelbart/rtp-over-quic-draft",
+      "headRefName": "terminology",
+      "headRefOid": "137b2a4313d2445adfffa77e6fdf60c92eca8b5e",
+      "closedAt": "2021-07-11T16:59:30Z",
+      "mergedAt": "2021-07-11T16:59:30Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "3f76be963765d4267472d6fbbfa863c040303266"
+      },
+      "comments": [
+        {
+          "author": "joerg-ott",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Quick note: in a few places, we may need to speak of \"RTP and RTCP packets\" instead of just \"RTP packets\".\r\nAnd I noticed: \"A RTP packet\" -> \"An RTP packet\"",
+          "createdAt": "2021-07-11T16:34:15Z",
+          "updatedAt": "2021-07-11T16:34:15Z"
+        },
+        {
+          "author": "mengelbart",
+          "authorAssociation": "OWNER",
+          "body": "> Quick note: in a few places, we may need to speak of \"RTP and RTCP packets\" instead of just \"RTP packets\".\r\n> And I noticed: \"A RTP packet\" -> \"An RTP packet\"\r\n\r\nMakes sense. I'll merge this PR first and then create another one for these changes. ",
+          "createdAt": "2021-07-11T16:59:24Z",
+          "updatedAt": "2021-07-11T16:59:24Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzAzNjA1MDM4",
+          "commit": {
+            "abbreviatedOid": "137b2a4"
+          },
+          "author": "joerg-ott",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-07-11T16:33:06Z",
+          "updatedAt": "2021-07-11T16:33:06Z",
+          "comments": []
+        },
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzAzNjA1MzE1",
+          "commit": {
+            "abbreviatedOid": "137b2a4"
+          },
+          "author": "joerg-ott",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-07-11T16:37:01Z",
+          "updatedAt": "2021-07-11T16:37:01Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "id": "MDExOlB1bGxSZXF1ZXN0Njg3MzgwNzA3",
+      "title": "Always name both, RTP and RTCP where applicable",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/5",
+      "state": "MERGED",
+      "author": "mengelbart",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-07-11T18:57:12Z",
+      "updatedAt": "2021-07-12T10:22:18Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "3f76be963765d4267472d6fbbfa863c040303266",
+      "headRepository": "mengelbart/rtp-over-quic-draft",
+      "headRefName": "always-name-rtp-and-rtcp",
+      "headRefOid": "fff6f1b82db8b5e6844fcc5bf79002e96f0ac908",
+      "closedAt": "2021-07-12T10:22:18Z",
+      "mergedAt": "2021-07-12T10:22:18Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "4f0fea14d24c04f29aa3fcafe0e4f79c5400c042"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "MDE3OlB1bGxSZXF1ZXN0UmV2aWV3NzAzODQxNTgy",
+          "commit": {
+            "abbreviatedOid": "fff6f1b"
+          },
+          "author": "joerg-ott",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2021-07-12T08:20:58Z",
+          "updatedAt": "2021-07-12T08:20:58Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "id": "MDExOlB1bGxSZXF1ZXN0Njg3NjU4MzI0",
+      "title": "Update outdated Draft/RFC references",
+      "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/6",
+      "state": "MERGED",
+      "author": "mengelbart",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2021-07-12T09:15:38Z",
+      "updatedAt": "2021-07-12T10:25:39Z",
+      "baseRepository": "mengelbart/rtp-over-quic-draft",
+      "baseRefName": "main",
+      "baseRefOid": "3f76be963765d4267472d6fbbfa863c040303266",
+      "headRepository": "mengelbart/rtp-over-quic-draft",
+      "headRefName": "update-references",
+      "headRefOid": "15f11672d191f67668d8f0fb76be4d4a5eaf4f71",
+      "closedAt": "2021-07-12T10:25:39Z",
+      "mergedAt": "2021-07-12T10:25:39Z",
+      "mergedBy": "mengelbart",
+      "mergeCommit": {
+        "oid": "e3a010e93ca98f3728f88125b02dc24567d59720"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
