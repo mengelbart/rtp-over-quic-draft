@@ -433,6 +433,12 @@ application to implement different optimizations ({{quic-api-read}}) and
 functions that a QUIC implementation SHOULD expose to an application
 ({{quic-api-write}}).
 
+Each item in the following list can be considered individually. Any exposed
+information or function can be used by RTP over QUIC regardless of whether the
+other items are available. Thus, RTP over QUIC does not depend on the
+availability of all of the listed features but can apply different optimizations
+depending on the functionality exposed by the QUIC implementation.
+
 ## Information to be exported from QUIC {#quic-api-read}
 
 This section provides a list of items that an application might want to export
@@ -447,8 +453,9 @@ implementation exports the listed items to the application.
   SHOULD include enough information to allow the application to maintain a
   mapping between the datagram that was acknowledged/lost and the RTP packet
   that was sent in that datagram.
-* *Stream States*: The QUIC implementation SHOULD expose to a sender, if all the
-  data that was sent on a stream was successfully delivered or not.
+* *Stream States*: The QUIC implementation SHOULD expose to a sender, how much
+  of the data that was sent on a stream was successfully delivered and how much
+  data is still outstanding to be sent or retransmitted.
 * *Arrival timestamps*: If the QUIC connection uses a timestamp extension like
   {{I-D.draft-smith-quic-receive-ts}} or {{I-D.draft-huitema-quic-ts}}, the
   arrival timestamps or one-way delays SHOULD be exposed to the application.
