@@ -5,7 +5,7 @@
 AVTCORE                                                           J. Ott
 Internet-Draft                                              M. Engelbart
 Intended status: Standards Track             Technical University Munich
-Expires: 10 December 2022                                    8 June 2022
+Expires: 25 December 2022                                   23 June 2022
 
 
                              RTP over QUIC
@@ -40,7 +40,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 December 2022.
+   This Internet-Draft will expire on 25 December 2022.
 
 Copyright Notice
 
@@ -63,6 +63,7 @@ Table of Contents
    3.  Scope
    4.  Protocol Overview
    5.  Connection Establishment and ALPN
+     5.1.  Draft version identification
    6.  Encapsulation
      6.1.  QUIC Streams
      6.2.  QUIC Datagrams
@@ -72,19 +73,20 @@ Table of Contents
    8.  Congestion Control
      8.1.  Congestion Control at the QUIC layer
      8.2.  Congestion Control at the Application Layer
+     8.3.  Shared QUIC connections
    9.  API Considerations
      9.1.  Information to be exported from QUIC
      9.2.  Functions to be exposed by QUIC
-   10. Experimental Results
-   11. Discussion
-     11.1.  Flow Identifier
-     11.2.  Impact of Connection Migration
-   12. Security Considerations
-   13. IANA Considerations
-     13.1.  Registration of a RTP over QUIC Identification String
-   14. References
-     14.1.  Normative References
-     14.2.  Informative References
+   10. Discussion
+     10.1.  Flow Identifier
+     10.2.  Impact of Connection Migration
+   11. Security Considerations
+   12. IANA Considerations
+     12.1.  Registration of a RTP over QUIC Identification String
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
+   Appendix A.  Experimental Results
    Acknowledgments
    Authors' Addresses
 
@@ -115,6 +117,10 @@ Table of Contents
    QUIC.
 
    The scope of this document is limited to unicast RTP/RTCP.
+
+   This document does not cover signaling for session setup.  Signaling
+   for RTP over QUIC can be defined in separate documents such as
+   [I-D.draft-dawkins-avtcore-sdp-rtp-quic] does for SDP.
 
    Note that this draft is similar in spirit to but differs in numerous
    ways from [I-D.draft-hurst-quic-rtp-tunnelling].
@@ -153,6 +159,17 @@ Table of Contents
    Section 1.3 of [RFC9000] to illustrate the order and size of fields.
 
 3.  Scope
+
+   RTP over QUIC - defines an "application usage" of QUIC (that can
+   benefit from some extensions to QUIC implementations and certain
+   features but does not depend on them).  This document defines an
+   encapsulation and considers interworking with RTP/UDP or RTP/DTLS or
+   SRTP/UDP.
+
+   The definition of new media transport protocols is up to the MOQ WG.
+
+   The definition of protocols for metadata exchange needs to happen
+   elsewhere.
 
 4.  Protocol Overview
 
@@ -195,7 +212,9 @@ Table of Contents
 
    QUIC requires the use of ALPN [RFC7301] tokens during connection
    setup.  RTP over QUIC uses "rtp-mux-quic" as ALPN token in the TLS
-   handshake (see also Section 13.
+   handshake (see also Section 12.  Use of different RTP profiles does
+   not require separate versions of ALPN tokens since they can be mixed
+   on the same connection.
 
       *Editor's note:* "rtp-mux-quic" indicates that RTP and other
       protocols may be multiplexed on the same QUIC connection using a
@@ -203,11 +222,28 @@ Table of Contents
       responsible for negotiation of protocols in use by appropriate use
       of a signaling protocol such as SDP.
 
-      *Editor's note:* Consider adding a version specific identifier
-      such as an Section 3.1 of [I-D.draft-ietf-quic-http-32].
-
       *Editor's note:* This implies that applications cannot use RTP
       over QUIC as specified in this document over WebTransport.
+
+5.1.  Draft version identification
+
+      *RFC Editor's note:* Please remove this section prior to
+      publication of a final version of this document.
+
+   RTP over QUIC uses the token "rtp-mux-quic" to identify itself in
+   ALPN.
+
+   Only implementations of the final, published RFC can identify
+   themselves as "rtp-mux-quic".  Until such an RFC exists,
+   implementations MUST NOT identify themselves using this string.
+
+   Implementations of draft versions of the protocol MUST add the string
+   "-" and the corresponding draft number to the identifier.  For
+   example, draft-engelbart-rtp-over-quic-04 is identified using the
+   string "rtp-mux-quic-04".
+
+   Non-compatible experiments that are based on these draft versions
+   MUST append the string "-" and an experiment name to the identifier.
 
 6.  Encapsulation
 
@@ -428,7 +464,7 @@ Table of Contents
    layer instead of the transport itself.
 
    _Sender Reports_ (PT=200, Name=SR, [RFC3550]) are similar to
-   _Receiver Reports_. They are send by media senders and additionally
+   _Receiver Reports_. They are sent by media senders and additionally
    contain a NTP and a RTP timestamp and the number of packets and
    octets transmitted by the sender.  The timestamps can be used by a
    receiver to synchronize streams.  QUIC cannot provide a similar
@@ -475,7 +511,10 @@ Table of Contents
 
    This section defines two architectures for congestion control and
    bandwidth estimation for RTP over QUIC, but it does not mandate any
-   specific congestion control algorithm to use.
+   specific congestion control algorithm to use.  The section also
+   discusses congestion control implications of using shared or multiple
+   separate QUIC connections to send and receive multiple independent
+   data streams.
 
    It is assumed that the congestion controller in use provides a pacing
    mechanism to determine when a packet can be sent to avoid bursts.
@@ -544,6 +583,24 @@ Table of Contents
    running at the QUIC layer.  Disabling the additional congestion
    controllers helps to avoid any interference between the different
    congestion controllers.
+
+8.3.  Shared QUIC connections
+
+   Two endpoints might want to exchange more than one data stream
+   simultaneously.  The streams can be either RTP or any other
+   datastream with or without real-time latency requirements.  This
+   usecase can be implemented in different ways.  A straightforward
+   solution is to establish multiple QUIC connections, one for each
+   stream.  In this case, the congestion controllers of the different
+   connection will compete for the same ressources in the network.  They
+   might behave more or less fair against each other, depending on the
+   congestion controllers in use.
+
+   A more sophisticated approach multiplexes the multiple streams on a
+   single, shared QUIC connection, which can be done by using the flow
+   identifier described in Section 6.  Applications multiplexing
+   multiple streams in one connection SHOULD implement some form of
+   stream prioritization or bandwidth allocation.
 
 9.  API Considerations
 
@@ -617,23 +674,9 @@ Table of Contents
       control, it is RECOMMENDEDto allow the application to disable QUIC
       layer congestion control entirely.
 
-10.  Experimental Results
+10.  Discussion
 
-   An experimental implementation of the mapping described in this
-   document can be found on Github (https://github.com/mengelbart/rtp-
-   over-quic).  The application implements the RTP over QUIC Datagrams
-   mapping and implements SCReAM congestion control at the application
-   layer.  It can optionally disable the builtin QUIC congestion control
-   (NewReno).  The endpoints only use RTCP for congestion control
-   feedback, which can optionally be disabled and replaced by the QUIC
-   connection statistics as described in Section 7.1.
-
-   Experimental results of the implementation can be found on Github
-   (https://github.com/mengelbart/rtp-over-quic-mininet), too.
-
-11.  Discussion
-
-11.1.  Flow Identifier
+10.1.  Flow Identifier
 
    [RFC9221] suggests to use flow identifiers to multiplex different
    streams on QUIC Datagrams, which is implemented in Section 6, but it
@@ -645,9 +688,9 @@ Table of Contents
    and non-RTP data streams over QUIC mandate different incompatible
    flow identifiers.
 
-11.2.  Impact of Connection Migration
+10.2.  Impact of Connection Migration
 
-12.  Security Considerations
+11.  Security Considerations
 
    RTP over QUIC is subject to the security considerations of RTP
    described in Section 9 of [RFC3550] and the security considerations
@@ -658,9 +701,9 @@ Table of Contents
    [RFC9001], Section 8 of [RFC9002] and Section 6 of [RFC9221] also
    apply to RTP over QUIC.
 
-13.  IANA Considerations
+12.  IANA Considerations
 
-13.1.  Registration of a RTP over QUIC Identification String
+12.1.  Registration of a RTP over QUIC Identification String
 
    This document creates a new registration for the identification of
    RTP over QUIC in the "TLS Application-Layer Protocol Negotiation
@@ -675,9 +718,9 @@ Table of Contents
 
    Specification:  This document
 
-14.  References
+13.  References
 
-14.1.  Normative References
+13.1.  Normative References
 
    [I-D.draft-huitema-quic-ts]
               Huitema, C., "Quic Timestamps For Measuring One-Way
@@ -773,7 +816,7 @@ Table of Contents
               DOI 10.17487/RFC9221, March 2022,
               <https://www.rfc-editor.org/rfc/rfc9221>.
 
-14.2.  Informative References
+13.2.  Informative References
 
    [I-D.draft-alvestrand-rmcat-remb]
               Alvestrand, H., "RTCP message for Receiver Estimated
@@ -781,6 +824,13 @@ Table of Contents
               alvestrand-rmcat-remb-03, 21 October 2013,
               <https://datatracker.ietf.org/doc/html/draft-alvestrand-
               rmcat-remb-03>.
+
+   [I-D.draft-dawkins-avtcore-sdp-rtp-quic]
+              Dawkins, S., "SDP Offer/Answer for RTP using QUIC as
+              Transport", Work in Progress, Internet-Draft, draft-
+              dawkins-avtcore-sdp-rtp-quic-00, 28 January 2022,
+              <https://datatracker.ietf.org/doc/html/draft-dawkins-
+              avtcore-sdp-rtp-quic-00>.
 
    [I-D.draft-hurst-quic-rtp-tunnelling]
               Hurst, S., "QRT: QUIC RTP Tunnelling", Work in Progress,
@@ -791,16 +841,9 @@ Table of Contents
    [I-D.draft-ietf-masque-h3-datagram]
               Schinazi, D. and L. Pardue, "HTTP Datagrams and the
               Capsule Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-masque-h3-datagram-09, 11 April 2022,
+              draft-ietf-masque-h3-datagram-11, 17 June 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-masque-
-              h3-datagram-09>.
-
-   [I-D.draft-ietf-quic-http-32]
-              Bishop, M., "Hypertext Transfer Protocol Version 3
-              (HTTP/3)", Work in Progress, Internet-Draft, draft-ietf-
-              quic-http-32, 20 October 2020,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              http-32>.
+              h3-datagram-11>.
 
    [RFC4571]  Lazzaro, J., "Framing Real-time Transport Protocol (RTP)
               and RTP Control Protocol (RTCP) Packets over Connection-
@@ -811,9 +854,25 @@ Table of Contents
               Guidelines", BCP 145, RFC 8085, DOI 10.17487/RFC8085,
               March 2017, <https://www.rfc-editor.org/rfc/rfc8085>.
 
+Appendix A.  Experimental Results
+
+   An experimental implementation of the mapping described in this
+   document can be found on Github (https://github.com/mengelbart/rtp-
+   over-quic).  The application implements the RTP over QUIC Datagrams
+   mapping and implements SCReAM congestion control at the application
+   layer.  It can optionally disable the builtin QUIC congestion control
+   (NewReno).  The endpoints only use RTCP for congestion control
+   feedback, which can optionally be disabled and replaced by the QUIC
+   connection statistics as described in Section 7.1.
+
+   Experimental results of the implementation can be found on Github
+   (https://github.com/mengelbart/rtp-over-quic-mininet), too.
+
 Acknowledgments
 
-   TODO acknowledge.
+   The authors would like to thank Spencer Dawkins, Lucas Pardue and
+   David Schinazi for their valuable comments and suggestions
+   contributing to this document.
 
 Authors' Addresses
 

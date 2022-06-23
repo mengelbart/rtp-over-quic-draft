@@ -1021,7 +1021,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ott &amp; Engelbart</td>
-<td class="center">Expires 10 December 2022</td>
+<td class="center">Expires 25 December 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1034,12 +1034,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-engelbart-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-06-08" class="published">8 June 2022</time>
+<time datetime="2022-06-23" class="published">23 June 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-12-10">10 December 2022</time></dd>
+<dd class="expires"><time datetime="2022-12-25">25 December 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1088,7 +1088,7 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 10 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 25 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1131,6 +1131,11 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-connection-establishment-an" class="xref">Connection Establishment and ALPN</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-draft-version-identificatio" class="xref">Draft version identification</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
             <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-encapsulation" class="xref">Encapsulation</a></p>
@@ -1163,6 +1168,9 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="xref">8.2</a>.  <a href="#name-congestion-control-at-the-a" class="xref">Congestion Control at the Application Layer</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="xref">8.3</a>.  <a href="#name-shared-quic-connections" class="xref">Shared QUIC connections</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
@@ -1177,46 +1185,46 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-experimental-results" class="xref">Experimental Results</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-discussion" class="xref">Discussion</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-discussion" class="xref">Discussion</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
-                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="xref">11.1</a>.  <a href="#name-flow-identifier" class="xref">Flow Identifier</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="xref">10.1</a>.  <a href="#name-flow-identifier" class="xref">Flow Identifier</a></p>
 </li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
-                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="xref">11.2</a>.  <a href="#name-impact-of-connection-migrat" class="xref">Impact of Connection Migration</a></p>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="xref">10.2</a>.  <a href="#name-impact-of-connection-migrat" class="xref">Impact of Connection Migration</a></p>
 </li>
             </ul>
 </li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="xref">11</a>. <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="xref">12</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="xref">12.1</a>.  <a href="#name-registration-of-a-rtp-over-" class="xref">Registration of a RTP over QUIC Identification String</a></p>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
-            <p id="section-toc.1-1.13.1"><a href="#section-13" class="xref">13</a>. <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.13.1"><a href="#section-13" class="xref">13</a>. <a href="#name-references" class="xref">References</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.1">
-                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="xref">13.1</a>.  <a href="#name-registration-of-a-rtp-over-" class="xref">Registration of a RTP over QUIC Identification String</a></p>
+                <p id="section-toc.1-1.13.2.1.1"><a href="#section-13.1" class="xref">13.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13.2.2">
+                <p id="section-toc.1-1.13.2.2.1"><a href="#section-13.2" class="xref">13.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
-            <p id="section-toc.1-1.14.1"><a href="#section-14" class="xref">14</a>. <a href="#name-references" class="xref">References</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.1">
-                <p id="section-toc.1-1.14.2.1.1"><a href="#section-14.1" class="xref">14.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14.2.2">
-                <p id="section-toc.1-1.14.2.2.1"><a href="#section-14.2" class="xref">14.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
-</li>
-            </ul>
+            <p id="section-toc.1-1.14.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-experimental-results" class="xref">Experimental Results</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.15">
-            <p id="section-toc.1-1.15.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.15.1"><a href="#appendix-B" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.16">
-            <p id="section-toc.1-1.16.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.16.1"><a href="#appendix-C" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1247,8 +1255,11 @@ information readily available within a QUIC endpoint. This document also
 describes different options for implementing congestion control for RTP over
 QUIC.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <p id="section-1-3">The scope of this document is limited to unicast RTP/RTCP.<a href="#section-1-3" class="pilcrow">¶</a></p>
-<p id="section-1-4">Note that this draft is similar in spirit to but differs in numerous ways from
-<span>[<a href="#I-D.draft-hurst-quic-rtp-tunnelling" class="xref">I-D.draft-hurst-quic-rtp-tunnelling</a>]</span>.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-4">This document does not cover signaling for session setup. Signaling for RTP over
+QUIC can be defined in separate documents such as
+<span>[<a href="#I-D.draft-dawkins-avtcore-sdp-rtp-quic" class="xref">I-D.draft-dawkins-avtcore-sdp-rtp-quic</a>]</span> does for SDP.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">Note that this draft is similar in spirit to but differs in numerous ways from
+<span>[<a href="#I-D.draft-hurst-quic-rtp-tunnelling" class="xref">I-D.draft-hurst-quic-rtp-tunnelling</a>]</span>.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="terminology-and-notation">
@@ -1304,7 +1315,13 @@ illustrate the order and size of fields.<a href="#section-2-4" class="pilcrow">�
 <section id="section-3">
       <h2 id="name-scope">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-scope" class="section-name selfRef">Scope</a>
-    </h2>
+      </h2>
+<p id="section-3-1">RTP over QUIC - defines an "application usage" of QUIC (that can benefit from
+some extensions to QUIC implementations and certain features but does not depend
+on them). This document defines an encapsulation and considers interworking with
+RTP/UDP or RTP/DTLS or SRTP/UDP.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The definition of new media transport protocols is up to the MOQ WG.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The definition of protocols for metadata exchange needs to happen elsewhere.<a href="#section-3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protocol-overview">
@@ -1327,7 +1344,7 @@ managing a separate QUIC connection per RTP session. QUIC does not provide
 demultiplexing between different flows on datagrams but suggests that an
 application implement a demultiplexing mechanism if required. An example of such
 a mechanism are flow identifiers prepended to each datagram frame as described
-in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-09#section-2.1" class="relref">Section 2.1</a> of [<a href="#I-D.draft-ietf-masque-h3-datagram" class="xref">I-D.draft-ietf-masque-h3-datagram</a>]</span>. RTP over QUIC uses a
+in <span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11#section-2.1" class="relref">Section 2.1</a> of [<a href="#I-D.draft-ietf-masque-h3-datagram" class="xref">I-D.draft-ietf-masque-h3-datagram</a>]</span>. RTP over QUIC uses a
 flow identifier to replace the network address and port number to multiplex many
 RTP sessions over the same QUIC connection.<a href="#section-4-2" class="pilcrow">¶</a></p>
 <p id="section-4-3">A congestion controller can be plugged in to adapt the media bitrate to the
@@ -1350,7 +1367,9 @@ RTCP stream.<a href="#section-4-3" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-5-1">QUIC requires the use of ALPN <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span> tokens during connection setup. RTP
 over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
-<a href="#iana-considerations" class="xref">Section 13</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<a href="#iana-considerations" class="xref">Section 12</a>.
+Use of different RTP profiles does not require separate versions of ALPN tokens
+since they can be mixed on the same connection.<a href="#section-5-1" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5-2.1">
           <p id="section-5-2.1.1"><strong>Editor's note:</strong> "rtp-mux-quic" indicates that RTP and other protocols may
@@ -1361,16 +1380,33 @@ of protocols in use by appropriate use of a signaling protocol such as SDP.<a hr
       </ul>
 <ul class="normal ulEmpty">
 <li class="normal ulEmpty" id="section-5-3.1">
-          <p id="section-5-3.1.1"><strong>Editor's note:</strong> Consider adding a version specific identifier such as an
-<span><a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-32#section-3.1" class="relref">Section 3.1</a> of [<a href="#I-D.draft-ietf-quic-http-32" class="xref">I-D.draft-ietf-quic-http-32</a>]</span>.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-5-3.1.1"><strong>Editor's note:</strong> This implies that applications cannot use RTP over QUIC as
+specified in this document over WebTransport.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
+<div id="draft-version-identification">
+<section id="section-5.1">
+        <h3 id="name-draft-version-identificatio">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-draft-version-identificatio" class="section-name selfRef">Draft version identification</a>
+        </h3>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-5-4.1">
-          <p id="section-5-4.1.1"><strong>Editor's note:</strong> This implies that applications cannot use RTP over QUIC as
-specified in this document over WebTransport.<a href="#section-5-4.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-5.1-1.1">
+            <p id="section-5.1-1.1.1"><strong>RFC Editor's note:</strong> Please remove this section prior to publication of a
+final version of this document.<a href="#section-5.1-1.1.1" class="pilcrow">¶</a></p>
 </li>
-      </ul>
+        </ul>
+<p id="section-5.1-2">RTP over QUIC uses the token "rtp-mux-quic" to identify itself in ALPN.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3">Only implementations of the final, published RFC can identify themselves as
+"rtp-mux-quic". Until such an RFC exists, implementations MUST NOT identify
+themselves using this string.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4">Implementations of draft versions of the protocol MUST add the string "-" and
+the corresponding draft number to the identifier.  For example,
+draft-engelbart-rtp-over-quic-04 is identified using the string
+"rtp-mux-quic-04".<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5">Non-compatible experiments that are based on these draft versions MUST append
+the string "-" and an experiment name to the identifier.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
 </section>
 </div>
 <div id="encapsulation">
@@ -1615,7 +1651,7 @@ QUIC features, QUIC cannot replace all of the available RTCP packet types. This
 mostly affects RTCP packet types which carry control information that is to be
 interpreted by the application layer instead of the transport itself.<a href="#section-7.2-1" class="pilcrow">¶</a></p>
 <p id="section-7.2-2"><em>Sender Reports</em> (<code>PT=200</code>, <code>Name=SR</code>, <span>[<a href="#RFC3550" class="xref">RFC3550</a>]</span>) are similar to <em>Receiver
-Reports</em>. They are send by media senders and additionally contain a NTP and a
+Reports</em>. They are sent by media senders and additionally contain a NTP and a
 RTP timestamp and the number of packets and octets transmitted by the sender.
 The timestamps can be used by a receiver to synchronize streams. QUIC cannot
 provide a similar control information, since it does not know about RTP
@@ -1659,7 +1695,9 @@ reconfigure media codecs to produce media at a rate that can be sent in
 real-time under the observed network conditions.<a href="#section-8-3" class="pilcrow">¶</a></p>
 <p id="section-8-4">This section defines two architectures for congestion control and bandwidth
 estimation for RTP over QUIC, but it does not mandate any specific congestion
-control algorithm to use.<a href="#section-8-4" class="pilcrow">¶</a></p>
+control algorithm to use. The section also discusses congestion control
+implications of using shared or multiple separate QUIC connections to send and
+receive multiple independent data streams.<a href="#section-8-4" class="pilcrow">¶</a></p>
 <p id="section-8-5">It is assumed that the congestion controller in use provides a pacing mechanism
 to determine when a packet can be sent to avoid bursts. The currently proposed
 congestion control algorithms for real-time communications provide such pacing
@@ -1732,6 +1770,25 @@ congestion control, it is RECOMMENDED to disable any other congestion control
 that is possibly running at the QUIC layer. Disabling the additional congestion
 controllers helps to avoid any interference between the different congestion
 controllers.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="shared-quic-connections">
+<section id="section-8.3">
+        <h3 id="name-shared-quic-connections">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-shared-quic-connections" class="section-name selfRef">Shared QUIC connections</a>
+        </h3>
+<p id="section-8.3-1">Two endpoints might want to exchange more than one data stream simultaneously.
+The streams can be either RTP or any other datastream with or without real-time
+latency requirements. This usecase can be implemented in different ways. A
+straightforward solution is to establish multiple QUIC connections, one for each
+stream. In this case, the congestion controllers of the different connection
+will compete for the same ressources in the network. They might behave more or
+less fair against each other, depending on the congestion controllers in use.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">A more sophisticated approach multiplexes the multiple streams on a single,
+shared QUIC connection, which can be done by using the flow identifier described
+in <a href="#encapsulation" class="xref">Section 6</a>. Applications multiplexing multiple streams in one
+connection SHOULD implement some form of stream prioritization or bandwidth
+allocation.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1822,91 +1879,75 @@ entirely.<a href="#section-9.2-2.3" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
-<div id="experimental-results">
-<section id="section-10">
-      <h2 id="name-experimental-results">
-<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-experimental-results" class="section-name selfRef">Experimental Results</a>
-      </h2>
-<p id="section-10-1">An experimental implementation of the mapping described in this document can be
-found on <a href="https://github.com/mengelbart/rtp-over-quic">Github</a>. The application
-implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
-control at the application layer. It can optionally disable the builtin QUIC
-congestion control (NewReno). The endpoints only use RTCP for congestion control
-feedback, which can optionally be disabled and replaced by the QUIC connection
-statistics as described in <a href="#transport-layer-feedback" class="xref">Section 7.1</a>.<a href="#section-10-1" class="pilcrow">¶</a></p>
-<p id="section-10-2">Experimental results of the implementation can be found on
-<a href="https://github.com/mengelbart/rtp-over-quic-mininet">Github</a>, too.<a href="#section-10-2" class="pilcrow">¶</a></p>
-</section>
-</div>
 <div id="discussion">
-<section id="section-11">
+<section id="section-10">
       <h2 id="name-discussion">
-<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-discussion" class="section-name selfRef">Discussion</a>
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-discussion" class="section-name selfRef">Discussion</a>
       </h2>
 <div id="flow-identifier">
-<section id="section-11.1">
+<section id="section-10.1">
         <h3 id="name-flow-identifier">
-<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-flow-identifier" class="section-name selfRef">Flow Identifier</a>
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-flow-identifier" class="section-name selfRef">Flow Identifier</a>
         </h3>
-<p id="section-11.1-1"><span>[<a href="#RFC9221" class="xref">RFC9221</a>]</span> suggests to use flow identifiers to multiplex different streams on
+<p id="section-10.1-1"><span>[<a href="#RFC9221" class="xref">RFC9221</a>]</span> suggests to use flow identifiers to multiplex different streams on
 QUIC Datagrams, which is implemented in <a href="#encapsulation" class="xref">Section 6</a>, but it is unclear how
 applications can combine RTP over QUIC with other data streams using the same
 QUIC connections. If the non-RTP data streams use the same flow identifies, too
 and the application can make sure, that flow identifiers are unique, there
 should be no problem. Flow identifiers could be problematic, if different
 specifications for RTP and non-RTP data streams over QUIC mandate different
-incompatible flow identifiers.<a href="#section-11.1-1" class="pilcrow">¶</a></p>
+incompatible flow identifiers.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="impact-of-connection-migration">
-<section id="section-11.2">
+<section id="section-10.2">
         <h3 id="name-impact-of-connection-migrat">
-<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-impact-of-connection-migrat" class="section-name selfRef">Impact of Connection Migration</a>
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-impact-of-connection-migrat" class="section-name selfRef">Impact of Connection Migration</a>
       </h3>
 </section>
 </div>
 </section>
 </div>
 <div id="security-considerations">
-<section id="section-12">
+<section id="section-11">
       <h2 id="name-security-considerations">
-<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<p id="section-12-1">RTP over QUIC is subject to the security considerations of RTP described in
+<p id="section-11-1">RTP over QUIC is subject to the security considerations of RTP described in
 <span><a href="https://rfc-editor.org/rfc/rfc3550#section-9" class="relref">Section 9</a> of [<a href="#RFC3550" class="xref">RFC3550</a>]</span> and the security considerations of any RTP profile in
-use.<a href="#section-12-1" class="pilcrow">¶</a></p>
-<p id="section-12-2">The security considerations for the QUIC protocol and datagram extension
-described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-21" class="relref">Section 21</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc9001#section-9" class="relref">Section 9</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc9002#section-8" class="relref">Section 8</a> of [<a href="#RFC9002" class="xref">RFC9002</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc9221#section-6" class="relref">Section 6</a> of [<a href="#RFC9221" class="xref">RFC9221</a>]</span> also apply to RTP over QUIC.<a href="#section-12-2" class="pilcrow">¶</a></p>
+use.<a href="#section-11-1" class="pilcrow">¶</a></p>
+<p id="section-11-2">The security considerations for the QUIC protocol and datagram extension
+described in <span><a href="https://rfc-editor.org/rfc/rfc9000#section-21" class="relref">Section 21</a> of [<a href="#RFC9000" class="xref">RFC9000</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc9001#section-9" class="relref">Section 9</a> of [<a href="#RFC9001" class="xref">RFC9001</a>]</span>, <span><a href="https://rfc-editor.org/rfc/rfc9002#section-8" class="relref">Section 8</a> of [<a href="#RFC9002" class="xref">RFC9002</a>]</span> and <span><a href="https://rfc-editor.org/rfc/rfc9221#section-6" class="relref">Section 6</a> of [<a href="#RFC9221" class="xref">RFC9221</a>]</span> also apply to RTP over QUIC.<a href="#section-11-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-13">
+<section id="section-12">
       <h2 id="name-iana-considerations">
-<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
 <div id="registration-of-a-rtp-over-quic-identification-string">
-<section id="section-13.1">
+<section id="section-12.1">
         <h3 id="name-registration-of-a-rtp-over-">
-<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-registration-of-a-rtp-over-" class="section-name selfRef">Registration of a RTP over QUIC Identification String</a>
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-registration-of-a-rtp-over-" class="section-name selfRef">Registration of a RTP over QUIC Identification String</a>
         </h3>
-<p id="section-13.1-1">This document creates a new registration for the identification of RTP over QUIC
+<p id="section-12.1-1">This document creates a new registration for the identification of RTP over QUIC
 in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
-<span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span>.<a href="#section-13.1-1" class="pilcrow">¶</a></p>
-<p id="section-13.1-2">The "rtp-mux-quic" string identifies RTP over QUIC:<a href="#section-13.1-2" class="pilcrow">¶</a></p>
-<span class="break"></span><dl class="dlParallel" id="section-13.1-3">
-          <dt id="section-13.1-3.1">Protocol:</dt>
-          <dd style="margin-left: 1.5em" id="section-13.1-3.2">
-            <p id="section-13.1-3.2.1">RTP over QUIC<a href="#section-13.1-3.2.1" class="pilcrow">¶</a></p>
+<span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span>.<a href="#section-12.1-1" class="pilcrow">¶</a></p>
+<p id="section-12.1-2">The "rtp-mux-quic" string identifies RTP over QUIC:<a href="#section-12.1-2" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-12.1-3">
+          <dt id="section-12.1-3.1">Protocol:</dt>
+          <dd style="margin-left: 1.5em" id="section-12.1-3.2">
+            <p id="section-12.1-3.2.1">RTP over QUIC<a href="#section-12.1-3.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-13.1-3.3">Identification Sequence:</dt>
-          <dd style="margin-left: 1.5em" id="section-13.1-3.4">
-            <p id="section-13.1-3.4.1">0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")<a href="#section-13.1-3.4.1" class="pilcrow">¶</a></p>
+<dt id="section-12.1-3.3">Identification Sequence:</dt>
+          <dd style="margin-left: 1.5em" id="section-12.1-3.4">
+            <p id="section-12.1-3.4.1">0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")<a href="#section-12.1-3.4.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
-<dt id="section-13.1-3.5">Specification:</dt>
-          <dd style="margin-left: 1.5em" id="section-13.1-3.6">
-            <p id="section-13.1-3.6.1">This document<a href="#section-13.1-3.6.1" class="pilcrow">¶</a></p>
+<dt id="section-12.1-3.5">Specification:</dt>
+          <dd style="margin-left: 1.5em" id="section-12.1-3.6">
+            <p id="section-12.1-3.6.1">This document<a href="#section-12.1-3.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -1914,13 +1955,13 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 </div>
 </section>
 </div>
-<section id="section-14">
+<section id="section-13">
       <h2 id="name-references">
-<a href="#section-14" class="section-number selfRef">14. </a><a href="#name-references" class="section-name selfRef">References</a>
+<a href="#section-13" class="section-number selfRef">13. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
-<section id="section-14.1">
+<section id="section-13.1">
         <h3 id="name-normative-references">
-<a href="#section-14.1" class="section-number selfRef">14.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<a href="#section-13.1" class="section-number selfRef">13.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.draft-huitema-quic-ts">[I-D.draft-huitema-quic-ts]</dt>
@@ -1997,14 +2038,18 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 <dd class="break"></dd>
 </dl>
 </section>
-<section id="section-14.2">
+<section id="section-13.2">
         <h3 id="name-informative-references">
-<a href="#section-14.2" class="section-number selfRef">14.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-13.2" class="section-number selfRef">13.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
         </h3>
 <dl class="references">
 <dt id="I-D.draft-alvestrand-rmcat-remb">[I-D.draft-alvestrand-rmcat-remb]</dt>
         <dd>
 <span class="refAuthor">Alvestrand, H.</span>, <span class="refTitle">"RTCP message for Receiver Estimated Maximum Bitrate"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-alvestrand-rmcat-remb-03</span>, <time datetime="2013-10-21" class="refDate">21 October 2013</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-alvestrand-rmcat-remb-03">https://datatracker.ietf.org/doc/html/draft-alvestrand-rmcat-remb-03</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-dawkins-avtcore-sdp-rtp-quic">[I-D.draft-dawkins-avtcore-sdp-rtp-quic]</dt>
+        <dd>
+<span class="refAuthor">Dawkins, S.</span>, <span class="refTitle">"SDP Offer/Answer for RTP using QUIC as Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-dawkins-avtcore-sdp-rtp-quic-00</span>, <time datetime="2022-01-28" class="refDate">28 January 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-dawkins-avtcore-sdp-rtp-quic-00">https://datatracker.ietf.org/doc/html/draft-dawkins-avtcore-sdp-rtp-quic-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-hurst-quic-rtp-tunnelling">[I-D.draft-hurst-quic-rtp-tunnelling]</dt>
         <dd>
@@ -2012,11 +2057,7 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-masque-h3-datagram">[I-D.draft-ietf-masque-h3-datagram]</dt>
         <dd>
-<span class="refAuthor">Schinazi, D.</span> and <span class="refAuthor">L. Pardue</span>, <span class="refTitle">"HTTP Datagrams and the Capsule Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-masque-h3-datagram-09</span>, <time datetime="2022-04-11" class="refDate">11 April 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-09">https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-09</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="I-D.draft-ietf-quic-http-32">[I-D.draft-ietf-quic-http-32]</dt>
-        <dd>
-<span class="refAuthor">Bishop, M.</span>, <span class="refTitle">"Hypertext Transfer Protocol Version 3 (HTTP/3)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-http-32</span>, <time datetime="2020-10-20" class="refDate">20 October 2020</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-32">https://datatracker.ietf.org/doc/html/draft-ietf-quic-http-32</a>&gt;</span>. </dd>
+<span class="refAuthor">Schinazi, D.</span> and <span class="refAuthor">L. Pardue</span>, <span class="refTitle">"HTTP Datagrams and the Capsule Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-masque-h3-datagram-11</span>, <time datetime="2022-06-17" class="refDate">17 June 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11">https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4571">[RFC4571]</dt>
         <dd>
@@ -2029,16 +2070,33 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 </dl>
 </section>
 </section>
-<div id="acknowledgments">
+<div id="experimental-results">
 <section id="appendix-A">
+      <h2 id="name-experimental-results">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-experimental-results" class="section-name selfRef">Experimental Results</a>
+      </h2>
+<p id="appendix-A-1">An experimental implementation of the mapping described in this document can be
+found on <a href="https://github.com/mengelbart/rtp-over-quic">Github</a>. The application
+implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
+control at the application layer. It can optionally disable the builtin QUIC
+congestion control (NewReno). The endpoints only use RTCP for congestion control
+feedback, which can optionally be disabled and replaced by the QUIC connection
+statistics as described in <a href="#transport-layer-feedback" class="xref">Section 7.1</a>.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">Experimental results of the implementation can be found on
+<a href="https://github.com/mengelbart/rtp-over-quic-mininet">Github</a>, too.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-B">
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
       </h2>
-<p id="appendix-A-1">TODO acknowledge.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-B-1">The authors would like to thank Spencer Dawkins, Lucas Pardue and David Schinazi
+for their valuable comments and suggestions contributing to this document.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
-<section id="appendix-B">
+<section id="appendix-C">
       <h2 id="name-authors-addresses">
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
