@@ -136,17 +136,35 @@ RTCP stream.
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
 over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
 {{iana-considerations}}.
+Use of different RTP profiles does not require separate versions of ALPN tokens
+since they can be mixed on the same connection.
 
 > **Editor's note:** "rtp-mux-quic" indicates that RTP and other protocols may
 > be multiplexed on the same QUIC connection using a flow identifier as
 > described in {{encapsulation}}. Applications are responsible for negotiation
 > of protocols in use by appropriate use of a signaling protocol such as SDP.
 
-> **Editor's note:** Consider adding a version specific identifier such as an
-> {{Section 3.1 of ?I-D.draft-ietf-quic-http-32}}.
-
 > **Editor's note:** This implies that applications cannot use RTP over QUIC as
 > specified in this document over WebTransport.
+
+## Draft version identification
+
+> **RFC Editor's note:** Please remove this section prior to publication of a
+> final version of this document.
+
+RTP over QUIC uses the token "rtp-mux-quic" to identify itself in ALPN.
+
+Only implementations of the final, published RFC can identify themselves as
+"rtp-mux-quic". Until such an RFC exists, implementations MUST NOT identify
+themselves using this string.
+
+Implementations of draft versions of the protocol MUST add the string "-" and
+the corresponding draft number to the identifier.  For example,
+draft-engelbart-rtp-over-quic-04 is identified using the string
+"rtp-mux-quic-04".
+
+Non-compatible experiments that are based on these draft versions MUST append
+the string "-" and an experiment name to the identifier.
 
 # Encapsulation {#encapsulation}
 
