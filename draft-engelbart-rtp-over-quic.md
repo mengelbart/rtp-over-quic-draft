@@ -101,6 +101,15 @@ illustrate the order and size of fields.
 
 # Scope
 
+RTP over QUIC – defines an “application usage” of QUIC (that can benefit from
+some extensions to QUIC implementations and certain features but does not depend
+on them). This document defines an encapsulation and considers interworking with
+RTP/UDP or RTP/DTLS or SRTP/UDP.
+
+The definition of new media transport protocols is up to the MOQ WG.
+
+The definition of protocols for metadata exchange needs to happen elsewhere.
+
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
