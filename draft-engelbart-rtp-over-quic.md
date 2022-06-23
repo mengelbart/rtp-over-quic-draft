@@ -577,4 +577,5 @@ Experimental results of the implementation can be found on
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+The authors would like to thank Spencer Dawkins, Lucas Pardue and David Schinazi
+for their valuable comments and suggestions contributing to this document.
