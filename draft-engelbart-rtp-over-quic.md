@@ -353,7 +353,7 @@ mostly affects RTCP packet types which carry control information that is to be
 interpreted by the application layer instead of the transport itself.
 
 *Sender Reports* (`PT=200`, `Name=SR`, {{!RFC3550}}) are similar to *Receiver
-Reports*. They are send by media senders and additionally contain a NTP and a
+Reports*. They are sent by media senders and additionally contain a NTP and a
 RTP timestamp and the number of packets and octets transmitted by the sender.
 The timestamps can be used by a receiver to synchronize streams. QUIC cannot
 provide a similar control information, since it does not know about RTP
