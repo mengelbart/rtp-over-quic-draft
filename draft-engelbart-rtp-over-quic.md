@@ -514,19 +514,6 @@ previous sections of this document.
   RECOMMENDEDto allow the application to disable QUIC layer congestion control
   entirely.
 
-# Experimental Results
-
-An experimental implementation of the mapping described in this document can be
-found on [Github](https://github.com/mengelbart/rtp-over-quic). The application
-implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
-control at the application layer. It can optionally disable the builtin QUIC
-congestion control (NewReno). The endpoints only use RTCP for congestion control
-feedback, which can optionally be disabled and replaced by the QUIC connection
-statistics as described in {{transport-layer-feedback}}.
-
-Experimental results of the implementation can be found on
-[Github](https://github.com/mengelbart/rtp-over-quic-mininet), too.
-
 # Discussion
 
 ## Flow Identifier
@@ -572,6 +559,20 @@ The "rtp-mux-quic" string identifies RTP over QUIC:
   : This document
 
 --- back
+
+# Experimental Results
+
+An experimental implementation of the mapping described in this document can be
+found on [Github](https://github.com/mengelbart/rtp-over-quic). The application
+implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
+control at the application layer. It can optionally disable the builtin QUIC
+congestion control (NewReno). The endpoints only use RTCP for congestion control
+feedback, which can optionally be disabled and replaced by the QUIC connection
+statistics as described in {{transport-layer-feedback}}.
+
+Experimental results of the implementation can be found on
+[Github](https://github.com/mengelbart/rtp-over-quic-mininet), too.
+
 
 # Acknowledgments
 {:numbered="false"}
