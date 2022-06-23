@@ -59,6 +59,10 @@ QUIC.
 
 The scope of this document is limited to unicast RTP/RTCP.
 
+This document does not cover signaling for session setup. Signaling for RTP over
+QUIC can be defined in separate documents such as
+{{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}} does for SDP.
+
 Note that this draft is similar in spirit to but differs in numerous ways from
 {{?I-D.draft-hurst-quic-rtp-tunnelling}}.
 
