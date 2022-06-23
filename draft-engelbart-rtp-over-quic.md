@@ -101,14 +101,22 @@ illustrate the order and size of fields.
 
 # Scope
 
-RTP over QUIC – defines an “application usage” of QUIC (that can benefit from
-some extensions to QUIC implementations and certain features but does not depend
-on them). This document defines an encapsulation and considers interworking with
-RTP/UDP or RTP/DTLS or SRTP/UDP.
+RTP over QUIC mostly defines an application usage of QUIC {{?I-D.draft-ietf-quic-applicability}}.
+As a baseline, the specification does not expect more than a standard QUIC implementation
+as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}}.
+Nevertheless, the specification can benefit from QUIC extesions such as QUIC datagrams
+{{!RFC9221}} as described below.
+Moreover, this document describes how a QUIC implementation and its API can be
+extended to improve efficiency of the protocol operation.
 
-The definition of new media transport protocols is up to the MOQ WG.
+On top of QUIC, this document defines an encapsulation of RTP and RTCP packets.
 
-The definition of protocols for metadata exchange needs to happen elsewhere.
+The scope of this document is limited to carrying RTP over QUIC. It does not attempt
+to enhance QUIC for real-time media or define a replacement or evolution of RTP.
+Such new media transport protocols may be covered elsewhere, e.g., in the MOQ WG.
+
+Protocols for negotiating connection setup and the associated parameters are defined
+separately, e.g., in {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
 
 # Protocol Overview
 
@@ -149,8 +157,11 @@ RTCP stream.
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
 over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
 {{iana-considerations}}.
-Use of different RTP profiles does not require separate versions of ALPN tokens
-since they can be mixed on the same connection.
+
+Note that the use of a given RTP profile is not reflected in the ALPN token even
+though it could be considered part of the application usage.  This is simply
+because different RTP sessions, which may use different RTP profiles, may be
+carried within the same QUIC connection.
 
 > **Editor's note:** "rtp-mux-quic" indicates that RTP and other protocols may
 > be multiplexed on the same QUIC connection using a flow identifier as
@@ -222,6 +233,11 @@ Differentiating RTP/RTCP packets of different RTP sessions from non-RTP/RTCP
 datagrams is the responsibility of the application by means of appropriate use
 of flow identifiers and the corresponding signaling.
 
+This specification defines two ways of carrying RTP packets in QUIC: 1) using
+reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs.  Every RTP session
+MUST choose exactly one way of carrying RTP and RTCP packets, different RTP
+sessions MAY choose different ways.
+
 ## QUIC Streams {#quic-streams}
 
 An application MUST open a new QUIC stream for each Application Data Unit (ADU).
@@ -245,6 +261,11 @@ transmitted, is no longer needed, either side can close the stream.
 > Moreover, putting multiple ADUs into a single stream would also require
 > defining policies when to use the same (and which) stream and when to open a
 > new one.
+
+> **Editor's Note:** Note, however, that using a single frame per stream in a single RTP packet may 
+> cause interworking issues when a translator wants to forward packets received
+> via RTP-over-QUIC to an endpoint as UDP packets because the received ADUs may
+> exceed the MTU size or even maximum UDP packet size.
 
 ## QUIC Datagrams {#quic-datagrams}
 
@@ -474,17 +495,18 @@ controllers.
 
 ## Shared QUIC connections
 
-Two endpoints might want to exchange more than one data stream simultaneously.
-The streams can be either RTP or any other datastream with or without real-time
-latency requirements. This usecase can be implemented in different ways. A
-straightforward solution is to establish multiple QUIC connections, one for each
-stream. In this case, the congestion controllers of the different connection
-will compete for the same ressources in the network. They might behave more or
-less fair against each other, depending on the congestion controllers in use.
+Two endpoints may want to establish channels to exchange more than one type of data simultaneously.
+The channels can be intended carry real-time RTP data or other non-real-time data.
+This can be realized in different ways.  A straightforward solution is to establish multiple QUIC
+connections, one for each channel.  Or all real-time channels are mapped to one QUIC
+connection, while a separate QUIC connection is created for the non-real-time channels.
+In both cases, the congestion controllers can be chosen to match the demands of the respective
+channels and the different QUIC connections will compete for the same resources in the network.
+No local prioritization of data across the different (types of) channels would be necessary.
 
-A more sophisticated approach multiplexes the multiple streams on a single,
+Alternatively, (all or a subset of) real-time and non-real-time channels are multiplexed onto a single,
 shared QUIC connection, which can be done by using the flow identifier described
-in {{encapsulation}}. Applications multiplexing multiple streams in one
+in {{encapsulation}}.  Applications multiplexing multiple streams in one
 connection SHOULD implement some form of stream prioritization or bandwidth
 allocation.
 
@@ -559,6 +581,46 @@ specifications for RTP and non-RTP data streams over QUIC mandate different
 incompatible flow identifiers.
 
 ## Impact of Connection Migration
+
+RTP sessions are characterized by a continuous flow of packets into either or
+both directions.  A connection migration requires may lead to pausing media
+transmission until reachability of the peer under the new address is validated.
+This may lead to short breaks in media delivery in the order of RTT and, if
+RTCP is used for RTT measurements, may cause spikes in observed delays.
+Application layer congestion control mechanisms (and also packet repair schemes
+such as retransmissions) need to be prepared to cope with such spikes.
+
+If a QUIC connection is established via a signaling channel, this signaling
+may have involved Interactive Connectivity Establishment (ICE) exchanges to
+determine and choose suitable (IP address, port number) pairs for the QUIC
+connection.  Subsequent address change events may be noticed by QUIC via its
+connection migration handling and/or at the ICE or other application layer,
+e.g., by noticing changing IP addresses at the network interface.  This may
+imply that the two signaling and data "layers" get (temporarily) out of sync.
+
+> **Editor's Note:** It may be desirable that the API provides an indication
+> of connection migration event for either case.
+
+## 0-RTT considerations
+
+For repeated connections between peers, the initiator of a QUIC connection can
+use 0-RTT data for both QUIC streams and datagrams. As such packets are subject to
+replay attacks, applications shall carefully specify which data types and operations
+are allowed.  0-RTT data may be beneficial for use with RTP over QUIC to reduce the
+risk of media clipping, e.g., at the beginning of a conversation.
+
+This specification defines carrying RTP on top of QUIC and thus does not finally 
+define what the actual application data are going to be.  RTP typically carries 
+ephemeral media contents that is rendered and possibly recorded but otherwise
+causes no side effects. Moreover, the amount of data that can be carried as 0-RTT
+data is rather limited.  But it is the responsibility of the respective application
+to determine is 0-RTT data is permissible.
+
+> **Editor's Note:** Since the QUIC connection will often be created in the context
+> of an existing signaling relationship (e.g., using WebRTC or SIP), specific 0-RTT
+> keying material could be exchanged to prevent replays across sessions.  Within
+> the same connection, replayed media packets would be discarded as duplicates by
+> the receiver.
 
 # Security Considerations
 
