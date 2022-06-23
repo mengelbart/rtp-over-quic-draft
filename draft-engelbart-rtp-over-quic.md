@@ -399,7 +399,9 @@ real-time under the observed network conditions.
 
 This section defines two architectures for congestion control and bandwidth
 estimation for RTP over QUIC, but it does not mandate any specific congestion
-control algorithm to use.
+control algorithm to use. The section also discusses congestion control
+implications of using shared or multiple separate QUIC connections to send and
+receive multiple independent data streams.
 
 It is assumed that the congestion controller in use provides a pacing mechanism
 to determine when a packet can be sent to avoid bursts. The currently proposed
@@ -460,6 +462,22 @@ congestion control, it is RECOMMENDED to disable any other congestion control
 that is possibly running at the QUIC layer. Disabling the additional congestion
 controllers helps to avoid any interference between the different congestion
 controllers.
+
+## Shared QUIC connections
+
+Two endpoints might want to exchange more than one data stream simultaneously.
+The streams can be either RTP or any other datastream with or without real-time
+latency requirements. This usecase can be implemented in different ways. A
+straightforward solution is to establish multiple QUIC connections, one for each
+stream. In this case, the congestion controllers of the different connection
+will compete for the same ressources in the network. They might behave more or
+less fair against each other, depending on the congestion controllers in use.
+
+A more sophisticated approach multiplexes the multiple streams on a single,
+shared QUIC connection, which can be done by using the flow identifier described
+in {{encapsulation}}. Applications multiplexing multiple streams in one
+connection SHOULD implement some form of stream prioritization or bandwidth
+allocation.
 
 # API Considerations
 
