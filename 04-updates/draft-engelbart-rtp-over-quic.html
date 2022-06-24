@@ -1021,7 +1021,7 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ott &amp; Engelbart</td>
-<td class="center">Expires 25 December 2022</td>
+<td class="center">Expires 26 December 2022</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1034,12 +1034,12 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <dd class="internet-draft">draft-engelbart-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-06-23" class="published">23 June 2022</time>
+<time datetime="2022-06-24" class="published">24 June 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-12-25">25 December 2022</time></dd>
+<dd class="expires"><time datetime="2022-12-26">26 December 2022</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1088,7 +1088,7 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 25 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 26 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1192,6 +1192,9 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
                 <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="xref">10.2</a>.  <a href="#name-impact-of-connection-migrat" class="xref">Impact of Connection Migration</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="xref">10.3</a>.  <a href="#name-0-rtt-considerations" class="xref">0-RTT considerations</a></p>
 </li>
             </ul>
 </li>
@@ -1316,12 +1319,19 @@ illustrate the order and size of fields.<a href="#section-2-4" class="pilcrow">�
       <h2 id="name-scope">
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-scope" class="section-name selfRef">Scope</a>
       </h2>
-<p id="section-3-1">RTP over QUIC - defines an "application usage" of QUIC (that can benefit from
-some extensions to QUIC implementations and certain features but does not depend
-on them). This document defines an encapsulation and considers interworking with
-RTP/UDP or RTP/DTLS or SRTP/UDP.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The definition of new media transport protocols is up to the MOQ WG.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">The definition of protocols for metadata exchange needs to happen elsewhere.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-1">RTP over QUIC mostly defines an application usage of QUIC <span>[<a href="#I-D.draft-ietf-quic-applicability" class="xref">I-D.draft-ietf-quic-applicability</a>]</span>.
+As a baseline, the specification does not expect more than a standard QUIC implementation
+as defined in <span>[<a href="#RFC8999" class="xref">RFC8999</a>]</span>, <span>[<a href="#RFC9000" class="xref">RFC9000</a>]</span>, <span>[<a href="#RFC9001" class="xref">RFC9001</a>]</span>, and <span>[<a href="#RFC9002" class="xref">RFC9002</a>]</span>.
+Nevertheless, the specification can benefit from QUIC extesions such as QUIC datagrams
+<span>[<a href="#RFC9221" class="xref">RFC9221</a>]</span> as described below.
+Moreover, this document describes how a QUIC implementation and its API can be
+extended to improve efficiency of the protocol operation.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">On top of QUIC, this document defines an encapsulation of RTP and RTCP packets.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The scope of this document is limited to carrying RTP over QUIC. It does not attempt
+to enhance QUIC for real-time media or define a replacement or evolution of RTP.
+Such new media transport protocols may be covered elsewhere, e.g., in the MOQ WG.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">Protocols for negotiating connection setup and the associated parameters are defined
+separately, e.g., in <span>[<a href="#I-D.draft-dawkins-avtcore-sdp-rtp-quic" class="xref">I-D.draft-dawkins-avtcore-sdp-rtp-quic</a>]</span>.<a href="#section-3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="protocol-overview">
@@ -1367,21 +1377,23 @@ RTCP stream.<a href="#section-4-3" class="pilcrow">¶</a></p>
       </h2>
 <p id="section-5-1">QUIC requires the use of ALPN <span>[<a href="#RFC7301" class="xref">RFC7301</a>]</span> tokens during connection setup. RTP
 over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
-<a href="#iana-considerations" class="xref">Section 12</a>.
-Use of different RTP profiles does not require separate versions of ALPN tokens
-since they can be mixed on the same connection.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<a href="#iana-considerations" class="xref">Section 12</a>.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">Note that the use of a given RTP profile is not reflected in the ALPN token even
+though it could be considered part of the application usage.  This is simply
+because different RTP sessions, which may use different RTP profiles, may be
+carried within the same QUIC connection.<a href="#section-5-2" class="pilcrow">¶</a></p>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-5-2.1">
-          <p id="section-5-2.1.1"><strong>Editor's note:</strong> "rtp-mux-quic" indicates that RTP and other protocols may
+<li class="normal ulEmpty" id="section-5-3.1">
+          <p id="section-5-3.1.1"><strong>Editor's note:</strong> "rtp-mux-quic" indicates that RTP and other protocols may
 be multiplexed on the same QUIC connection using a flow identifier as
 described in <a href="#encapsulation" class="xref">Section 6</a>. Applications are responsible for negotiation
-of protocols in use by appropriate use of a signaling protocol such as SDP.<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
+of protocols in use by appropriate use of a signaling protocol such as SDP.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <ul class="normal ulEmpty">
-<li class="normal ulEmpty" id="section-5-3.1">
-          <p id="section-5-3.1.1"><strong>Editor's note:</strong> This implies that applications cannot use RTP over QUIC as
-specified in this document over WebTransport.<a href="#section-5-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal ulEmpty" id="section-5-4.1">
+          <p id="section-5-4.1.1"><strong>Editor's note:</strong> This implies that applications cannot use RTP over QUIC as
+specified in this document over WebTransport.<a href="#section-5-4.1.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <div id="draft-version-identification">
@@ -1459,6 +1471,10 @@ identifiers.<a href="#section-6-7" class="pilcrow">¶</a></p>
 <p id="section-6-8">Differentiating RTP/RTCP packets of different RTP sessions from non-RTP/RTCP
 datagrams is the responsibility of the application by means of appropriate use
 of flow identifiers and the corresponding signaling.<a href="#section-6-8" class="pilcrow">¶</a></p>
+<p id="section-6-9">This specification defines two ways of carrying RTP packets in QUIC: 1) using
+reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs.  Every RTP session
+MUST choose exactly one way of carrying RTP and RTCP packets, different RTP
+sessions MAY choose different ways.<a href="#section-6-9" class="pilcrow">¶</a></p>
 <div id="quic-streams">
 <section id="section-6.1">
         <h3 id="name-quic-streams">
@@ -1485,6 +1501,14 @@ is worth the additional overhead only to reduce the number of streams.
 Moreover, putting multiple ADUs into a single stream would also require
 defining policies when to use the same (and which) stream and when to open a
 new one.<a href="#section-6.1-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-6.1-4.1">
+            <p id="section-6.1-4.1.1"><strong>Editor's Note:</strong> Note, however, that using a single frame per stream in a single RTP packet may
+cause interworking issues when a translator wants to forward packets received
+via RTP-over-QUIC to an endpoint as UDP packets because the received ADUs may
+exceed the MTU size or even maximum UDP packet size.<a href="#section-6.1-4.1.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1777,16 +1801,17 @@ controllers.<a href="#section-8.2-2" class="pilcrow">¶</a></p>
         <h3 id="name-shared-quic-connections">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-shared-quic-connections" class="section-name selfRef">Shared QUIC connections</a>
         </h3>
-<p id="section-8.3-1">Two endpoints might want to exchange more than one data stream simultaneously.
-The streams can be either RTP or any other datastream with or without real-time
-latency requirements. This usecase can be implemented in different ways. A
-straightforward solution is to establish multiple QUIC connections, one for each
-stream. In this case, the congestion controllers of the different connection
-will compete for the same ressources in the network. They might behave more or
-less fair against each other, depending on the congestion controllers in use.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
-<p id="section-8.3-2">A more sophisticated approach multiplexes the multiple streams on a single,
+<p id="section-8.3-1">Two endpoints may want to establish channels to exchange more than one type of data simultaneously.
+The channels can be intended to carry real-time RTP data or other non-real-time data.
+This can be realized in different ways.  A straightforward solution is to establish multiple QUIC
+connections, one for each channel.  Or all real-time channels are mapped to one QUIC
+connection, while a separate QUIC connection is created for the non-real-time channels.
+In both cases, the congestion controllers can be chosen to match the demands of the respective
+channels and the different QUIC connections will compete for the same resources in the network.
+No local prioritization of data across the different (types of) channels would be necessary.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">Alternatively, (all or a subset of) real-time and non-real-time channels are multiplexed onto a single,
 shared QUIC connection, which can be done by using the flow identifier described
-in <a href="#encapsulation" class="xref">Section 6</a>. Applications multiplexing multiple streams in one
+in <a href="#encapsulation" class="xref">Section 6</a>.  Applications multiplexing multiple streams in one
 connection SHOULD implement some form of stream prioritization or bandwidth
 allocation.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 </section>
@@ -1903,7 +1928,54 @@ incompatible flow identifiers.<a href="#section-10.1-1" class="pilcrow">¶</a></
 <section id="section-10.2">
         <h3 id="name-impact-of-connection-migrat">
 <a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-impact-of-connection-migrat" class="section-name selfRef">Impact of Connection Migration</a>
-      </h3>
+        </h3>
+<p id="section-10.2-1">RTP sessions are characterized by a continuous flow of packets into either or
+both directions.  A connection migration may lead to pausing media
+transmission until reachability of the peer under the new address is validated.
+This may lead to short breaks in media delivery in the order of RTT and, if
+RTCP is used for RTT measurements, may cause spikes in observed delays.
+Application layer congestion control mechanisms (and also packet repair schemes
+such as retransmissions) need to be prepared to cope with such spikes.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">If a QUIC connection is established via a signaling channel, this signaling
+may have involved Interactive Connectivity Establishment (ICE) exchanges to
+determine and choose suitable (IP address, port number) pairs for the QUIC
+connection.  Subsequent address change events may be noticed by QUIC via its
+connection migration handling and/or at the ICE or other application layer,
+e.g., by noticing changing IP addresses at the network interface.  This may
+imply that the two signaling and data "layers" get (temporarily) out of sync.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-10.2-3.1">
+            <p id="section-10.2-3.1.1"><strong>Editor's Note:</strong> It may be desirable that the API provides an indication
+of connection migration event for either case.<a href="#section-10.2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="rtt-considerations">
+<section id="section-10.3">
+        <h3 id="name-0-rtt-considerations">
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-0-rtt-considerations" class="section-name selfRef">0-RTT considerations</a>
+        </h3>
+<p id="section-10.3-1">For repeated connections between peers, the initiator of a QUIC connection can
+use 0-RTT data for both QUIC streams and datagrams. As such packets are subject to
+replay attacks, applications shall carefully specify which data types and operations
+are allowed.  0-RTT data may be beneficial for use with RTP over QUIC to reduce the
+risk of media clipping, e.g., at the beginning of a conversation.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.3-2">This specification defines carrying RTP on top of QUIC and thus does not finally
+define what the actual application data are going to be.  RTP typically carries
+ephemeral media contents that is rendered and possibly recorded but otherwise
+causes no side effects. Moreover, the amount of data that can be carried as 0-RTT
+data is rather limited.  But it is the responsibility of the respective application
+to determine if 0-RTT data is permissible.<a href="#section-10.3-2" class="pilcrow">¶</a></p>
+<ul class="normal ulEmpty">
+<li class="normal ulEmpty" id="section-10.3-3.1">
+            <p id="section-10.3-3.1.1"><strong>Editor's Note:</strong> Since the QUIC connection will often be created in the context
+of an existing signaling relationship (e.g., using WebRTC or SIP), specific 0-RTT
+keying material could be exchanged to prevent replays across sessions.  Within
+the same connection, replayed media packets would be discarded as duplicates by
+the receiver.<a href="#section-10.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 </section>
@@ -2020,6 +2092,10 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
         <dd>
 <span class="refAuthor">Sarker, Z.</span>, <span class="refAuthor">Perkins, C.</span>, <span class="refAuthor">Singh, V.</span>, and <span class="refAuthor">M. Ramalho</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Feedback for Congestion Control"</span>, <span class="seriesInfo">RFC 8888</span>, <span class="seriesInfo">DOI 10.17487/RFC8888</span>, <time datetime="2021-01" class="refDate">January 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8888">https://www.rfc-editor.org/rfc/rfc8888</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8999">[RFC8999]</dt>
+        <dd>
+<span class="refAuthor">Thomson, M.</span>, <span class="refTitle">"Version-Independent Properties of QUIC"</span>, <span class="seriesInfo">RFC 8999</span>, <span class="seriesInfo">DOI 10.17487/RFC8999</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8999">https://www.rfc-editor.org/rfc/rfc8999</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC9000">[RFC9000]</dt>
         <dd>
 <span class="refAuthor">Iyengar, J., Ed.</span> and <span class="refAuthor">M. Thomson, Ed.</span>, <span class="refTitle">"QUIC: A UDP-Based Multiplexed and Secure Transport"</span>, <span class="seriesInfo">RFC 9000</span>, <span class="seriesInfo">DOI 10.17487/RFC9000</span>, <time datetime="2021-05" class="refDate">May 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9000">https://www.rfc-editor.org/rfc/rfc9000</a>&gt;</span>. </dd>
@@ -2058,6 +2134,10 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 <dt id="I-D.draft-ietf-masque-h3-datagram">[I-D.draft-ietf-masque-h3-datagram]</dt>
         <dd>
 <span class="refAuthor">Schinazi, D.</span> and <span class="refAuthor">L. Pardue</span>, <span class="refTitle">"HTTP Datagrams and the Capsule Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-masque-h3-datagram-11</span>, <time datetime="2022-06-17" class="refDate">17 June 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11">https://datatracker.ietf.org/doc/html/draft-ietf-masque-h3-datagram-11</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ietf-quic-applicability">[I-D.draft-ietf-quic-applicability]</dt>
+        <dd>
+<span class="refAuthor">Kuehlewind, M.</span> and <span class="refAuthor">B. Trammell</span>, <span class="refTitle">"Applicability of the QUIC Transport Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-applicability-16</span>, <time datetime="2022-04-06" class="refDate">6 April 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-16">https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-16</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4571">[RFC4571]</dt>
         <dd>
