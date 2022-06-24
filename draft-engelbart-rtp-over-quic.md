@@ -262,7 +262,7 @@ transmitted, is no longer needed, either side can close the stream.
 > defining policies when to use the same (and which) stream and when to open a
 > new one.
 
-> **Editor's Note:** Note, however, that using a single frame per stream in a single RTP packet may 
+> **Editor's Note:** Note, however, that using a single frame per stream in a single RTP packet may
 > cause interworking issues when a translator wants to forward packets received
 > via RTP-over-QUIC to an endpoint as UDP packets because the received ADUs may
 > exceed the MTU size or even maximum UDP packet size.
@@ -496,7 +496,7 @@ controllers.
 ## Shared QUIC connections
 
 Two endpoints may want to establish channels to exchange more than one type of data simultaneously.
-The channels can be intended carry real-time RTP data or other non-real-time data.
+The channels can be intended to carry real-time RTP data or other non-real-time data.
 This can be realized in different ways.  A straightforward solution is to establish multiple QUIC
 connections, one for each channel.  Or all real-time channels are mapped to one QUIC
 connection, while a separate QUIC connection is created for the non-real-time channels.
@@ -583,7 +583,7 @@ incompatible flow identifiers.
 ## Impact of Connection Migration
 
 RTP sessions are characterized by a continuous flow of packets into either or
-both directions.  A connection migration requires may lead to pausing media
+both directions.  A connection migration may lead to pausing media
 transmission until reachability of the peer under the new address is validated.
 This may lead to short breaks in media delivery in the order of RTT and, if
 RTCP is used for RTT measurements, may cause spikes in observed delays.
@@ -609,12 +609,12 @@ replay attacks, applications shall carefully specify which data types and operat
 are allowed.  0-RTT data may be beneficial for use with RTP over QUIC to reduce the
 risk of media clipping, e.g., at the beginning of a conversation.
 
-This specification defines carrying RTP on top of QUIC and thus does not finally 
-define what the actual application data are going to be.  RTP typically carries 
+This specification defines carrying RTP on top of QUIC and thus does not finally
+define what the actual application data are going to be.  RTP typically carries
 ephemeral media contents that is rendered and possibly recorded but otherwise
 causes no side effects. Moreover, the amount of data that can be carried as 0-RTT
 data is rather limited.  But it is the responsibility of the respective application
-to determine is 0-RTT data is permissible.
+to determine if 0-RTT data is permissible.
 
 > **Editor's Note:** Since the QUIC connection will often be created in the context
 > of an existing signaling relationship (e.g., using WebRTC or SIP), specific 0-RTT
