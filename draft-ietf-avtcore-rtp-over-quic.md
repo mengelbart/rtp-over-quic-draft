@@ -240,20 +240,32 @@ sessions MAY choose different ways.
 
 ## QUIC Streams {#quic-streams}
 
-An application MUST open a new QUIC stream for each Application Data Unit (ADU).
-Each ADU MUST be encapsulated in a single RTP packet and the application MUST
-not send more than one RTP packet per stream. Opening a new stream for each
-packet adds implicit framing to RTP packets, allows to receive packets without
-strict ordering and gives an application the possibility to cancel certain
-packets.
+A sender MUST open a new unidirectional QUIC stream for each Application Data
+Unit (ADU). Each ADU MUST be encapsulated in a single RTP packet and the
+application MUST not send more than one RTP packet per stream. Unidirectional
+streams are used because there is no synchronous relationship between sent and
+received RTP packets. Once the RTP packet has been completely transmitted, the
+sender MUST gracefully close the stream. Gracefully closing the stream means
+that the QUIC implementation sends a stream frame with the FIN bit set and the
+stream enters the Data Sent state in which no new data can be sent, but
+previously sent data can still be retransmitted. Sending the FIN bit allows the
+receiving side of the stream to enter the Size Known state, which implicitly
+informs the receiver of the size of the transmitted RTP packet.
+
+If it is known to either the sender or the receiver, that a packet, which was
+not yet successfully and completely transmitted, is no longer needed, the sender
+can close the stream by sending a RESET\_STREAM or the receiver can request to
+close the stream by sending a STOP\_SENDING frame.
+
+Besides adding implicit framing to RTP packets, opening a new stream for each
+packet allows to receive packets without strict ordering and gives an
+application the possibility to cancel certain packets.
 
 Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
 that are transmitted reliably and in order, such that a receiving application
 can read a complete packet from the stream. No retransmission has to be
 implemented by the application, since QUIC frames that are lost in transit are
-retransmitted by the QUIC connection. If it is known to either the sender or the
-receiver, that a packet, which was not yet successfully and completely
-transmitted, is no longer needed, either side can close the stream.
+retransmitted by the QUIC connection.
 
 > **Editor's Note:** We considered adding a framing like the one described in
 > {{?RFC4571}} to send multiple RTP packets on one stream, but we don't think it
