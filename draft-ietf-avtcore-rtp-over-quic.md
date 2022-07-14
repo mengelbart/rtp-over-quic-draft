@@ -1,6 +1,6 @@
 ---
 title: "RTP over QUIC"
-docname: draft-engelbart-rtp-over-quic-latest
+docname: draft-ietf-avtcore-rtp-over-quic-latest
 category: std
 date: {DATE}
 
@@ -184,7 +184,7 @@ themselves using this string.
 
 Implementations of draft versions of the protocol MUST add the string "-" and
 the corresponding draft number to the identifier.  For example,
-draft-engelbart-rtp-over-quic-04 is identified using the string
+draft-ietf-avtcore-rtp-over-quic-04 is identified using the string
 "rtp-mux-quic-04".
 
 Non-compatible experiments that are based on these draft versions MUST append
