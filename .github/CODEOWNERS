@@ -1,2 +1,3 @@
-# Automatically generated CODEOWNERS file.
-draft-engelbart-rtp-over-quic.md 
+# Automatically generated CODEOWNERS
+# Regenerate with `make update-codeowners`
+draft-ietf-avtcore-rtp-over-quic.md ott@in.tum.de mathis.engelbart@gmail.com
