@@ -5,8 +5,8 @@ category: std
 date: {DATE}
 
 ipr: trust200902
-area: ART
-workgroup: AVTCORE
+area: "Applications and Real-Time"
+workgroup: "Audio/Video Transport Core Maintenance"
 keyword: Internet-Draft
 
 stand_alone: yes
