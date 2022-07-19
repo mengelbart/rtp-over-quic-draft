@@ -2,14 +2,14 @@
 
 
 
-AVTCORE                                                           J. Ott
+Audio/Video Transport Core Maintenance                            J. Ott
 Internet-Draft                                              M. Engelbart
 Intended status: Standards Track             Technical University Munich
-Expires: 26 December 2022                                   24 June 2022
+Expires: 20 January 2023                                    19 July 2022
 
 
                              RTP over QUIC
-                  draft-engelbart-rtp-over-quic-latest
+                draft-ietf-avtcore-rtp-over-quic-latest
 
 Abstract
 
@@ -21,6 +21,10 @@ Abstract
 Discussion Venues
 
    This note is to be removed before publishing as an RFC.
+
+   Discussion of this document takes place on the Audio/Video Transport
+   Core Maintenance Working Group mailing list (avt@ietf.org), which is
+   archived at https://mailarchive.ietf.org/arch/browse/avt/.
 
    Source for this draft and an issue tracker can be found at
    https://github.com/mengelbart/rtp-over-quic-draft.
@@ -40,7 +44,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 26 December 2022.
+   This Internet-Draft will expire on 20 January 2023.
 
 Copyright Notice
 
@@ -254,7 +258,7 @@ Table of Contents
 
    Implementations of draft versions of the protocol MUST add the string
    "-" and the corresponding draft number to the identifier.  For
-   example, draft-engelbart-rtp-over-quic-04 is identified using the
+   example, draft-ietf-avtcore-rtp-over-quic-04 is identified using the
    string "rtp-mux-quic-04".
 
    Non-compatible experiments that are based on these draft versions
@@ -807,9 +811,9 @@ Table of Contents
    [I-D.draft-ietf-quic-ack-frequency]
               Iyengar, J. and I. Swett, "QUIC Acknowledgement
               Frequency", Work in Progress, Internet-Draft, draft-ietf-
-              quic-ack-frequency-01, 25 October 2021,
+              quic-ack-frequency-02, 11 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              ack-frequency-01>.
+              ack-frequency-02>.
 
    [I-D.draft-smith-quic-receive-ts]
               Smith, C. and I. Swett, "QUIC Extension for Reporting
@@ -927,9 +931,9 @@ Table of Contents
    [I-D.draft-ietf-quic-applicability]
               Kuehlewind, M. and B. Trammell, "Applicability of the QUIC
               Transport Protocol", Work in Progress, Internet-Draft,
-              draft-ietf-quic-applicability-16, 6 April 2022,
+              draft-ietf-quic-applicability-18, 15 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              applicability-16>.
+              applicability-18>.
 
    [RFC4571]  Lazzaro, J., "Framing Real-time Transport Protocol (RTP)
               and RTP Control Protocol (RTCP) Packets over Connection-

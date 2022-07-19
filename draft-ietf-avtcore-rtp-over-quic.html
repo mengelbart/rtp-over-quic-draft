@@ -13,29 +13,29 @@ within QUIC. It also discusses how to leverage state from the QUIC
 implementation in the endpoints to reduce the exchange of RTCP packets and how
 to implement congestion control. 
     " name="description">
-<meta content="xml2rfc 3.12.10" name="generator">
+<meta content="xml2rfc 3.13.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
-<meta content="draft-engelbart-rtp-over-quic-latest" name="ietf.draft">
+<meta content="draft-ietf-avtcore-rtp-over-quic-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.12.10
+  xml2rfc 3.13.0
     Python 3.10.4
     appdirs 1.4.4
     ConfigArgParse 1.5.3
-    google-i18n-address 2.5.1
+    google-i18n-address 2.5.2
     html5lib 1.1
     intervaltree 3.1.0
-    Jinja2 2.11.3
+    Jinja2 3.1.2
     kitchen 1.2.6
-    lxml 4.8.0
-    MarkupSafe 2.0.1
-    pycountry 20.7.3
+    lxml 4.9.1
+    MarkupSafe 2.1.1
+    pycountry 22.3.5
     pyflakes 2.4.0
     PyYAML 6.0
     requests 2.27.1
     setuptools 59.4.0
     six 1.16.0
 -->
-<link href="draft-engelbart-rtp-over-quic.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-ietf-avtcore-rtp-over-quic.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -157,6 +157,14 @@ to implement congestion control.
   font-weight: 700;
   font-display: swap;
   src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -340,7 +348,7 @@ ol, ul {
   padding: 0;
   margin: 0 0 0.5em 2em;
 }
-ol ol, ul ul, ol ul, ul ol {
+:is(ol, ul) :is(ol, ul) {
   margin-left: 1em;
 }
 li {
@@ -355,8 +363,7 @@ ul.empty, .ulEmpty {
 ul.empty li, .ulEmpty li {
   margin-top: 0.5em;
 }
-ul.compact, .ulCompact,
-ol.compact, .olCompact {
+:is(ul, ol).compact, .ulCompact, .olCompact {
   line-height: 100%;
   margin: 0 0 0 2em;
 }
@@ -372,7 +379,7 @@ dl > dd {
   margin-bottom: .8em;
   min-height: 1.3em;
 }
-dl.compact > dd, .dlCompact > dd {
+:is(dl.compact, .dlCompact) > dd {
   margin-bottom: 0em;
 }
 dl > dd > dl {
@@ -414,6 +421,9 @@ tt, code {
      remove leading to avoid altering the final height of lines */
   line-height: 0;
 }
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
 pre {
   border: 1px solid var(--line-color);
   font-size: 13.5px;
@@ -438,6 +448,19 @@ figcaption, caption {
   text-align: left;
 }
 @media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
   pre, svg {
     display: inline-block;
     overflow-x: auto;
@@ -453,7 +476,7 @@ figcaption, caption {
     display: block;
     width: calc(100% - 25px);
   }
-  pre + .pilcrow, svg + .pilcrow {
+  :is(pre, svg) + .pilcrow {
     display: inline-block;
     vertical-align: text-bottom;
     padding-bottom: 8px;
@@ -502,17 +525,11 @@ th, td {
 th {
   background-color: var(--line-color);
 }
-tr:nth-child(2n) > td {
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
   background-color: var(--background-color);
 }
-tr:nth-child(2n+1) > td {
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
   background-color: var(--highlight-color);
-}
-thead+tbody > tr:nth-child(2n) > td {
-  background-color: var(--highlight-color);
-}
-thead+tbody > tr:nth-child(2n+1) > td {
-  background-color: var(--background-color);
 }
 table caption {
   margin: 0;
@@ -552,8 +569,9 @@ hr {
 }
 .bcp14 {
   font-variant: small-caps;
+  font-weight: 600;
+  font-size: 14.5px;
 }
-
 .role {
   font-variant: all-small-caps;
 }
@@ -792,7 +810,7 @@ hr.addr {
     margin: 0 0 0 4px;
     font-size: var(--small-font-size);
   }
-  #toc ul p, #toc ul li {
+  #toc ul :is(p, li) {
     margin: 2px 0;
     line-height: 22px;
   }
@@ -902,13 +920,13 @@ dl.dlNewline > dt {
 }
 
 /* Provide styling for table cell text alignment */
-table .text-left, table .text-left {
+table .text-left {
   text-align: left;
 }
-table .text-center, table .text-center {
+table .text-center {
   text-align: center;
 }
-table .text-right, table .text-right {
+table .text-right {
   text-align: right;
 }
 
@@ -975,12 +993,6 @@ address div.right {
   }
 
 }
-/* Tweak the bcp14 keyword presentation */
-.bcp14 {
-  font-variant: small-caps;
-  font-weight: bold;
-  font-size: 0.9em;
-}
 
 /* Dark mode. */
 @media (prefers-color-scheme: dark) {
@@ -995,19 +1007,20 @@ address div.right {
   --pilcrow-strong: #666;
   scrollbar-color: #777 #333;
 }
-/* Trick: a prefix match works because only black and white are allowed */
-svg [stroke="black"], svg [stroke^="#000"] {
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
   stroke: var(--text-color);
 }
-svg [stroke="white"], svg [stroke^="#fff"] {
+svg :is([stroke="white"], [stroke^="#fff"]) {
   stroke: var(--background-color);
 }
-svg [fill="black"], svg [fill^="#000"], svg :not([fill]) {
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
   fill: var(--text-color);
 }
-svg [stroke="fill"], svg [fill^="#fff"] {
+svg :is([stroke="fill"], [fill^="#fff"]) {
   fill: var(--background-color);
-}
 }
 </style>
 
@@ -1017,11 +1030,11 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RTP over QUIC</td>
-<td class="right">June 2022</td>
+<td class="right">July 2022</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ott &amp; Engelbart</td>
-<td class="center">Expires 26 December 2022</td>
+<td class="center">Expires 20 January 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1029,17 +1042,17 @@ svg [stroke="fill"], svg [fill^="#fff"] {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">AVTCORE</dd>
+<dd class="workgroup">Audio/Video Transport Core Maintenance</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-engelbart-rtp-over-quic-latest</dd>
+<dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-06-24" class="published">24 June 2022</time>
+<time datetime="2022-07-19" class="published">19 July 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Standards Track</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2022-12-26">26 December 2022</time></dd>
+<dd class="expires"><time datetime="2023-01-20">20 January 2023</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1066,8 +1079,11 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
 <a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
-<p id="section-note.1-2">Source for this draft and an issue tracker can be found at
-  <span><a href="https://github.com/mengelbart/rtp-over-quic-draft">https://github.com/mengelbart/rtp-over-quic-draft</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the
+    Audio/Video Transport Core Maintenance Working Group mailing list (avt@ietf.org),
+    which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/avt/">https://mailarchive.ietf.org/arch/browse/avt/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/mengelbart/rtp-over-quic-draft">https://github.com/mengelbart/rtp-over-quic-draft</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1088,7 +1104,7 @@ to implement congestion control.<a href="#section-abstract-1" class="pilcrow">¶
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 26 December 2022.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 January 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1413,7 +1429,7 @@ final version of this document.<a href="#section-5.1-1.1.1" class="pilcrow">¶</
 themselves using this string.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
 <p id="section-5.1-4">Implementations of draft versions of the protocol MUST add the string "-" and
 the corresponding draft number to the identifier.  For example,
-draft-engelbart-rtp-over-quic-04 is identified using the string
+draft-ietf-avtcore-rtp-over-quic-04 is identified using the string
 "rtp-mux-quic-04".<a href="#section-5.1-4" class="pilcrow">¶</a></p>
 <p id="section-5.1-5">Non-compatible experiments that are based on these draft versions MUST append
 the string "-" and an experiment name to the identifier.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
@@ -2042,7 +2058,7 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-ack-frequency">[I-D.draft-ietf-quic-ack-frequency]</dt>
         <dd>
-<span class="refAuthor">Iyengar, J.</span> and <span class="refAuthor">I. Swett</span>, <span class="refTitle">"QUIC Acknowledgement Frequency"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-ack-frequency-01</span>, <time datetime="2021-10-25" class="refDate">25 October 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-01">https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-01</a>&gt;</span>. </dd>
+<span class="refAuthor">Iyengar, J.</span> and <span class="refAuthor">I. Swett</span>, <span class="refTitle">"QUIC Acknowledgement Frequency"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-ack-frequency-02</span>, <time datetime="2022-07-11" class="refDate">11 July 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-02">https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-smith-quic-receive-ts">[I-D.draft-smith-quic-receive-ts]</dt>
         <dd>
@@ -2137,7 +2153,7 @@ in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-applicability">[I-D.draft-ietf-quic-applicability]</dt>
         <dd>
-<span class="refAuthor">Kuehlewind, M.</span> and <span class="refAuthor">B. Trammell</span>, <span class="refTitle">"Applicability of the QUIC Transport Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-applicability-16</span>, <time datetime="2022-04-06" class="refDate">6 April 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-16">https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-16</a>&gt;</span>. </dd>
+<span class="refAuthor">Kuehlewind, M.</span> and <span class="refAuthor">B. Trammell</span>, <span class="refTitle">"Applicability of the QUIC Transport Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-applicability-18</span>, <time datetime="2022-07-15" class="refDate">15 July 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-18">https://datatracker.ietf.org/doc/html/draft-ietf-quic-applicability-18</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC4571">[RFC4571]</dt>
         <dd>
