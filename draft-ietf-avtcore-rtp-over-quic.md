@@ -276,10 +276,12 @@ an additional framing. Senders SHOULD consider the header overhead associated
 with QUIC datagrams and ensure that the RTP/RTCP packets, including their
 payloads, QUIC, and IP headers, will fit into path MTU.
 
-If an application wishes to retransmit lost RTP packets, the retransmission has
-to be implemented by the application by sending a new datagram for the RTP
-packet, because QUIC datagrams are not retransmitted on loss (see also
-{{transport-layer-feedback}} for loss signaling).
+Since QUIC datagrams are not retransmitted on loss (see also
+{{transport-layer-feedback}} for loss signaling), if an application wishes to
+retransmit lost RTP packets, the retransmission has to be implemented by the
+application. RTP retransmissions can be done in the same RTP session or a
+separate RTP session {{!RFC4588}} and the flow identifier MUST be set to the
+flow identifier of the RTP session in which the retransmission happens.
 
 # RTCP {#rtcp}
 
