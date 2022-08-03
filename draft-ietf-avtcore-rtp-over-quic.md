@@ -439,9 +439,6 @@ congestion control algorithms for real-time communications provide such pacing
 mechanisms. The use of congestion controllers which don't provide a pacing
 mechanism is out of scope of this document.
 
-> **TODO:** Add considerations for bandwidth shares when a QUIC connection is
-> shared between RTP and non-RTP streams?
-
 ## Congestion Control at the QUIC layer {#cc-quic-layer}
 
 If congestion control is to be applied at the transport layer, it is RECOMMENDED
