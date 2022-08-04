@@ -460,11 +460,6 @@ an alternative bandwidth estimation at the application layer as described in
 {{cc-application-layer}} or a receiver can feedback the observed bandwidth
 through RTCP, e.g., using {{?I-D.draft-alvestrand-rmcat-remb}}.
 
-> **Editor's note:** An alternative to the hard requirement to use a timestamp
-> extension could be to use RTCP, but that would mean, that an application has
-> to negotiate RTCP congestion control feedback which would then have to be
-> passed to the QUIC congestion controller.
-
 > **Editor's note:** How can a QUIC connection be shared with non-RTP streams,
 > when SCReAM/NADA/GCC is used as congestion controller? Can these algorithms be
 > adapted to allow different streams including non-real-time streams? Do they
