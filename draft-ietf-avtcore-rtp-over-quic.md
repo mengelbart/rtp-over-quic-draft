@@ -267,6 +267,14 @@ can read a complete packet from the stream. No retransmission has to be
 implemented by the application, since QUIC frames that are lost in transit are
 retransmitted by the QUIC connection.
 
+Opening new streams for each ADU implicitly limits the amount of ADUS which are
+concurrently in transit. The number of ADUs which have to be transmitted
+concurrently depends on a number of factors such as the number of RTP sessions
+within a QUIC connection, the rate at which new ADUs are produced and the
+maximum acceptable transmission delay of a given ADU. Receivers are responsible
+for providing senders with enough credit to open new streams for new ADUs at any
+time.
+
 > **Editor's Note:** We considered adding a framing like the one described in
 > {{?RFC4571}} to send multiple RTP packets on one stream, but we don't think it
 > is worth the additional overhead only to reduce the number of streams.
