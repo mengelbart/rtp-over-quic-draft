@@ -456,14 +456,16 @@ mechanism is out of scope of this document.
 ## Congestion Control at the QUIC layer {#cc-quic-layer}
 
 If congestion control is to be applied at the transport layer, it is RECOMMENDED
-to configure the QUIC Implementation to use a delay-based real-time congestion
-control algorithm instead of a loss-based algorithm. The currently available
-delay-based congestion control algorithms depend on detailed arrival time
-feedback to estimate the current one-way delay between sender and receiver.
-Since QUIC does not provide arrival timestamps in its acknowledgments, the QUIC
-implementations of the sender and receiver MUST use an extension to add this
+that the QUIC Implementation uses a congestion controller that keeps queueing
+delays short to keep the transmission latency for RTP and RTCP packets as low
+as possible.
+
+Many low latency congestion control algorithms depend on detailed arrival time
+feedback to estimate the current one-way delay between sender and receiver. QUIC
+does not provide arrival timestamps in its acknowledgments. The QUIC
+implementations of the sender and receiver can use an extension to add this
 information to QUICs acknowledgment frames, e.g.
-{{!I-D.draft-smith-quic-receive-ts}}.
+{{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}.
 
 If congestion control is done by the QUIC implementation, the application needs
 a mechanism to query the currently available bandwidth to adapt media codec
