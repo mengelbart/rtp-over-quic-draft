@@ -569,7 +569,8 @@ previous sections of this document.
   must be able to choose an appropriate congestion control algorithm.
 * *Disable Congestion Controller*: If congestion control is to be implemented at
   the application layer as described in {{cc-application-layer}}, and the
-  application layer is trusted to apply adequate congestion control, it is
+  application layer is trusted to apply adequate congestion control as described
+  in {{Section 7 of !RFC9002}} and {{Section 3.1 of !RFC8085}}, it is
   RECOMMENDEDto allow the application to disable QUIC layer congestion control
   entirely.
 
