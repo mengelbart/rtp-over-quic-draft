@@ -536,6 +536,11 @@ implementation exports the listed items to the application.
 * *Arrival timestamps*: If the QUIC connection uses a timestamp extension like
   {{I-D.draft-smith-quic-receive-ts}} or {{I-D.draft-huitema-quic-ts}}, the
   arrival timestamps or one-way delays SHOULD be exposed to the application.
+* *Bandwidth Estimation*: If congestion control is done at the transport layer
+  in the QUIC implementation, the QUIC implementation SHOULD expose an
+  estimation of the currently available bandwidth to the application. Exposing
+  the bandwidth estimation avoids the implementation of an additional bandwidth
+  estimation algorithm in the application.
 * *ECN*: If ECN marks are available, they SHOULD be exposed to the application.
 
 ## Functions to be exposed by QUIC {#quic-api-write}
