@@ -574,9 +574,10 @@ previous sections of this document.
 * *Cancel Streams*: To allow an application to cancel (re)transmission of
   packets that are no longer needed, the QUIC implementation MUST expose a way
   to cancel the corresponding QUIC streams.
-* *Select Congestion Controller*: If congestion control is to be implemented at
-  the QUIC connection layer as described in {{cc-quic-layer}}, the application
-  must be able to choose an appropriate congestion control algorithm.
+* *Configure Congestion Controller*: If congestion control is to be implemented
+  at the QUIC connection layer as described in {{cc-quic-layer}}, the QUIC
+  implementation SHOULD expose an API to allow the application to configure the
+  specifics of the congestion controller.
 * *Disable Congestion Controller*: If congestion control is to be implemented at
   the application layer as described in {{cc-application-layer}}, and the
   application layer is trusted to apply adequate congestion control as described
