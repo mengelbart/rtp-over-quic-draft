@@ -152,6 +152,24 @@ metrics can be used to generate the required feedback at the sender-side and
 provide it to the congestion controller to avoid the additional overhead of the
 RTCP stream.
 
+## Supported RTP Topologies {#topologies}
+
+RTP over QUIC only supports some of the RTP topologies described in
+{{?RFC7667}}. Most notably, due to QUIC being a purely unicast protocol at the
+time of writing, RTP over QUIC cannot be used as a transport protocol in any of
+the multicast topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
+
+RTP supports different types of translators and mixers. Whenever a middlebox
+such as a translator or a mixer needs to access the content of RTP/RTCP-packets,
+the QUIC connection has to be terminated at that middlebox.
+
+Using RTP over QUIC streams (see {{quic-streams}}) can support much larger RTP
+packet sizes than other transport protocols such as UDP can, which can lead to
+problems with translators which translate from RTP over QUIC to a RTP over a
+different transport protocol. To support forwarding RTP packets from QUIC
+streams to the other transport protocol, the translator either may need to
+rewrite the RTP packets to fit into the smaller MTU of the other protocol.
+
 # Connection Establishment and ALPN
 
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
