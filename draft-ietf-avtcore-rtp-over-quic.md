@@ -165,10 +165,12 @@ the QUIC connection has to be terminated at that middlebox.
 
 Using RTP over QUIC streams (see {{quic-streams}}) can support much larger RTP
 packet sizes than other transport protocols such as UDP can, which can lead to
-problems with translators which translate from RTP over QUIC to a RTP over a
+problems with transport translators which translate from RTP over QUIC to RTP over a
 different transport protocol. To support forwarding RTP packets from QUIC
-streams to the other transport protocol, the translator either may need to
-rewrite the RTP packets to fit into the smaller MTU of the other protocol.
+streams to the other transport protocol, the translator may need to
+rewrite the RTP packets to fit into the smaller MTU of the other protocol. Such
+a translator may need codec-specific knowledge to packetize the payload of the
+incoming RTP packets in smaller RTP packets.
 
 # Connection Establishment and ALPN
 
@@ -293,6 +295,10 @@ RTP/RTCP Packet:
 If it is known to either the sender, that a packet, which was not yet
 successfully and completely transmitted, is no longer needed, the sender MAY
 close the stream by sending a RESET\_STREAM frame.
+
+A translators that translates between two endpoints, which are both connected
+via QUIC, MUST forward RESET\_STREAM frames received from one end to the other
+end, unless it is forwarding the RTP packets on QUIC datagrams.
 
 > **Editor's Note:** It might be desired to also allow the receiver to request
 > cancellation of a stream by sending STOP\_SENDING frame. However, this might
