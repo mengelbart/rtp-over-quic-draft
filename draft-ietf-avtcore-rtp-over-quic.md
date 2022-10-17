@@ -234,9 +234,9 @@ datagrams is the responsibility of the application by means of appropriate use
 of flow identifiers and the corresponding signaling.
 
 This specification defines two ways of carrying RTP packets in QUIC: 1) using
-reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs.  Every RTP session
-MUST choose exactly one way of carrying RTP and RTCP packets, different RTP
-sessions MAY choose different ways.
+reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs. Senders MAY
+combine both modes by sending some RTP/RTCP packets over the same or different
+QUIC streams and others in QUIC datagrams.
 
 ## QUIC Streams {#quic-streams}
 
