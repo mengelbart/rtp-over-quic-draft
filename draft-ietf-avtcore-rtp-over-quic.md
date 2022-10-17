@@ -193,33 +193,15 @@ the string "-" and an experiment name to the identifier.
 # Encapsulation {#encapsulation}
 
 QUIC supports two transport methods: reliable streams {{!RFC9000}} and
-unreliable datagrams {{!RFC9221}}. This document specifies a mapping of RTP to
-both of the transport modes. The encapsulation format for RTP over QUIC is
-described in {{fig-payload}}.
+unreliable datagrams {{!RFC9221}}. This document specifies mappings of RTP to
+both of the transport modes.
 
 {{quic-streams}} and {{quic-datagrams}} explain the specifics of mapping of RTP
 to QUIC streams and QUIC datagrams respectively.
 
-~~~
-Payload {
-  Flow Identifier (i),
-  RTP/RTCP Packet (..)
-}
-~~~
-{: #fig-payload title="RTP over QUIC Payload Format"}
-
-Flow Identifier:
-
-: Flow identifier to demultiplex different data flows on the same QUIC
-connection.
-
-RTP/RTCP Packet:
-
-: The RTP/RTCP packet to transmit.
-
-For multiplexing different RTP and other data streams on the same QUIC
-connection, each RTP/RTCP packet is prefixed with a flow identifier. A flow
-identifier is a QUIC variable-length integer which must be unique per stream.
+For multiplexing different RTP/RTCP and other data streams on the same QUIC
+connection, RTP over QUIC uses a QUIC variable-length integer {{Section 16 of
+!RFC9000}} as flow identifier.
 
 RTP and RTCP packets of a single RTP session MAY be sent using the same flow
 identifier (following the procedures defined in {{!RFC5761}}, or they MAY be
@@ -240,26 +222,59 @@ QUIC streams and others in QUIC datagrams.
 
 ## QUIC Streams {#quic-streams}
 
-A sender MUST open a new unidirectional QUIC stream for each Application Data
-Unit (ADU). Each ADU MUST be encapsulated in a single RTP packet and the
-application MUST not send more than one RTP packet per stream. Unidirectional
-streams are used because there is no synchronous relationship between sent and
-received RTP packets. Once the RTP packet has been completely transmitted, the
-sender MUST gracefully close the stream. Gracefully closing the stream means
-that the QUIC implementation sends a stream frame with the FIN bit set and the
-stream enters the Data Sent state in which no new data can be sent, but
-previously sent data can still be retransmitted. Sending the FIN bit allows the
-receiving side of the stream to enter the Size Known state, which implicitly
-informs the receiver of the size of the transmitted RTP packet.
+To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
+unidirectional QUIC stream. Unidirectional streams are used because there is no
+synchronous relationship between sent and received RTP/RTCP packets.
 
-If it is known to either the sender or the receiver, that a packet, which was
-not yet successfully and completely transmitted, is no longer needed, the sender
-can close the stream by sending a RESET\_STREAM or the receiver can request to
-close the stream by sending a STOP\_SENDING frame.
+The encapsulation format for RTP over QUIC Streams is described in
+{{fig-stream-payload}}.
 
-Besides adding implicit framing to RTP packets, opening a new stream for each
-packet allows to receive packets without strict ordering and gives an
-application the possibility to cancel certain packets.
+~~~
+Payload {
+  Flow Identifier (i),
+  RTP/RTCP Payload(..) ...,
+}
+~~~
+{: #fig-stream-payload title="RTP over QUIC Streams Payload Format"}
+
+Flow Identifier:
+
+: Flow identifier to demultiplex different data flows on the same QUIC
+connection.
+
+RTP/RTCP Payload:
+
+: Contains the RTP/RTCP payload; see {{fig-rtp-stream-payload}}
+
+The payload in a QUIC stream starts with the flow identifier and is followed by
+one or more RTP/RTCP payloads. All packets sent on a stream MUST belong to the
+RTP session with the same flow identifier. A sender MAY open new QUIC streams
+for different packets using the same flow identifier, for example to avoid
+head-of-line blocking.
+
+Each payload begins with a length field indicating the length of the RTP/RTCP
+packet and is followed by the packet itself, see {{fig-rtp-stream-payload}}.
+
+~~~
+RTP/RTCP Payload {
+  Length(i),
+  RTP/RTCP Packet(..),
+}
+~~~
+{: #fig-rtp-stream-payload title="RTP/RTCP payload for QUIC streams"}
+
+Length:
+
+: A QUIC variable length integer {{Section 16 of !RFC9000}} describing the
+length of the following RTP/RTCP packets in bytes.
+
+RTP/RTCP Packet:
+
+: The RTP/RTCP packet to transmit.
+
+If it is known to either the sender, that a packet, which was not yet
+successfully and completely transmitted, is no longer needed, the sender MAY
+close the stream by sending a RESET\_STREAM frame.
 
 Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
 that are transmitted reliably and in order, such that a receiving application
@@ -267,25 +282,13 @@ can read a complete packet from the stream. No retransmission has to be
 implemented by the application, since QUIC frames that are lost in transit are
 retransmitted by the QUIC connection.
 
-Opening new streams for each ADU implicitly limits the amount of ADUS which are
-concurrently in transit. The number of ADUs which have to be transmitted
-concurrently depends on a number of factors such as the number of RTP sessions
-within a QUIC connection, the rate at which new ADUs are produced and the
-maximum acceptable transmission delay of a given ADU. Receivers are responsible
-for providing senders with enough credit to open new streams for new ADUs at any
-time.
-
-> **Editor's Note:** We considered adding a framing like the one described in
-> {{?RFC4571}} to send multiple RTP packets on one stream, but we don't think it
-> is worth the additional overhead only to reduce the number of streams.
-> Moreover, putting multiple ADUs into a single stream would also require
-> defining policies when to use the same (and which) stream and when to open a
-> new one.
-
-> **Editor's Note:** Note, however, that using a single frame per stream in a single RTP packet may
-> cause interworking issues when a translator wants to forward packets received
-> via RTP-over-QUIC to an endpoint as UDP packets because the received ADUs may
-> exceed the MTU size or even maximum UDP packet size.
+Opening new streams for new packets implicitly limits the amount of packets
+which are concurrently in transit. The number of packets which have to be
+transmitted concurrently depends on a number of factors such as the number of
+RTP sessions within a QUIC connection, the rate at which new application data is
+produced and the maximum acceptable transmission delay of a given packet.
+Receivers are responsible for providing senders with enough credit to open new
+streams for new packets at any time.
 
 ## QUIC Datagrams {#quic-datagrams}
 
@@ -294,7 +297,27 @@ QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame boundaries, thus a
 single RTP packet can be mapped to a single QUIC datagram, without the need for
 an additional framing. Senders SHOULD consider the header overhead associated
 with QUIC datagrams and ensure that the RTP/RTCP packets, including their
-payloads, QUIC, and IP headers, will fit into path MTU.
+payloads, QUIC, and IP headers and flow identifier, will fit into path MTU.
+
+The encapsulation format for RTP over QUIC Datagrams is described in
+{{fig-dgram-payload}}.
+
+~~~
+Payload {
+  Flow Identifier (i),
+  RTP/RTCP Packet (..),
+}
+~~~
+{: #fig-dgram-payload title="RTP over QUIC Datagram Payload Format"}
+
+Flow Identifier:
+
+: Flow identifier to demultiplex different data flows on the same QUIC
+connection.
+
+RTP/RTCP Packet:
+
+: The RTP/RTCP packet to transmit.
 
 Since QUIC datagrams are not retransmitted on loss (see also
 {{transport-layer-feedback}} for loss signaling), if an application wishes to
