@@ -276,6 +276,13 @@ If it is known to either the sender, that a packet, which was not yet
 successfully and completely transmitted, is no longer needed, the sender MAY
 close the stream by sending a RESET\_STREAM frame.
 
+> **Editor's Note:** It might be desired to also allow the receiver to request
+> cancellation of a stream by sending STOP\_SENDING frame. However, this might
+> lead to unintended packet loss, because the receiver does not know which and
+> how many packets follow on the same stream. If this feature is required, a
+> solution could be to require senders to open new streams for each application
+> data unit, as described in a previous version of this document.
+
 Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
 that are transmitted reliably and in order, such that a receiving application
 can read a complete packet from the stream. No retransmission has to be
