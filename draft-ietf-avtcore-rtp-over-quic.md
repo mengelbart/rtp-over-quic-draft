@@ -165,12 +165,13 @@ the QUIC connection has to be terminated at that middlebox.
 
 Using RTP over QUIC streams (see {{quic-streams}}) can support much larger RTP
 packet sizes than other transport protocols such as UDP can, which can lead to
-problems with transport translators which translate from RTP over QUIC to RTP over a
-different transport protocol. To support forwarding RTP packets from QUIC
-streams to the other transport protocol, the translator may need to
-rewrite the RTP packets to fit into the smaller MTU of the other protocol. Such
-a translator may need codec-specific knowledge to packetize the payload of the
-incoming RTP packets in smaller RTP packets.
+problems with transport translators which translate from RTP over QUIC to RTP
+over a different transport protocol. A similar problem can occur if a translator
+needs to translate from RTP over UDP to RTP over QUIC datagrams, where the MTU
+of a QUIC datagram may be smaller than the MTU of a UDP datagram. In both cases,
+the translator may need to rewrite the RTP packets to fit into the smaller MTU
+of the other protocol. Such a translator may need codec-specific knowledge to
+packetize the payload of the incoming RTP packets in smaller RTP packets.
 
 # Connection Establishment and ALPN
 
