@@ -55,7 +55,9 @@ mapping of how to carry RTP over QUIC. The focus is on RTP and RTCP packet
 mapping and on reducing the amount of RTCP traffic by leveraging state
 information readily available within a QUIC endpoint. This document also
 describes different options for implementing congestion control for RTP over
-QUIC.
+QUIC. The mapping specified in this document relies on the WebTransport Protocol
+Framework {{!I-D.draft-ietf-webtrans-overview-04}} to implement multiplexing of
+RTP/RTCP sessions and other protocols in a single QUIC connection.
 
 The scope of this document is limited to unicast RTP/RTCP.
 
@@ -101,15 +103,18 @@ illustrate the order and size of fields.
 
 # Scope
 
-RTP over QUIC mostly defines an application usage of QUIC {{?I-D.draft-ietf-quic-applicability}}.
-As a baseline, the specification does not expect more than a standard QUIC implementation
-as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}}.
-Nevertheless, the specification can benefit from QUIC extesions such as QUIC datagrams
-{{!RFC9221}} as described below.
-Moreover, this document describes how a QUIC implementation and its API can be
-extended to improve efficiency of the protocol operation.
+RTP over QUIC mostly defines an application usage of QUIC
+{{?I-D.draft-ietf-quic-applicability}}. The specification relies on the
+WebTransport Protocol Framework {{!I-D.draft-ietf-webtrans-overview-04}} to
+provide a multiplexing layer on top of QUIC.
 
-On top of QUIC, this document defines an encapsulation of RTP and RTCP packets.
+Additionally, the specification can benefit from QUIC extesions such as QUIC
+datagrams {{!RFC9221}} as described below. Moreover, this document describes how
+a QUIC implementation and its API can be extended to improve efficiency of the
+protocol operation.
+
+On top of WebTransport, this document defines an encapsulation of RTP and RTCP
+packets.
 
 The scope of this document is limited to carrying RTP over QUIC. It does not attempt
 to enhance QUIC for real-time media or define a replacement or evolution of RTP.
@@ -120,199 +125,144 @@ separately, e.g., in {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
 
 # Protocol Overview
 
-This document introduces a mapping of the Real-time Transport Protocol (RTP) to
-the QUIC transport protocol. RTP over QUIC allows the use of QUIC streams and
-unreliable QUIC datagrams to transport real-time data, and thus, the QUIC
-implementation MUST support QUICs unreliable datagram extension, if RTP packets
-should be sent over QUIC datagrams. Since datagram frames cannot be fragmented,
-the QUIC implementation MUST also provide a way to query the maximum datagram
-size so that an application can create RTP packets that always fit into a QUIC
-datagram frame.
+RTP over QUIC relies on the WebTransport protocol framework
+{{!I-D.draft-ietf-webtrans-overview-04}} to implement multiplexing of many RTP
+sessions and potentially also other protocols over the same QUIC connection.
+This next section gives an overview over the WebTransport protocol framework and
+how it is used to map RTP to QUIC connections. The following section describes
+limitations of RTP over QUIC regarding different RTP topologies.
 
-{{!RFC3550}} specifies that RTP sessions need to be transmitted on different
-transport addresses to allow multiplexing between them. RTP over QUIC uses a
-different approach to leverage the advantages of QUIC connections without
-managing a separate QUIC connection per RTP session. QUIC does not provide
-demultiplexing between different flows on datagrams but suggests that an
-application implement a demultiplexing mechanism if required. An example of such
-a mechanism are flow identifiers prepended to each datagram frame as described
-in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RTP over QUIC uses a
-flow identifier to replace the network address and port number to multiplex many
-RTP sessions over the same QUIC connection.
+## WebTransport Overview
 
-A congestion controller can be plugged in to adapt the media bitrate to the
-available bandwidth. This document does not mandate any congestion control
-algorithm. Some examples include Network-Assisted Dynamic Adaptation (NADA)
-{{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
-{{!RFC8298}}. These congestion control algorithms require some feedback about
-the network's performance to calculate target bitrates. Traditionally this
-feedback is generated at the receiver and sent back to the sender via RTCP.
-Since QUIC also collects some metrics about the network's performance, these
-metrics can be used to generate the required feedback at the sender-side and
-provide it to the congestion controller to avoid the additional overhead of the
-RTCP stream.
+The WebTransport Protocol Framework defines a set of abstract features that can
+be provided by any concrete transport implementation. Next to session
+establishment and termination, WebTransport provides abstractions for sending
+and receiving bytes on one or more uni- or bidirectional streams as well as
+sending and receiving datagrams.
+
+Multiple WebTransport sessions can be multiplexed over the same transport
+protocol. Relying on WebTransport as abstraction from QUIC allows RTP over
+QUIC to multiplex multiple RTP sessions and possibly other protocol sessions
+(e.g., for data transfers or signaling) into the same transport connection.
+
+WebTransport protocols are required to limit the rate at which clients can send
+data. The implications of such rate limiting for real-time applications using
+RTP are discussed in detail in {{congestion-control}}.
+
+Although there might be WebTransport protocol instances that do not use QUIC as
+the underlying transport protocol, this document is written with specfically
+QUIC in mind. The general mapping allows the usage of other transport protocols,
+but care should be taken if other protocols are employed due to their varying
+support for features such as unreliable delivery. Some transport protocols may
+emulate certain features such as unreliable datagrams or independent streams.
+For an application they might look the same compared to a QUIC connection, but
+in reality, the implementation may still retransmit datagrams or suffer from
+head-of-line blocking between streams.
 
 ## Supported RTP Topologies {#topologies}
 
-RTP over QUIC only supports some of the RTP topologies described in
-{{?RFC7667}}. Most notably, due to QUIC being a purely unicast protocol at the
-time of writing, RTP over QUIC cannot be used as a transport protocol in any of
-the multicast topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
+This specification only supports some of the RTP topologies described in
+{{?RFC7667}}. Most notably, due to WebTransport offering only unicast transports
+at the time of writing, it cannot be used as a multicast protocol in any of the
+multicast topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
 
 RTP supports different types of translators and mixers. Whenever a middlebox
 such as a translator or a mixer needs to access the content of RTP/RTCP-packets,
-the QUIC connection has to be terminated at that middlebox.
+the transport connection has to be terminated at that middlebox.
 
-Using RTP over QUIC streams (see {{quic-streams}}) can support much larger RTP
-packet sizes than other transport protocols such as UDP can, which can lead to
-problems with transport translators which translate from RTP over QUIC to RTP
-over a different transport protocol. A similar problem can occur if a translator
-needs to translate from RTP over UDP to RTP over QUIC datagrams, where the MTU
-of a QUIC datagram may be smaller than the MTU of a UDP datagram. In both cases,
-the translator may need to rewrite the RTP packets to fit into the smaller MTU
-of the other protocol. Such a translator may need codec-specific knowledge to
-packetize the payload of the incoming RTP packets in smaller RTP packets.
-
-# Connection Establishment and ALPN
-
-QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
-over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
-{{iana-considerations}}.
-
-Note that the use of a given RTP profile is not reflected in the ALPN token even
-though it could be considered part of the application usage.  This is simply
-because different RTP sessions, which may use different RTP profiles, may be
-carried within the same QUIC connection.
-
-> **Editor's note:** "rtp-mux-quic" indicates that RTP and other protocols may
-> be multiplexed on the same QUIC connection using a flow identifier as
-> described in {{encapsulation}}. Applications are responsible for negotiation
-> of protocols in use by appropriate use of a signaling protocol such as SDP.
-
-> **Editor's note:** This implies that applications cannot use RTP over QUIC as
-> specified in this document over WebTransport.
-
-## Draft version identification
-
-> **RFC Editor's note:** Please remove this section prior to publication of a
-> final version of this document.
-
-RTP over QUIC uses the token "rtp-mux-quic" to identify itself in ALPN.
-
-Only implementations of the final, published RFC can identify themselves as
-"rtp-mux-quic". Until such an RFC exists, implementations MUST NOT identify
-themselves using this string.
-
-Implementations of draft versions of the protocol MUST add the string "-" and
-the corresponding draft number to the identifier.  For example,
-draft-ietf-avtcore-rtp-over-quic-04 is identified using the string
-"rtp-mux-quic-04".
-
-Non-compatible experiments that are based on these draft versions MUST append
-the string "-" and an experiment name to the identifier.
+Using RTP over streams (see {{streams}}) can support much larger RTP packet
+sizes than other transport protocols such as UDP can, which can lead to problems
+with transport translators which translate from RTP over QUIC to RTP over such a
+transport protocol. A similar problem can occur if a translator needs to
+translate from RTP over UDP to RTP over WebTransport datagrams, where the MTU of
+a WebTransport datagram may be smaller than the MTU of a UDP datagram. In both
+cases, the translator may need to rewrite the RTP packets to fit into the
+smaller MTU of the other protocol. Such a translator may need codec-specific
+knowledge to packetize the payload of the incoming RTP packets in smaller RTP
+packets.
 
 # Encapsulation {#encapsulation}
 
-QUIC supports two transport methods: reliable streams {{!RFC9000}} and
-unreliable datagrams {{!RFC9221}}. This document specifies mappings of RTP to
-both of the transport modes.
+WebTransports supports two transport modes: reliable streams and unreliable
+datagrams. This document specifies mappings of RTP to both modes. {{streams}}
+and {{datagrams}} explain the specifics of mapping of RTP to streams and
+datagrams respectively. Senders MAY combine both modes by sending some RTP/RTCP
+packets over the same or different streams as described in {{streams}} and
+others in datagrams as described in {{datagrams}}.
 
-{{quic-streams}} and {{quic-datagrams}} explain the specifics of mapping of RTP
-to QUIC streams and QUIC datagrams respectively.
+## Streams {#streams}
 
-For multiplexing different RTP/RTCP and other data streams on the same QUIC
-connection, RTP over QUIC uses a QUIC variable-length integer {{Section 16 of
-!RFC9000}} as flow identifier.
+WebTransport protocols provide client- and server-initiated uni- and
+bidirectional streams. RTP/RTCP packets MUST be sent in unidirectional streams,
+because there is no synchronous relationship between sent and received RTP/RTCP
+packets.
 
-RTP and RTCP packets of a single RTP session MAY be sent using the same flow
-identifier (following the procedures defined in {{!RFC5761}}, or they MAY be
-sent using different flow identifiers. The respective mode of operation MUST be
-indicated using the appropriate signaling.
+Senders can send RTP/RTCP packets over streams using an encapsulation similar to
+the one defined in {{!RFC4571}}, but instead of using a 16-bit length field,
+each packet is prefixed with a variable length integer as defined in {{Section
+16 of !RFC9000}}. Using a variable length integer as the length field allows to
+compose larger packets, which avoids RTP packet fragmentation, while keeping the
+size of the length field to a minimum.
 
-RTP and RTCP packets of different RTP sessions MUST be sent using different flow
-identifiers.
+The encapsulation format for RTP over Streams is shown in
+{{fig-stream}} and {{fig-stream-payload}}.
 
-Differentiating RTP/RTCP packets of different RTP sessions from non-RTP/RTCP
-datagrams is the responsibility of the application by means of appropriate use
-of flow identifiers and the corresponding signaling.
-
-This specification defines two ways of carrying RTP packets in QUIC: 1) using
-reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs. Senders MAY
-combine both modes by sending some RTP/RTCP packets over the same or different
-QUIC streams and others in QUIC datagrams.
-
-## QUIC Streams {#quic-streams}
-
-To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
-unidirectional QUIC stream. Unidirectional streams are used because there is no
-synchronous relationship between sent and received RTP/RTCP packets.
-
-The encapsulation format for RTP over QUIC Streams is described in
-{{fig-stream-payload}}.
+~~~
+Stream {
+  Payload (..) ...,
+}
+~~~
+{: #fig-stream title="RTP over Streams Payload Format."}
 
 ~~~
 Payload {
-  Flow Identifier (i),
-  RTP/RTCP Payload(..) ...,
-}
-~~~
-{: #fig-stream-payload title="RTP over QUIC Streams Payload Format"}
-
-Flow Identifier:
-
-: Flow identifier to demultiplex different data flows on the same QUIC
-connection.
-
-RTP/RTCP Payload:
-
-: Contains the RTP/RTCP payload; see {{fig-rtp-stream-payload}}
-
-The payload in a QUIC stream starts with the flow identifier and is followed by
-one or more RTP/RTCP payloads. All packets sent on a stream MUST belong to the
-RTP session with the same flow identifier. A sender MAY open new QUIC streams
-for different packets using the same flow identifier, for example to avoid
-head-of-line blocking.
-
-Each payload begins with a length field indicating the length of the RTP/RTCP
-packet and is followed by the packet itself, see {{fig-rtp-stream-payload}}.
-
-~~~
-RTP/RTCP Payload {
   Length(i),
   RTP/RTCP Packet(..),
 }
 ~~~
-{: #fig-rtp-stream-payload title="RTP/RTCP payload for QUIC streams"}
+{: #fig-stream-payload title="Content of a payload sent on a stream"}
 
 Length:
 
-: A QUIC variable length integer {{Section 16 of !RFC9000}} describing the
-length of the following RTP/RTCP packets in bytes.
+: A variable length integer ({{Section 16 of !RFC9000}}) describing the length
+of the following RTP/RTCP packets in bytes.
 
 RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-If it is known to either the sender, that a packet, which was not yet
-successfully and completely transmitted, is no longer needed, the sender MAY
-close the stream by sending a RESET\_STREAM frame.
+Senders MAY open new streams for new RTP packets to avoid head-of-line blocking
+or they MAY send multiple RTP packets on the same stream. In both cases, each
+packet MUST be prepended with the packets length.
+
+Senders MAY abort the send side of a stream at any time. Aborting a stream
+allows a sender to cancel retransmissions of data that is no longer needed,
+e.g., a media frame that has passed its playout deadline. A sender should keep
+in mind, that aborting a stream cancels (re-)transmissions of all data on that
+stream and thus should only be used when all of the outstanding data can safely
+be discarded.
 
 A translators that translates between two endpoints, which are both connected
-via QUIC, MUST forward RESET\_STREAM frames received from one end to the other
-end, unless it is forwarding the RTP packets on QUIC datagrams.
+via a WebTransport protocol, MUST forward abortion of streams received from one
+end to the other end, unless it is forwarding the RTP packets on datagrams.
 
-> **Editor's Note:** It might be desired to also allow the receiver to request
-> cancellation of a stream by sending STOP\_SENDING frame. However, this might
-> lead to unintended packet loss, because the receiver does not know which and
-> how many packets follow on the same stream. If this feature is required, a
-> solution could be to require senders to open new streams for each application
-> data unit, as described in a previous version of this document.
+> **Editor's Note:** It might be desired to also allow the receiver to abort a
+> stream. However, this might lead to unintended packet loss, because the
+> receiver does not know which and how many packets follow on the same stream.
+> If this feature is required, a solution could be to require senders to open
+> new streams for each application data unit, as described in a previous version
+> of this document. Another solution might involve some form of additional
+> signaling between sender and receiver.
 
-Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
-that are transmitted reliably and in order, such that a receiving application
-can read a complete packet from the stream. No retransmission has to be
-implemented by the application, since QUIC frames that are lost in transit are
-retransmitted by the QUIC connection.
+Large RTP packets sent on a stream can be fragmented in smaller frames at the
+transport layer. The frames of a single stream are transmitted reliably and in
+order, such that a receiving application can read a complete packet from the
+stream. No retransmission has to be implemented by the application, since frames
+that are lost in transit are retransmitted by the underlying transport protocol.
+
+> **TODO:** The following paragraph assumes that an application has some say
+> about flow control, if that is not the case in WebTransport protocols, we
+> should remove it or make it less a requirement of the application.
 
 Opening new streams for new packets implicitly limits the amount of packets
 which are concurrently in transit. The number of packets which have to be
@@ -322,193 +272,192 @@ produced and the maximum acceptable transmission delay of a given packet.
 Receivers are responsible for providing senders with enough credit to open new
 streams for new packets at any time.
 
-## QUIC Datagrams {#quic-datagrams}
+## Datagrams {#datagrams}
 
-RTP packets can be sent in QUIC datagrams. QUIC datagrams are an extension to
-QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame boundaries, thus a
-single RTP packet can be mapped to a single QUIC datagram, without the need for
-an additional framing. Senders SHOULD consider the header overhead associated
-with QUIC datagrams and ensure that the RTP/RTCP packets, including their
-payloads, QUIC, and IP headers and flow identifier, will fit into path MTU.
+RTP packets can be sent in unreliable datagrams. Unreliable datagrams preserve
+frame boundaries, thus a single RTP packet can be mapped to a single datagram,
+without the need for an additional framing. WebTransport protocols are required
+to expose the maximum datagram size the application can send. Applications MUST
+NOT try to send RTP packets exceeding the maximum datagram size limit.
 
-The encapsulation format for RTP over QUIC Datagrams is described in
+The encapsulation format for Datagrams is described in
 {{fig-dgram-payload}}.
 
 ~~~
-Payload {
-  Flow Identifier (i),
+Datagram {
   RTP/RTCP Packet (..),
 }
 ~~~
-{: #fig-dgram-payload title="RTP over QUIC Datagram Payload Format"}
-
-Flow Identifier:
-
-: Flow identifier to demultiplex different data flows on the same QUIC
-connection.
+{: #fig-dgram-payload title="Datagram Payload Format"}
 
 RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-Since QUIC datagrams are not retransmitted on loss (see also
+Since datagrams are not retransmitted on loss (see also
 {{transport-layer-feedback}} for loss signaling), if an application wishes to
 retransmit lost RTP packets, the retransmission has to be implemented by the
-application. RTP retransmissions can be done in the same RTP session or a
-separate RTP session {{!RFC4588}} and the flow identifier MUST be set to the
-flow identifier of the RTP session in which the retransmission happens.
+application.
 
 # RTCP {#rtcp}
 
 The RTP Control Protocol (RTCP) allows RTP senders and receivers to exchange
 control information to monitor connection statistics and to identify and
-synchronize streams. Many of the statistics contained in RTCP packets overlap
-with the connection statistics collected by a QUIC connection. To avoid using up
-bandwidth for duplicated control information, the information SHOULD only be
-sent at one protocol layer. QUIC relies on certain control frames to be sent.
+synchronize streams. Many of the statistics contained in RTCP packets may
+overlap with the connection statistics collected by a transport protocol. QUIC
+is one example of a protocol that collects a number of metrics that overlap with
+the connection statistics derived from RTCP. To avoid using up bandwidth for
+duplicated control information, the information SHOULD only be sent at one
+protocol layer.
 
-In general, applications MAY send RTCP without any restrictions. This document
-specifies a baseline for replacing some of the RTCP packet types by mapping the
-contents to QUIC connection statistics. Future documents can extend this mapping
-for other RTCP format types. It is RECOMMENDED to expose relevant information
-from the QUIC layer to the application instead of exchanging addtional RTCP
-packets, where applicable.
+In general, applications using a WebTransport protocol MAY send RTCP without
+any restrictions. This document specifies a baseline for replacing some of the
+RTCP packet types by mapping the contents to connection statistics of underlying
+the transport. Future documents can extend this mapping for other RTCP format
+types. It is RECOMMENDED to expose relevant information from the transport layer
+to the application instead of exchanging addtional RTCP packets, where
+applicable.
 
-This section discusses what information can be exposed from the QUIC connection
+This section discusses what information can be exposed from the transport
 layer to reduce the RTCP overhead and which type of RTCP messages cannot be
 replaced by similar feedback from the transport layer. The list of RTCP packets
 in this section is not exhaustive and similar considerations SHOULD be taken
-into account before exchanging any other type of RTCP control packets.
+into account before exchanging any other type of RTCP packets.
 
 ## Transport Layer Feedback {#transport-layer-feedback}
 
 This section explains how some of the RTCP packet types which are used to signal
-reception statistics can be replaced by equivalent statistics that are already
-collected by QUIC. The following list explains how this mapping can be achieved
-for the individual fields of different RTCP packet types.
+reception statistics can be replaced by equivalent statistics that may already
+be collected at the transport layer. The following list explains how this
+mapping can be achieved for the individual fields of different RTCP packet
+types.
 
-QUIC Datagrams are ack-eliciting packets, which means, that an acknowledgment is
-triggered when a datagram frame is received. Thus, a sender can assume that an
-RTP packet arrived at the receiver or was lost in transit, using the QUIC
-acknowledgments of QUIC Datagram frames. In the following, an RTP packet is
-regarded as acknowledged, when the QUIC Datagram frame that carried the RTP
-packet, was acknowledged. For RTP packets that are sent over QUIC streams, an
-RTP packet can be considered acknowledged, when all frames which carried
-fragments of the RTP packet were acknowledged.
-
-When QUIC Streams are used, the application should be aware that the direct
+When reliable Streams are used, the application should be aware that the direct
 mapping proposed below may not reflect the real characteristics of the network.
-RTP packet loss can seem lower than actual packet loss due to QUIC's automatic
+RTP packet loss can seem lower than actual packet loss due to automatic
 retransmissions. Similarly, timing information might be incorrect due to
 retransmissions.
 
+Acknowledgments play in important part in the analysis below. Due to the
+reliable nature of streams, it is likely that there will be some form of
+acknowledgment available for RTP packets that are sent over reliable streams.
+For RTP packets that are sent over QUIC streams, an RTP packet can be considered
+acknowledged, when all frames which carried fragments of the RTP packet were
+acknowledged.
+
+As datagrams are unreliable, there is no need for acknowledgments. However, some
+transport protocols might still use acknowledgments for unreliable datagrams. In
+QUIC, Datagrams are ack-eliciting packets, which means, that an acknowledgment is
+triggered when a datagram frame is received. Thus, a sender can assume that an
+RTP packet arrived at the receiver or was lost in transit, using QUICs loss
+detection.
+
 Some of the transport layer feedback that can be implemented in RTCP contains
-information that is not included in QUIC by default, but can be added via QUIC
-extensions. One important example are arrival timestamps, which are not part of
-QUIC's default acknowledgment frames, but can be added using
+information that is not included in every WebTransport protocol by default, but
+can be added via extensions. One important example are arrival timestamps, which
+are not part of QUIC's default acknowledgment frames, but can be added using
 {{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}. Another
-extension, that can improve the precision of the feedback from QUIC is
+extension, that can improve the precision of QUIC's feedback is
 {{!I-D.draft-ietf-quic-ack-frequency}}, which allows a sender to control the
 delay of acknowledgments sent by the receiver.
 
 * *Receiver Reports* (`PT=201`, `Name=RR`, {{!RFC3550}})
   * *Fraction lost*: The fraction of lost packets can be directly infered from
-    QUIC's acknowledgments. The calculation SHOULD include all packets up to the
+    acknowledgments. The calculation SHOULD include all packets up to the
     acknowledged RTP packet with the highest RTP sequence number. Later packets
-    SHOULD be ignored, since they may still be in flight, unless other QUIC
-    packets that were sent after the datagram frame, were already acknowledged.
+    SHOULD be ignored, since they may still be in flight, unless other packets
+    that were sent on the same connection and after the packets that contained
+    the RTP packet, were already acknowledged.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
-    loss can be infered from QUIC's acknowledgments including all packets up to
-    the latest acknowledged packet.
+    loss can be infered from acknowledgments including all packets up to the
+    latest acknowledged packet.
   * *Highest Sequence Number received*: The highest sequence number received is
-    the sequence number of all RTP packets that were acknowledged.
-  * Interarrival jitter: If QUIC acknowledgments carry timestamps as described
-    in one of the extensions referenced above, senders can infer from QUIC acks
-    the interarrival jitter from the arrival timestamps.
+    the highest sequence number of all RTP packets that were acknowledged.
+  * Interarrival jitter: If acknowledgments carry timestamps as described in one
+    of the extensions referenced above, senders can infer the interarrival
+    jitter from the arrival timestamps.
   * Last SR: Similar to RTP arrival times, the arrival time of RTCP Sender
-    Reports can be inferred from QUIC acknowledgments, if they include
-    timestamps.
+    Reports can be inferred from acknowledgments, if they include timestamps.
   * Delay since last SR: This field is not required when the receiver reports
-    are entirely replaced by QUIC feedback.
+    are entirely replaced by transport layer feedback.
 * *Negative Acknowledgments* (`PT=205`, `FMT=1`, `Name=Generic NACK`,
   {{!RFC4585}})
   * The generic negative acknowledgment packet contains information about
     packets which the receiver considered lost. {{Section 6.2.1. of !RFC4585}}
     recommends to use this feature only, if the underlying protocol cannot
-    provide similar feedback. QUIC does not provide negative acknowledgments,
-    but can detect lost packets through acknowledgments.
+    provide similar feedback. Acknowledgments and loss detection of an
+    underlying transport protocol can be used as an alternative to RTCP negative
+    acknowledgments.
 * *ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}})
   * ECN feedback packets report the count of observed ECN-CE marks. {{!RFC6679}}
     defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`) and a
-    new report block for the extended reports which are listed below. QUIC
-    supports ECN reporting through acknowledgments. If the connection supports
-    ECN, the reporting of ECN counts SHOULD be done using QUIC acknowledgments.
+    new report block for the extended reports which are listed below. If the
+    transport protocol supports ECN, the reporting of ECN counts SHOULD be done
+    at the transport layer instead of using RTCP.
 * *Congestion Control Feedback* (`PT=205`, `FMT=11`, `Name=CCFB`, {{!RFC8888}})
   * RTP Congestion Control Feedback contains acknowledgments, arrival timestamps
     and ECN notifications for each received packet. Acknowledgments and ECNs can
-    be infered from QUIC as described above. Arrival timestamps can be added
-    through extended acknowledgment frames as described in
+    be infered from a transport protocol as described above. Arrival timestamps
+    can be added to QUIC through extended acknowledgment frames as described in
     {{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}.
 * *Extended Reports* (`PT=207`, `Name=XR`, {{!RFC3611}})
   * Extended Reports offer an extensible framework for a variety of different
     control messages. Some of the standard report blocks which can be
     implemented in extended reports such as loss RLE or ECNs can be implemented
-    in QUIC, too. For other report blocks, it SHOULD be evaluated individually,
-    if the contained information can be transmitted using QUIC instead.
+    in WebTransport protocols, too. For other report blocks, it SHOULD be
+    evaluated individually, if the contained information can be transmitted
+    using the transport protocol instead of RTCP.
 
 ## Application Layer Repair and other Control Messages
 
-While the previous section presented some RTCP packet that can be replaced by
-QUIC features, QUIC cannot replace all of the available RTCP packet types. This
-mostly affects RTCP packet types which carry control information that is to be
-interpreted by the application layer instead of the transport itself.
+While the previous section presented a list of RTCP packets that can be replaced
+by transport layer features, many RTCP packets cannot be mapped to transport
+layer features.
 
 *Sender Reports* (`PT=200`, `Name=SR`, {{!RFC3550}}) are similar to *Receiver
 Reports*. They are sent by media senders and additionally contain a NTP and a
 RTP timestamp and the number of packets and octets transmitted by the sender.
-The timestamps can be used by a receiver to synchronize streams. QUIC cannot
-provide a similar control information, since it does not know about RTP
-timestamps. A QUIC receiver can also not calculate the packet or octet counts,
-since it does not know about lost datagrams. Thus, sender reports are required
-in RTP over QUIC to synchronize streams at the receiver. The sender reports
-SHOULD not contain any receiver report blocks, as the information can be infered
-from the QUIC transport as explained in the previous section.
+The timestamps can be used by a receiver to synchronize streams. Transport
+protocols typically cannot provide a similar control information, since they do
+not have any knowledge of RTP timestamps. A receiver can also not calculate the
+packet or octet counts, since it does not know about lost datagrams. Thus,
+sender reports are required to synchronize streams at the receiver. The sender
+reports SHOULD not contain any receiver report blocks, if the information can be
+infered from the transport as explained in the previous section.
 
 Next to carrying transmission statistics, RTCP packets can contain application
-layer control information, that cannot directly be mapped to QUIC. This includes
-for example the *Source Description* (`PT=202`, `Name=SDES`), *Bye* (`PT=203`,
-`Name=BYE`) and *Application* (`PT=204`, `Name=APP`) packet types from
-{{!RFC3550}} or many of the payload specific feedback messages (`PT=206`)
-defined in {{!RFC4585}}, which can for example be used to control the codec
-behavior of the sender. Since QUIC does not provide any kind of application
-layer control messaging, these RTCP packet types SHOULD be used in the same way
-as they would be used over any other transport protocol.
+layer control information, that cannot directly be mapped to the transport
+layer. This includes for example the *Source Description* (`PT=202`,
+`Name=SDES`), *Bye* (`PT=203`, `Name=BYE`) and *Application* (`PT=204`,
+`Name=APP`) packet types from {{!RFC3550}} or many of the payload specific
+feedback messages (`PT=206`) defined in {{!RFC4585}}, which can for example be
+used to control the codec behavior of the sender. Since WebTransport does not
+provide any kind of application layer control messaging, these RTCP packet types
+SHOULD be used in the same way as they would be used over any other transport
+protocol.
 
 # Congestion Control {#congestion-control}
 
-Like any other application on the internet, RTP over QUIC needs to perform
-congestion control to avoid overloading the network.
-
-QUIC is a congestion controlled transport protocol. Senders are required to
-employ some form of congestion control. The default congestion control specified
-for QUIC is an alogrithm similar to TCP NewReno, but senders are free to choose
-any congestion control algorithm as long as they follow the guidelines specified
-in {{Section 3 of ?RFC8085}}.
+Like any other application on the internet, RTP needs to perform congestion
+control to avoid overloading the network.
 
 RTP does not specify a congestion controller, but provides feedback formats for
-congestion control (e.g. {{!RFC8888}}) as well as different congestion control
-algorithms in separate RFCs (e.g. SCReAM {{!RFC8298}} and NADA {{!RFC8698}}).
+congestion control (e.g. {{?RFC8888}}) as well as different congestion control
+algorithms in separate RFCs (e.g. SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
 The congestion control algorithms for RTP are specifically tailored for
 real-time transmissions at low latencies. The available congestion control
 algorithms for RTP expose a `target_bitrate` that can be used to dynamically
 reconfigure media codecs to produce media at a rate that can be sent in
 real-time under the observed network conditions.
 
+WebTransport protocols are required to limit the rate at which a clients sends
+data. Senders are free to choose how to accomplish this requirement.
+
 This section defines two architectures for congestion control and bandwidth
-estimation for RTP over QUIC, but it does not mandate any specific congestion
-control algorithm to use. The section also discusses congestion control
-implications of using shared or multiple separate QUIC connections to send and
-receive multiple independent data streams.
+estimation, but it does not mandate any specific congestion control algorithm to
+use. The section also discusses congestion control implications of using shared
+or multiple separate QUIC connections to send and receive multiple independent
+data streams.
 
 It is assumed that the congestion controller in use provides a pacing mechanism
 to determine when a packet can be sent to avoid bursts. The currently proposed
@@ -516,12 +465,12 @@ congestion control algorithms for real-time communications provide such pacing
 mechanisms. The use of congestion controllers which don't provide a pacing
 mechanism is out of scope of this document.
 
-## Congestion Control at the QUIC layer {#cc-quic-layer}
+## Congestion Control at the Transport layer {#cc-transport-layer}
 
 If congestion control is to be applied at the transport layer, it is RECOMMENDED
-that the QUIC Implementation uses a congestion controller that keeps queueing
-delays short to keep the transmission latency for RTP and RTCP packets as low
-as possible.
+that the transport Implementation uses a congestion controller that keeps
+queueing delays short to keep the transmission latency for RTP and RTCP packets
+as low as possible.
 
 Many low latency congestion control algorithms depend on detailed arrival time
 feedback to estimate the current one-way delay between sender and receiver. QUIC
@@ -530,36 +479,50 @@ implementations of the sender and receiver can use an extension to add this
 information to QUICs acknowledgment frames, e.g.
 {{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}.
 
-If congestion control is done by the QUIC implementation, the application needs
-a mechanism to query the currently available bandwidth to adapt media codec
-configurations. The employed congestion controller of the QUIC connection SHOULD
-expose such an API to the application. If a current bandwidth estimation is not
-available from the QUIC congestion controller, the sender can either implement
-an alternative bandwidth estimation at the application layer as described in
-{{cc-application-layer}} or a receiver can feedback the observed bandwidth
-through RTCP, e.g., using {{?I-D.draft-alvestrand-rmcat-remb}}.
+To adapt media codec configurations to the current bandwidth capacity, the
+application also needs a mechanism to query the currently available bandwidth
+estimation. The employed congestion controller SHOULD expose such an estimation
+to the application. If a current bandwidth estimation is not available from the
+congestion controller, the sender can either implement an alternative bandwidth
+estimation at the application layer as described in {{cc-application-layer}} or
+a receiver can feedback the observed bandwidth through RTCP, e.g., using
+{{?I-D.draft-alvestrand-rmcat-remb}}.
 
 ## Congestion Control at the Application Layer {#cc-application-layer}
 
-If an application cannot access a bandwidth estimation from the QUIC layer, or
-the QUIC implementation does not support a delay-based, low-latency congestion
-control algorithm, it can alternatively implement a bandwidth estimation
-algorithm at the application layer. Calculating a bandwidth estimation at the
-application layer can be done using the same bandwidth estimation algorithms as
-described in {{congestion-control}} (NADA, SCReAM). The bandwidth estimation
-algorithm typically needs some feedback on the transmission performance. This
-feedback can be collected following the guidelines in {{rtcp}}.
+If an application cannot access a bandwidth estimation from the transport layer,
+or the transport implementation does not support a delay-based, low-latency
+congestion control algorithm, it can alternatively implement a bandwidth
+estimation algorithm at the application layer. Calculating a bandwidth
+estimation at the application layer can be done using the same bandwidth
+estimation algorithms as described in {{congestion-control}} (NADA, SCReAM). The
+bandwidth estimation algorithm typically needs some feedback on the transmission
+performance. This feedback can be collected following the guidelines in
+{{rtcp}}.
 
-If the application implements full congestion control rather than just a
-bandwidth estimation at the application layer using a congestion controller that
-satisfies the requirements of {{Section 7 of !RFC9002}}, and the connection is
-only used to send real-time media which is subject to the application layer
-congestion control, it is RECOMMENDED to disable any other congestion control
-that is possibly running at the QUIC layer. Disabling the additional congestion
-controllers helps to avoid any interference between the different congestion
-controllers.
+Some transport implementations might offer an configuration option to disable
+the congestion controller completely. It is RECOMMENDED that an application
+disables the transport congestion controller, if all of the following conditions
+are met:
+
+1. the application implements full congestion control (rather than just
+   computing a bandwidth estimation),
+2. the application is using a congestion controller that satisfies the
+   requirements of {{Section 7 of !RFC9002}},
+3. the connection is only used to send real-time media which is subject to the
+   application layer congestion control.
+
+Disabling the additional congestion controllers helps to avoid any interference
+between the different congestion controllers.
 
 ## Shared QUIC connections
+
+> **TODO:** This following paragraphs are probably not needed if we rely on
+> WebTransport as multiplexing layer. However, it may be helpful to keep this
+> section for considerations/expectations to the multiplexing layer regarding
+> bandwidth sharing. E.g., if two WebTransport sessions share a QUIC connection,
+> it would be good if a session using RTP could rely on a certain share of the
+> bandwidth.
 
 Two endpoints may want to establish channels to exchange more than one type of data simultaneously.
 The channels can be intended to carry real-time RTP data or other non-real-time data.
@@ -576,82 +539,71 @@ in {{encapsulation}}.  Applications multiplexing multiple streams in one
 connection SHOULD implement some form of stream prioritization or bandwidth
 allocation.
 
-# API Considerations
+# API Considerations {#api-considerations}
 
 The mapping described in the previous sections poses some interface requirements
-on the QUIC implementation. Although a basic mapping should work without any of
-these requirements most of the optimizations regarding congestion control and
-RTCP mapping require certain functionalities to be exposed to the application.
-The following to sections contain a list of information that is required by an
-application to implement different optimizations ({{quic-api-read}}) and
-functions that a QUIC implementation SHOULD expose to an application
-({{quic-api-write}}).
+on the transport implementation. Although a basic mapping should work without
+any of these requirements most of the optimizations regarding congestion control
+and RTCP mapping require certain functionalities to be exposed to the
+application. The following two sections contain a list of information
+({{transport-api-read}}) and functions that a transport implementation SHOULD
+expose to an application ({{transport-api-write}}), to enable the application to
+implement different optimizations.
 
 Each item in the following list can be considered individually. Any exposed
-information or function can be used by RTP over QUIC regardless of whether the
-other items are available. Thus, RTP over QUIC does not depend on the
-availability of all of the listed features but can apply different optimizations
-depending on the functionality exposed by the QUIC implementation.
+information or function can be used by the application regardless of whether the
+other items are available. Thus, the application does not depend on the
+availability of all of the listed features to use RTP, but can apply different
+optimizations depending on the functionality exposed by the transport
+implementation.
 
-## Information to be exported from QUIC {#quic-api-read}
+## Information to be exported from the Transport {#transport-api-read}
 
 This section provides a list of items that an application might want to export
-from an underlying QUIC implementation. It is thus RECOMMENDED that a QUIC
-implementation exports the listed items to the application.
+from an underlying transport implementation.
 
-* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection
-  can transmit.
+* *Maximum Datagram Size*: The maximum datagram size that the application can
+  transmit over the underlying transport connection.
 * *Datagram Acknowledgment and Loss*: {{Section 5.2 of !RFC9221}} allows QUIC
   implementations to notify the application that a QUIC Datagram was
   acknowledged or that it believes a datagram was lost. The exposed information
   SHOULD include enough information to allow the application to maintain a
   mapping between the datagram that was acknowledged/lost and the RTP packet
   that was sent in that datagram.
-* *Stream States*: The QUIC implementation SHOULD expose to a sender, how much
-  of the data that was sent on a stream was successfully delivered and how much
-  data is still outstanding to be sent or retransmitted.
-* *Arrival timestamps*: If the QUIC connection uses a timestamp extension like
+* *Stream States*: The transport implementation SHOULD expose to a sender, how
+  much of the data that was sent on a stream was successfully delivered and how
+  much data is still outstanding to be sent or retransmitted.
+* *Arrival timestamps*: If the transport connection uses timestamps like
   {{I-D.draft-smith-quic-receive-ts}} or {{I-D.draft-huitema-quic-ts}}, the
   arrival timestamps or one-way delays SHOULD be exposed to the application.
-* *Bandwidth Estimation*: If congestion control is done at the transport layer
-  in the QUIC implementation, the QUIC implementation SHOULD expose an
-  estimation of the currently available bandwidth to the application. Exposing
-  the bandwidth estimation avoids the implementation of an additional bandwidth
-  estimation algorithm in the application.
+* *Bandwidth Estimation*: If congestion control is done at the transport layer,
+  the transport implementation SHOULD expose an estimation of the currently
+  available bandwidth to the application. Exposing the bandwidth estimation
+  avoids the implementation of an additional bandwidth estimation algorithm in
+  the application.
 * *ECN*: If ECN marks are available, they SHOULD be exposed to the application.
 
-## Functions to be exposed by QUIC {#quic-api-write}
+## Functions to be exposed by the Transport {#transport-api-write}
 
-This sections lists functions that a QUIC implementation SHOULD expose to an
-application to implement different features of the mapping described in the
+This sections lists functions that a transport implementation SHOULD expose to
+an application to implement different features of the mapping described in the
 previous sections of this document.
 
 * *Cancel Streams*: To allow an application to cancel (re)transmission of
-  packets that are no longer needed, the QUIC implementation MUST expose a way
-  to cancel the corresponding QUIC streams.
+  packets that are no longer needed, the transport implementation SHOULD expose
+  a way to cancel the corresponding transport streams.
 * *Configure Congestion Controller*: If congestion control is to be implemented
-  at the QUIC connection layer as described in {{cc-quic-layer}}, the QUIC
+  at the transport layer as described in {{cc-transport-layer}}, the
   implementation SHOULD expose an API to allow the application to configure the
   specifics of the congestion controller.
 * *Disable Congestion Controller*: If congestion control is to be implemented at
   the application layer as described in {{cc-application-layer}}, and the
   application layer is trusted to apply adequate congestion control as described
   in {{Section 7 of !RFC9002}} and {{Section 3.1 of !RFC8085}}, it is
-  RECOMMENDEDto allow the application to disable QUIC layer congestion control
-  entirely.
+  RECOMMENDEDto allow the application to disable transport layer congestion
+  control entirely.
 
 # Discussion
-
-## Flow Identifier
-
-{{!RFC9221}} suggests to use flow identifiers to multiplex different streams on
-QUIC Datagrams, which is implemented in {{encapsulation}}, but it is unclear how
-applications can combine RTP over QUIC with other data streams using the same
-QUIC connections. If the non-RTP data streams use the same flow identifies, too
-and the application can make sure, that flow identifiers are unique, there
-should be no problem. Flow identifiers could be problematic, if different
-specifications for RTP and non-RTP data streams over QUIC mandate different
-incompatible flow identifiers.
 
 ## Impact of Connection Migration
 
@@ -707,22 +659,7 @@ of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RTP over QUIC.
 
 # IANA Considerations {#iana-considerations}
 
-## Registration of a RTP over QUIC Identification String
-
-This document creates a new registration for the identification of RTP over QUIC
-in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
-{{?RFC7301}}.
-
-The "rtp-mux-quic" string identifies RTP over QUIC:
-
-  Protocol:
-  : RTP over QUIC
-
-  Identification Sequence:
-  : 0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")
-
-  Specification:
-  : This document
+This document has no IANA considerations.
 
 --- back
 
