@@ -173,7 +173,7 @@ the translator may need to rewrite the RTP packets to fit into the smaller MTU
 of the other protocol. Such a translator may need codec-specific knowledge to
 packetize the payload of the incoming RTP packets in smaller RTP packets.
 
-# Connection Establishment and ALPN
+# Connection Establishment and ALPN {#alpn}
 
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
 over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
@@ -211,44 +211,72 @@ draft-ietf-avtcore-rtp-over-quic-04 is identified using the string
 Non-compatible experiments that are based on these draft versions MUST append
 the string "-" and an experiment name to the identifier.
 
-# Encapsulation {#encapsulation}
+# Encapsulation
+
+This section describes the encapsulation of RTP/RTCP packets in QUIC.
 
 QUIC supports two transport methods: reliable streams {{!RFC9000}} and
 unreliable datagrams {{!RFC9221}}. This document specifies mappings of RTP to
-both of the transport modes.
+both of the transport modes. Senders MAY combine both modes by sending some
+RTP/RTCP packets over the same or different QUIC streams and others in QUIC
+datagrams.
 
-{{quic-streams}} and {{quic-datagrams}} explain the specifics of mapping of RTP
-to QUIC streams and QUIC datagrams respectively.
+{{multiplexing}} introduces a multiplexing mechanism that supports multiplexing
+RTP, RTCP, and, with some constraints, other non-RTP protocols. {{quic-streams}}
+and {{quic-datagrams}} explain the specifics of mapping RTP to QUIC streams and
+QUIC datagrams, respectively.
 
-For multiplexing different RTP/RTCP and other data streams on the same QUIC
-connection, RTP over QUIC uses a QUIC variable-length integer {{Section 16 of
-!RFC9000}} as flow identifier.
+## Multiplexing {#multiplexing}
 
-RTP and RTCP packets of a single RTP session MAY be sent using the same flow
-identifier (following the procedures defined in {{!RFC5761}}, or they MAY be
-sent using different flow identifiers. The respective mode of operation MUST be
-indicated using the appropriate signaling.
+RTP over QUIC uses flow identifiers to multiplex different RTP, RTCP, and
+non-RTP data streams on a single QUIC connection. A flow identifier is a QUIC
+variable-length integer as described in {{Section 16 of !RFC9000}}. Each flow
+identifier is associated with a stream of RTP packets, RTCP packets, or a data
+stream of a non-RTP protocol.
 
-RTP and RTCP packets of different RTP sessions MUST be sent using different flow
-identifiers.
+In a QUIC connection using the ALPN token defined in {{alpn}}, every QUIC
+datagram and every QUIC stream MUST start with a flow identifier. A peer MUST
+NOT send any data in a datagram or stream that is not associated with the flow
+identifier which started the datagram or stream.
 
-Differentiating RTP/RTCP packets of different RTP sessions from non-RTP/RTCP
-datagrams is the responsibility of the application by means of appropriate use
-of flow identifiers and the corresponding signaling.
+RTP and RTCP packets of different RTP sessions MUST use distinct flow
+identifiers. If peers wish to send multiple types of media in a single RTP
+session, they MAY do so by following {{?RFC8860}}.
 
-This specification defines two ways of carrying RTP packets in QUIC: 1) using
-reliable QUIC streams and 2) using unreliable QUIC DATAGRAMs. Senders MAY
-combine both modes by sending some RTP/RTCP packets over the same or different
-QUIC streams and others in QUIC datagrams.
+A single RTP session MAY be associated with one or two flow identifiers. Thus,
+it is possible to send RTP and RTCP packets belonging to the same session using
+different flow identifiers. RTP and RTCP packets of a single RTP session MAY use
+the same flow identifier (following the procedures defined in {{?RFC5761}}, or
+they MAY use different flow identifiers.
+
+The association between flow identifiers and data streams MUST be negotiated
+using appropriate signaling. Applications MAY send data using flow identifiers
+not associated with any RTP or RTCP stream. If a receiver cannot associate a
+flow identifier with any RTP/RTCP or non-RTP stream, it MAY drop the data
+stream.
+
+There are different use cases for sharing the same QUIC connection between RTP
+and non-RTP data streams. Peers might use the same connection to exchange
+signaling messages or exchange data while sending and receiving media streams.
+The semantics of non-RTP datagrams or streams are not in the scope of this
+document. Peers MAY use any protocol on top of the encapsulation described in
+this document.
+
+Flow identifiers introduce some overhead in addition to the header overhead of
+RTP/RTCP and QUIC. QUIC variable-length integers require between one and eight
+bytes depending on the number expressed. Thus, it is advisable to use low
+numbers first and only use higher ones if necessary due to an increased number
+of flows.
 
 ## QUIC Streams {#quic-streams}
 
 To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
-unidirectional QUIC stream. Unidirectional streams are used because there is no
-synchronous relationship between sent and received RTP/RTCP packets.
+unidirectional QUIC stream. Streams are unidirectional because there is no
+synchronous relationship between sent and received RTP/RTCP packets. A sender
+MAY open new QUIC streams for different packets using the same flow identifier,
+for example, to avoid head-of-line blocking.
 
-The encapsulation format for RTP over QUIC Streams is described in
-{{fig-stream-payload}}.
+{{fig-stream-payload}} shows the encapsulation format for RTP over QUIC Streams.
 
 ~~~
 Payload {
@@ -267,14 +295,12 @@ RTP/RTCP Payload:
 
 : Contains the RTP/RTCP payload; see {{fig-rtp-stream-payload}}
 
-The payload in a QUIC stream starts with the flow identifier and is followed by
-one or more RTP/RTCP payloads. All packets sent on a stream MUST belong to the
-RTP session with the same flow identifier. A sender MAY open new QUIC streams
-for different packets using the same flow identifier, for example to avoid
-head-of-line blocking.
+The payload in a QUIC stream starts with the flow identifier followed by one or
+more RTP/RTCP payloads. All RTP/RTCP payloads sent on a stream MUST belong to
+the RTP session with the same flow identifier.
 
 Each payload begins with a length field indicating the length of the RTP/RTCP
-packet and is followed by the packet itself, see {{fig-rtp-stream-payload}}.
+packet, followed by the packet itself, see {{fig-rtp-stream-payload}}.
 
 ~~~
 RTP/RTCP Payload {
@@ -293,46 +319,48 @@ RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-If it is known to either the sender, that a packet, which was not yet
-successfully and completely transmitted, is no longer needed, the sender MAY
-close the stream by sending a RESET\_STREAM frame.
+If a sender knows that a packet, which was not yet successfully and completely
+transmitted, is no longer needed, the sender MAY close the stream by sending a
+RESET\_STREAM frame.
 
-A translators that translates between two endpoints, which are both connected
-via QUIC, MUST forward RESET\_STREAM frames received from one end to the other
-end, unless it is forwarding the RTP packets on QUIC datagrams.
+A translator that translates between two endpoints, both connected via QUIC,
+MUST forward RESET\_STREAM frames received from one end to the other unless it
+forwards the RTP packets on QUIC datagrams.
 
 > **Editor's Note:** It might be desired to also allow the receiver to request
 > cancellation of a stream by sending STOP\_SENDING frame. However, this might
-> lead to unintended packet loss, because the receiver does not know which and
+> lead to unintended packet loss because the receiver does not know which and
 > how many packets follow on the same stream. If this feature is required, a
 > solution could be to require senders to open new streams for each application
 > data unit, as described in a previous version of this document.
 
-Large RTP packets sent on a stream will be fragmented in smaller QUIC frames,
-that are transmitted reliably and in order, such that a receiving application
-can read a complete packet from the stream. No retransmission has to be
-implemented by the application, since QUIC frames that are lost in transit are
-retransmitted by the QUIC connection.
+Large RTP packets sent on a stream will be fragmented into smaller QUIC frames.
+The QUIC frames are transmitted reliably and in order such that a receiving
+application can read a complete RTP packet from the stream as long as the stream
+is not closed with a RESET\_STREAM frame. No retransmission has to be
+implemented by the application since QUIC frames lost in transit are
+retransmitted by QUIC.
 
-Opening new streams for new packets implicitly limits the amount of packets
-which are concurrently in transit. The number of packets which have to be
-transmitted concurrently depends on a number of factors such as the number of
-RTP sessions within a QUIC connection, the rate at which new application data is
-produced and the maximum acceptable transmission delay of a given packet.
+Opening new streams for new packets MAY implicitly limit the number of packets
+concurrently in transit because the QUIC receiver provides an upper bound of
+parallel streams, which it can update using QUIC MAX\_STREAMS frames. The number
+of packets that have to be transmitted concurrently depends on several factors,
+such as the number of RTP streams within a QUIC connection, the bitrate of the
+media streams, and the maximum acceptable transmission delay of a given packet.
 Receivers are responsible for providing senders with enough credit to open new
 streams for new packets at any time.
 
 ## QUIC Datagrams {#quic-datagrams}
 
-RTP packets can be sent in QUIC datagrams. QUIC datagrams are an extension to
-QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame boundaries, thus a
-single RTP packet can be mapped to a single QUIC datagram, without the need for
-an additional framing. Senders SHOULD consider the header overhead associated
-with QUIC datagrams and ensure that the RTP/RTCP packets, including their
-payloads, QUIC, and IP headers and flow identifier, will fit into path MTU.
+Senders can also transmit RTP packets in QUIC datagrams. QUIC datagrams are an
+extension to QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame
+boundaries. Thus, a single RTP packet can be mapped to a single QUIC datagram
+without additional framing. Senders SHOULD consider the header overhead
+associated with QUIC datagrams and ensure that the RTP/RTCP packets, including
+their payloads, flow identifier, QUIC, and IP headers, will fit into path MTU.
 
-The encapsulation format for RTP over QUIC Datagrams is described in
-{{fig-dgram-payload}}.
+{{fig-dgram-payload}} shows the encapsulation format for RTP over QUIC
+Datagrams.
 
 ~~~
 Payload {
