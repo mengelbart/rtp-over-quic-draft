@@ -420,8 +420,13 @@ delay of acknowledgments sent by the receiver.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
     loss can be infered from QUIC's acknowledgments including all packets up to
     the latest acknowledged packet.
-  * *Highest Sequence Number received*: The highest sequence number received is
-    the sequence number of all RTP packets that were acknowledged.
+  * Highest Sequence Number received*: In RTCP, this field is a 32-bit field
+    that contains the highest sequence number a receiver received in an RTP
+    packet and the count of sequence number cycles the receiver has observed. A
+    sender sends RTP packets in QUIC packets and receives acknowledgments for
+    the QUIC packets. By keeping a mapping from a QUIC packet to the RTP packets
+    encapsulated in that QUIC packet, the sender can infer the highest sequence
+    number and number of cycles seen by the receiver from QUIC acknowledgments.
   * Interarrival jitter: If QUIC acknowledgments carry timestamps as described
     in one of the extensions referenced above, senders can infer from QUIC acks
     the interarrival jitter from the arrival timestamps.
