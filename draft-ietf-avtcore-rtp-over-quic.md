@@ -413,10 +413,10 @@ delay of acknowledgments sent by the receiver.
 
 * *Receiver Reports* (`PT=201`, `Name=RR`, {{!RFC3550}})
   * *Fraction lost*: The fraction of lost packets can be directly infered from
-    QUIC's acknowledgments. The calculation SHOULD include all packets up to the
+    QUIC's acknowledgments. The calculation SHOULD include all RTP packets up to the
     acknowledged RTP packet with the highest RTP sequence number. Later packets
     SHOULD be ignored, since they may still be in flight, unless other QUIC
-    packets that were sent after the datagram frame, were already acknowledged.
+    packets that were sent after the RTP packet, were already acknowledged.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
     loss can be infered from QUIC's acknowledgments including all packets up to
     the latest acknowledged packet.
