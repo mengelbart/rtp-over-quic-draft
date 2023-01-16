@@ -30,7 +30,7 @@ author:
 This document specifies a minimal mapping for encapsulating RTP and RTCP packets
 within QUIC. It also discusses how to leverage state from the QUIC
 implementation in the endpoints to reduce the exchange of RTCP packets and how
-to implement congestion control.
+to implement rate adaptation and congestion control.
 
 --- middle
 
@@ -76,7 +76,7 @@ when, and only when, they appear in all capitals, as shown here.
 The following terms are used:
 
 Datagram:
-: Datagrams exist in UDP as well as in QUICs unreliable datagram extension. If not explicitly noted
+: Datagrams exist in UDP as well as in QUIC's unreliable datagram extension. If not explicitly noted
 differently, the term datagram in this document refers to a QUIC Datagram as defined in
 {{!RFC9221}}.
 
@@ -113,7 +113,7 @@ On top of QUIC, this document defines an encapsulation of RTP and RTCP packets.
 
 The scope of this document is limited to carrying RTP over QUIC. It does not attempt
 to enhance QUIC for real-time media or define a replacement or evolution of RTP.
-Such new media transport protocols may be covered elsewhere, e.g., in the MOQ WG.
+Work to map other media transport protocols is under way elsewhere in the IETF.
 
 Protocols for negotiating connection setup and the associated parameters are defined
 separately, e.g., in {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
@@ -122,8 +122,8 @@ separately, e.g., in {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
 the QUIC transport protocol. RTP over QUIC allows the use of QUIC streams and
-unreliable QUIC datagrams to transport real-time data, and thus, the QUIC
-implementation MUST support QUICs unreliable datagram extension, if RTP packets
+QUIC datagrams to transport real-time data, and thus, the QUIC
+implementation MUST support QUIC's datagram extension, if RTP packets
 should be sent over QUIC datagrams. Since datagram frames cannot be fragmented,
 the QUIC implementation MUST also provide a way to query the maximum datagram
 size so that an application can create RTP packets that always fit into a QUIC
@@ -140,16 +140,16 @@ in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RTP over QUIC uses a
 flow identifier to replace the network address and port number to multiplex many
 RTP sessions over the same QUIC connection.
 
-A congestion controller can be plugged in to adapt the media bitrate to the
-available bandwidth. This document does not mandate any congestion control
+A rate adaptation algorithm can be plugged in to adapt the media bitrate to the
+available bandwidth. This document does not mandate any specific rate adaptation
 algorithm. Some examples include Network-Assisted Dynamic Adaptation (NADA)
 {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
-{{!RFC8298}}. These congestion control algorithms require some feedback about
+{{!RFC8298}}. These rate adaptation algorithms require some feedback about
 the network's performance to calculate target bitrates. Traditionally this
 feedback is generated at the receiver and sent back to the sender via RTCP.
 Since QUIC also collects some metrics about the network's performance, these
 metrics can be used to generate the required feedback at the sender-side and
-provide it to the congestion controller to avoid the additional overhead of the
+provide it to the rate adaptation algorithm to avoid the additional overhead of the
 RTCP stream.
 
 ## Supported RTP Topologies {#topologies}
@@ -215,8 +215,8 @@ the string "-" and an experiment name to the identifier.
 
 This section describes the encapsulation of RTP/RTCP packets in QUIC.
 
-QUIC supports two transport methods: reliable streams {{!RFC9000}} and
-unreliable datagrams {{!RFC9221}}. This document specifies mappings of RTP to
+QUIC supports two transport methods: streams {{!RFC9000}} and
+datagrams {{!RFC9221}}. This document specifies mappings of RTP to
 both of the transport modes. Senders MAY combine both modes by sending some
 RTP/RTCP packets over the same or different QUIC streams and others in QUIC
 datagrams.
@@ -399,7 +399,7 @@ In general, applications MAY send RTCP without any restrictions. This document
 specifies a baseline for replacing some of the RTCP packet types by mapping the
 contents to QUIC connection statistics. Future documents can extend this mapping
 for other RTCP format types. It is RECOMMENDED to expose relevant information
-from the QUIC layer to the application instead of exchanging addtional RTCP
+from the QUIC layer to the application instead of exchanging addtiaddtionalional RTCP
 packets, where applicable.
 
 This section discusses what information can be exposed from the QUIC connection
@@ -439,24 +439,26 @@ extension, that can improve the precision of the feedback from QUIC is
 {{!I-D.draft-ietf-quic-ack-frequency}}, which allows a sender to control the
 delay of acknowledgments sent by the receiver.
 
+The list of RTCP Receiver Reports that could be replaced by feedback from QUIC follows:
+
 * *Receiver Reports* (`PT=201`, `Name=RR`, {{!RFC3550}})
-  * *Fraction lost*: The fraction of lost packets can be directly infered from
+  * *Fraction lost*: When RTP packets are carried in QUIC datagrams, the fraction of lost packets can be directly inferred from
     QUIC's acknowledgments. The calculation SHOULD include all packets up to the
     acknowledged RTP packet with the highest RTP sequence number. Later packets
     SHOULD be ignored, since they may still be in flight, unless other QUIC
-    packets that were sent after the datagram frame, were already acknowledged.
+    packets that were sent after the RTP packet frame, were already acknowledged.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
-    loss can be infered from QUIC's acknowledgments including all packets up to
+    loss can be inferred from QUIC's acknowledgments including all packets up to
     the latest acknowledged packet.
   * *Highest Sequence Number received*: The highest sequence number received is
-    the sequence number of all RTP packets that were acknowledged.
-  * Interarrival jitter: If QUIC acknowledgments carry timestamps as described
+    the highest sequence number of all RTP packets carried in a QUIC packet that was acknowledged.
+  * *Interarrival jitter*: If QUIC acknowledgments carry timestamps as described
     in one of the extensions referenced above, senders can infer from QUIC acks
     the interarrival jitter from the arrival timestamps.
-  * Last SR: Similar to RTP arrival times, the arrival time of RTCP Sender
+  * *Last SR*: Similar to RTP arrival times, the arrival time of RTCP Sender
     Reports can be inferred from QUIC acknowledgments, if they include
     timestamps.
-  * Delay since last SR: This field is not required when the receiver reports
+  * *Delay since last SR*: This field is not required when the receiver reports
     are entirely replaced by QUIC feedback.
 * *Negative Acknowledgments* (`PT=205`, `FMT=1`, `Name=Generic NACK`,
   {{!RFC4585}})
@@ -464,17 +466,18 @@ delay of acknowledgments sent by the receiver.
     packets which the receiver considered lost. {{Section 6.2.1. of !RFC4585}}
     recommends to use this feature only, if the underlying protocol cannot
     provide similar feedback. QUIC does not provide negative acknowledgments,
-    but can detect lost packets through acknowledgments.
+    but can detect lost packets based on the Gap numbers contained in QUIC ACK frames.
 * *ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}})
   * ECN feedback packets report the count of observed ECN-CE marks. {{!RFC6679}}
     defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`) and a
     new report block for the extended reports which are listed below. QUIC
     supports ECN reporting through acknowledgments. If the connection supports
-    ECN, the reporting of ECN counts SHOULD be done using QUIC acknowledgments.
+    ECN, the reporting of ECN counts SHOULD be done using QUIC acknowledgments,
+    rather than RTCP ECN feedback reports.
 * *Congestion Control Feedback* (`PT=205`, `FMT=11`, `Name=CCFB`, {{!RFC8888}})
   * RTP Congestion Control Feedback contains acknowledgments, arrival timestamps
     and ECN notifications for each received packet. Acknowledgments and ECNs can
-    be infered from QUIC as described above. Arrival timestamps can be added
+    be inferred from QUIC as described above. Arrival timestamps can be added
     through extended acknowledgment frames as described in
     {{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}.
 * *Extended Reports* (`PT=207`, `Name=XR`, {{!RFC3611}})
@@ -496,10 +499,10 @@ Reports*. They are sent by media senders and additionally contain a NTP and a
 RTP timestamp and the number of packets and octets transmitted by the sender.
 The timestamps can be used by a receiver to synchronize streams. QUIC cannot
 provide a similar control information, since it does not know about RTP
-timestamps. A QUIC receiver can also not calculate the packet or octet counts,
+timestamps. Nor can a QUIC receiver calculate the packet or octet counts,
 since it does not know about lost datagrams. Thus, sender reports are required
 in RTP over QUIC to synchronize streams at the receiver. The sender reports
-SHOULD not contain any receiver report blocks, as the information can be infered
+SHOULD not contain any receiver report blocks, as the information can be inferred
 from the QUIC transport as explained in the previous section.
 
 Next to carrying transmission statistics, RTCP packets can contain application
@@ -519,22 +522,22 @@ congestion control to avoid overloading the network.
 
 QUIC is a congestion controlled transport protocol. Senders are required to
 employ some form of congestion control. The default congestion control specified
-for QUIC is an alogrithm similar to TCP NewReno, but senders are free to choose
+for QUIC is an alogrithm similar to TCP NewReno {{RFC9002}}, but senders are free to choose
 any congestion control algorithm as long as they follow the guidelines specified
 in {{Section 3 of ?RFC8085}}.
 
-RTP does not specify a congestion controller, but provides feedback formats for
-congestion control (e.g. {{!RFC8888}}) as well as different congestion control
+RTP does not specify a rate adaptation algorithm, but provides feedback formats for
+congestion control (e.g. {{!RFC8888}}) as well as different rate adaptation
 algorithms in separate RFCs (e.g. SCReAM {{!RFC8298}} and NADA {{!RFC8698}}).
-The congestion control algorithms for RTP are specifically tailored for
-real-time transmissions at low latencies. The available congestion control
+The rate adaptation algorithms for RTP are specifically tailored for
+real-time transmissions at low latencies. The available rate adaptation
 algorithms for RTP expose a `target_bitrate` that can be used to dynamically
 reconfigure media codecs to produce media at a rate that can be sent in
 real-time under the observed network conditions.
 
 This section defines two architectures for congestion control and bandwidth
-estimation for RTP over QUIC, but it does not mandate any specific congestion
-control algorithm to use. The section also discusses congestion control
+estimation for RTP over QUIC, but it does not mandate any specific rate adaptation algorithm
+to use. The section also discusses congestion control
 implications of using shared or multiple separate QUIC connections to send and
 receive multiple independent data streams.
 
@@ -561,7 +564,7 @@ information to QUICs acknowledgment frames, e.g.
 If congestion control is done by the QUIC implementation, the application needs
 a mechanism to query the currently available bandwidth to adapt media codec
 configurations. The employed congestion controller of the QUIC connection SHOULD
-expose such an API to the application. If a current bandwidth estimation is not
+expose such an API to the application. If a current bandwidth estimate is not
 available from the QUIC congestion controller, the sender can either implement
 an alternative bandwidth estimation at the application layer as described in
 {{cc-application-layer}} or a receiver can feedback the observed bandwidth
@@ -571,7 +574,7 @@ through RTCP, e.g., using {{?I-D.draft-alvestrand-rmcat-remb}}.
 
 If an application cannot access a bandwidth estimation from the QUIC layer, or
 the QUIC implementation does not support a delay-based, low-latency congestion
-control algorithm, it can alternatively implement a bandwidth estimation
+control algorithm, the application can alternatively implement a bandwidth estimation
 algorithm at the application layer. Calculating a bandwidth estimation at the
 application layer can be done using the same bandwidth estimation algorithms as
 described in {{congestion-control}} (NADA, SCReAM). The bandwidth estimation
@@ -608,7 +611,7 @@ allocation.
 
 The mapping described in the previous sections poses some interface requirements
 on the QUIC implementation. Although a basic mapping should work without any of
-these requirements most of the optimizations regarding congestion control and
+these requirements most of the optimizations regarding rate adaptation and
 RTCP mapping require certain functionalities to be exposed to the application.
 The following to sections contain a list of information that is required by an
 application to implement different optimizations ({{quic-api-read}}) and
@@ -665,7 +668,7 @@ previous sections of this document.
   the application layer as described in {{cc-application-layer}}, and the
   application layer is trusted to apply adequate congestion control as described
   in {{Section 7 of !RFC9002}} and {{Section 3.1 of !RFC8085}}, it is
-  RECOMMENDEDto allow the application to disable QUIC layer congestion control
+  RECOMMENDED to allow the application to disable QUIC layer congestion control
   entirely.
 
 # Discussion
@@ -771,5 +774,5 @@ Experimental results of the implementation can be found on
 # Acknowledgments
 {:numbered="false"}
 
-The authors would like to thank Spencer Dawkins, Lucas Pardue and David Schinazi
+The authors would like to thank David Schinazi, Lucas Pardue, Spencer Dawkins, and Vidhi Goel
 for their valuable comments and suggestions contributing to this document.
