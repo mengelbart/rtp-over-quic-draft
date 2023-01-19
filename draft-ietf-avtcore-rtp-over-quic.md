@@ -399,7 +399,7 @@ In general, applications MAY send RTCP without any restrictions. This document
 specifies a baseline for replacing some of the RTCP packet types by mapping the
 contents to QUIC connection statistics. Future documents can extend this mapping
 for other RTCP format types. It is RECOMMENDED to expose relevant information
-from the QUIC layer to the application instead of exchanging addtiaddtionalional RTCP
+from the QUIC layer to the application instead of exchanging additional RTCP
 packets, where applicable.
 
 This section discusses what information can be exposed from the QUIC connection
@@ -446,12 +446,17 @@ The list of RTCP Receiver Reports that could be replaced by feedback from QUIC f
     QUIC's acknowledgments. The calculation SHOULD include all packets up to the
     acknowledged RTP packet with the highest RTP sequence number. Later packets
     SHOULD be ignored, since they may still be in flight, unless other QUIC
-    packets that were sent after the RTP packet frame, were already acknowledged.
+    packets that were sent after the RTP packet, were already acknowledged.
   * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
     loss can be inferred from QUIC's acknowledgments including all packets up to
     the latest acknowledged packet.
-  * *Highest Sequence Number received*: The highest sequence number received is
-    the highest sequence number of all RTP packets carried in a QUIC packet that was acknowledged.
+  * *Highest Sequence Number received*: In RTCP, this field is a 32-bit field
+    that contains the highest sequence number a receiver received in an RTP
+    packet and the count of sequence number cycles the receiver has observed. A
+    sender sends RTP packets in QUIC packets and receives acknowledgments for
+    the QUIC packets. By keeping a mapping from a QUIC packet to the RTP packets
+    encapsulated in that QUIC packet, the sender can infer the highest sequence
+    number and number of cycles seen by the receiver from QUIC acknowledgments.
   * *Interarrival jitter*: If QUIC acknowledgments carry timestamps as described
     in one of the extensions referenced above, senders can infer from QUIC acks
     the interarrival jitter from the arrival timestamps.
@@ -522,7 +527,7 @@ congestion control to avoid overloading the network.
 
 QUIC is a congestion controlled transport protocol. Senders are required to
 employ some form of congestion control. The default congestion control specified
-for QUIC is an alogrithm similar to TCP NewReno {{RFC9002}}, but senders are free to choose
+for QUIC in {{!RFC9002}} is similar to TCP NewReno {{?RFC6582}}, but senders are free to choose
 any congestion control algorithm as long as they follow the guidelines specified
 in {{Section 3 of ?RFC8085}}.
 
