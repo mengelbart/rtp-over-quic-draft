@@ -471,7 +471,7 @@ The list of RTCP Receiver Reports that could be replaced by feedback from QUIC f
     packets which the receiver considered lost. {{Section 6.2.1. of !RFC4585}}
     recommends to use this feature only, if the underlying protocol cannot
     provide similar feedback. QUIC does not provide negative acknowledgments,
-    but can detect lost packets based on the Gap numbers contained in QUIC ACK frames.
+    but can detect lost packets based on the Gap numbers contained in QUIC ACK frames {{Section 6 of !RFC9002}}.
 * *ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}})
   * ECN feedback packets report the count of observed ECN-CE marks. {{!RFC6679}}
     defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`) and a
