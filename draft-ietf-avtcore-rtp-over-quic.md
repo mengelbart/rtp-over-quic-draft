@@ -30,7 +30,7 @@ author:
 This document specifies a minimal mapping for encapsulating RTP and RTCP packets
 within QUIC. It also discusses how to leverage state from the QUIC
 implementation in the endpoints to reduce the exchange of RTCP packets and how
-to implement rate adaptation and congestion control.
+to implement  congestion control and rate adaptation.
 
 --- middle
 
@@ -54,7 +54,7 @@ a single port used at either end of the connection.  This document defines a
 mapping of how to carry RTP over QUIC. The focus is on RTP and RTCP packet
 mapping and on reducing the amount of RTCP traffic by leveraging state
 information readily available within a QUIC endpoint. This document also
-describes different options for implementing congestion control for RTP over
+describes different options for implementing congestion control and rate adaptation for RTP over
 QUIC.
 
 The scope of this document is limited to unicast RTP/RTCP.
@@ -520,7 +520,7 @@ behavior of the sender. Since QUIC does not provide any kind of application
 layer control messaging, these RTCP packet types SHOULD be used in the same way
 as they would be used over any other transport protocol.
 
-# Congestion Control {#congestion-control}
+# Congestion Control and Rate Adaptaion {#congestion-control}
 
 Like any other application on the internet, RTP over QUIC needs to perform
 congestion control to avoid overloading the network.
@@ -531,9 +531,11 @@ for QUIC in {{!RFC9002}} is similar to TCP NewReno {{?RFC6582}}, but senders are
 any congestion control algorithm as long as they follow the guidelines specified
 in {{Section 3 of ?RFC8085}}.
 
-RTP does not specify a rate adaptation algorithm, but provides feedback formats for
-congestion control (e.g. {{!RFC8888}}) as well as different rate adaptation
-algorithms in separate RFCs (e.g. SCReAM {{!RFC8298}} and NADA {{!RFC8698}}).
+RTP itself does not specify a congestion control algorithm, but {{!RFC8888}} defines an RTCP
+feedback message intended to enable rate adaptation for interactive real-time traffic using RTP,
+and successful rate adaptation will accomoplish congestion control as well.
+Various rate adaptation algorithms for real-time media are defined in separate RFCs
+(e.g. SCReAM {{!RFC8298}} and NADA {{!RFC8698}}).
 The rate adaptation algorithms for RTP are specifically tailored for
 real-time transmissions at low latencies. The available rate adaptation
 algorithms for RTP expose a `target_bitrate` that can be used to dynamically
