@@ -520,7 +520,7 @@ behavior of the sender. Since QUIC does not provide any kind of application
 layer control messaging, these RTCP packet types SHOULD be used in the same way
 as they would be used over any other transport protocol.
 
-# Congestion Control and Rate Adaptaion {#congestion-control}
+# Congestion Control and Rate Adaptation {#congestion-control}
 
 Like any other application on the internet, RTP over QUIC needs to perform
 congestion control to avoid overloading the network.
