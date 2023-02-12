@@ -27,44 +27,122 @@ author:
 
 --- abstract
 
-This document specifies a minimal mapping for encapsulating RTP and RTCP packets
-within QUIC. It also discusses how to leverage state from the QUIC
-implementation in the endpoints to reduce the exchange of RTCP packets and how
-to implement  congestion control and rate adaptation.
+This document specifies a minimal mapping for encapsulating Real-time Transport
+Protocol (RTP) and RTP Control Protocol (RTCP) packets within the QUIC protocol.
+It also discusses how to leverage state from the QUIC implementation in the
+endpoints, in order to reduce the need to exchange RTCP packets and how to
+implement congestion control and rate adaptation without relying on RTCP
+feedback.
 
 --- middle
 
 # Introduction
+
+This document specifies a minimal mapping for encapsulating Real-time Transport
+Protocol (RTP) {{!RFC3550}} and RTP Control Protocol (RTCP) {{!RFC3550}} packets
+within the QUIC protocol ({{!RFC9000}}). It also discusses how to leverage state
+from the QUIC implementation in the endpoints, in order to reduce the need to
+exchange RTCP packets, and how to implement congestion control and rate
+adaptation without relying on RTCP feedback.
+
+## Background {#background}
 
 The Real-time Transport Protocol (RTP) {{!RFC3550}} is generally used to carry
 real-time media for conversational media sessions, such as video conferences,
 across the Internet.  Since RTP requires real-time delivery and is tolerant to
 packet losses, the default underlying transport protocol has been UDP, recently
 with DTLS on top to secure the media exchange and occasionally TCP (and possibly
-TLS) as a fallback.  With the advent of QUIC {{!RFC9000}} and, most notably, its
-unreliable DATAGRAM extension {{!RFC9221}}, another secure transport protocol
-becomes available.  QUIC and its DATAGRAMs combine desirable properties for
+TLS) as a fallback.
+
+This specification describes an application usage of QUIC ({{?RFC9308}}).
+As a baseline, the specification does not expect more than a standard QUIC implementation
+as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}},
+providing a secure end-to-end transport that is also expected to work well through NATs and firewalls.
+Beyond this baseline, real-time applications can benefit from QUIC extensions such as unreliable QUIC datagrams
+{{!RFC9221}}, which provides additional desirable properties for
 real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
-blocking) with a secure end-to-end transport that is also expected to work well
-through NATs and firewalls.
+blocking).
 
 Moreover, with QUIC's multiplexing capabilities, reliable and unreliable
 transport connections as, e.g., needed for WebRTC, can be established with only
-a single port used at either end of the connection.  This document defines a
-mapping of how to carry RTP over QUIC. The focus is on RTP and RTCP packet
-mapping and on reducing the amount of RTCP traffic by leveraging state
-information readily available within a QUIC endpoint. This document also
-describes different options for implementing congestion control and rate adaptation for RTP over
-QUIC.
+a single port used at either end of the connection.
 
-The scope of this document is limited to unicast RTP/RTCP.
+## What's in Scope for this Specification {#in-scope}
 
-This document does not cover signaling for session setup. Signaling for RTP over
-QUIC can be defined in separate documents such as
-{{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}} does for SDP.
+This document defines a mapping for RTP and RTCP over QUIC (this mapping is
+hereafter referred to as "RTP-over-QUIC"), and describes ways to reduce the
+amount of RTCP traffic by leveraging state information readily available within
+a QUIC endpoint. This document also describes different options for implementing
+congestion control and rate adaptation for RTP over QUIC.
 
-Note that this draft is similar in spirit to but differs in numerous ways from
-{{?I-D.draft-hurst-quic-rtp-tunnelling}}.
+This specification focuses on providing a secure encapsulation of RTP packets
+for transmission over QUIC. The expected usage is wherever RTP is used to carry
+media packets, allowing QUIC in place of other transport protocols such as TCP,
+UDP, SCTP, DTLS, etc. That is, we expect RTP-over-QUIC to be used in contexts in
+which a signaling protocol is used to announce or negotiate a media
+encapsulation and the associated transport parameters (such as IP address, port
+number). RTP-over-QUIC is not intended as a stand-alone media transport,
+although QUIC transport parameters could be statically configured.
+
+The above implies that RTP-over-QUIC is targeted at peer-to-peer operation; but
+it may also be used in client-server-style settings, e.g., when talking to a
+conference server as described in RFC 7667 ({{!RFC7667}}), or, if RTP-over-QUIC
+is used to replace RTSP ({{?RFC7826}}), to a media server.
+
+Moreover, this document describes how a QUIC implementation and its API can be
+extended to improve efficiency of the RTP-over-QUIC protocol operation.
+
+RTP-over-QUIC does not impact the usage of RTP Audio Video Profiles (AVP)
+({{!RFC3551}}), or any RTP-based mechanisms, even though it may render some of
+them unnecessary, e.g., Secure Real-Time Transport Prococol (SRTP)
+({{?RFC3711}}) might not be needed, because end-to-end security is already
+provided by QUIC, and double encryption by QUIC and by SRTP might have more
+costs than benefits.  Nor does RTP-over-QUIC limit the use of RTCP-based
+mechanisms, even though some information or functions obtained by using RTCP
+mechanisms may also be available from the underlying QUIC implementation by
+other means.
+
+Between two (or more) endpoints, RTP-over-QUIC supports multiplexing multiple
+RTP-based media streams within a single QUIC connection and thus using a single
+(destination IP address, destination port number, source IP address, source port
+number, protocol) 5-tuple..  We note that multiple independent QUIC connections
+may be established in parallel using the same destination IP address,
+destination port number, source IP address, source port number, protocol)
+5-tuple., e.g. to carry different media channels. These connections would be
+logically independent of one another.
+
+## What's Out of Scope for this Specification {#out-of-scope}
+
+This document does not attempt to enhance QUIC for real-time media or define a
+replacement for, or evolution of, RTP. Work to map other media transport
+protocols to QUIC is under way elsewhere in the IETF.
+
+RTP-over-QUIC is designed for use with point-to-point connections, because QUIC
+itself is not defined for multicast operation. The scope of this document is
+limited to unicast RTP/RTCP, even though nothing would or should prevent its use
+in multicast setups once QUIC supports multicast.
+
+RTP-over-QUIC does not define congestion control and rate adaptation algorithms
+for use with media. However, {{congestion-control}} discusses options for how
+congestion control and rate adaptation could be performed at the QUIC and/or at
+the RTP layer, and how information available at the QUIC layer could be exposed
+via an API for the benefit of RTP layer implementation.
+
+> **Editor's note:** Need to check whether {{congestion-control}} will also
+> describe the QUIC interface that's being exposed, or if that ends up somewhere
+> else in the document.
+
+RTP-over-QUIC does not define prioritization mechanisms when handling different
+media as those would be dependent on the media themselves and their
+relationships. Prioritization is left to the application using RTP-over-QUIC.
+
+This document does not cover signaling for session setup. SDP for RTP-over-QUIC
+is defined in separate documents such as
+{{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}, and can be carried in any signaling
+protocol that can carry SDP, including the Session Initiation Protocol (SIP)
+({{?RFC3261}}), Real-Time Protocols for Browser-Based Applications (RTCWeb)
+({{?RFC8825}}), or WebRTC-HTTP Ingestion Protocol (WHIP)
+({{?I-D.draft-ietf-wish-whip}}).
 
 # Terminology and Notation
 
@@ -73,10 +151,16 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
+> **Editor's note:** the list of terms below will almost certainly grow in size as the specification matures.
+
 The following terms are used:
 
 Congestion Control:
-: A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver, but has not been acknowledged by the receiver. This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, causing some outstanding data to be discarded before the receiver can receive the data and acknowledge it to the sender.
+: A mechanism to limit the aggregate amount of data that has been sent over a
+path to a receiver, but has not been acknowledged by the receiver. This prevents
+a sender from overwhelming the capacity of a path between a sender and a
+receiver, causing some outstanding data to be discarded before the receiver can
+receive the data and acknowledge it to the sender.
 
 Datagram:
 : Datagrams exist in UDP as well as in QUIC's unreliable datagram extension. If not explicitly noted
@@ -94,7 +178,14 @@ Media Encoder:
 packetized in RTP packets to be transmitted over QUIC.
 
 Rate Adaptation:
-: A mechanism to help a sender determine and adjust its sending rate, in order to maximize the amount of information that is sent to a receiver, without causing queues to build beyond a reasonable amount, causing "buffer bloat" and "jitter". Rate adapation is one way to accomplish congestion control for realtime media, especially when a sender has multiple media streams to the receiver, because the sum of all sending rates for media streams must not be high enough to cause congestion on the path these media streams share between sender and receiver.
+: A mechanism to help a sender determine and adjust its sending rate, in order
+to maximize the amount of information that is sent to a receiver, without
+causing queues to build beyond a reasonable amount, causing "buffer bloat" and
+"jitter". Rate adapation is one way to accomplish congestion control for
+realtime media, especially when a sender has multiple media streams to the
+receiver, because the sum of all sending rates for media streams must not be
+high enough to cause congestion on the path these media streams share between
+sender and receiver.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
@@ -104,25 +195,6 @@ Sender:
 
 Packet diagrams in this document use the format defined in {{Section 1.3 of RFC9000}} to
 illustrate the order and size of fields.
-
-# Scope
-
-RTP over QUIC mostly defines an application usage of QUIC {{?I-D.draft-ietf-quic-applicability}}.
-As a baseline, the specification does not expect more than a standard QUIC implementation
-as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}}.
-Nevertheless, the specification can benefit from QUIC extesions such as QUIC datagrams
-{{!RFC9221}} as described below.
-Moreover, this document describes how a QUIC implementation and its API can be
-extended to improve efficiency of the protocol operation.
-
-On top of QUIC, this document defines an encapsulation of RTP and RTCP packets.
-
-The scope of this document is limited to carrying RTP over QUIC. It does not attempt
-to enhance QUIC for real-time media or define a replacement or evolution of RTP.
-Work to map other media transport protocols is under way elsewhere in the IETF.
-
-Protocols for negotiating connection setup and the associated parameters are defined
-separately, e.g., in {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}.
 
 # Protocol Overview
 
@@ -787,5 +859,11 @@ Experimental results of the implementation can be found on
 # Acknowledgments
 {:numbered="false"}
 
-The authors would like to thank Bernard Aboba, David Schinazi, Lucas Pardue, Sergio Garcia Murillo,  Spencer Dawkins, and Vidhi Goel
-for their valuable comments and suggestions contributing to this document.
+Early versions of this document were similar in spirit to
+{{?I-D.draft-hurst-quic-rtp-tunnelling}}, although many details differ. The
+authors would like to thank Sam Hurst for providing his thoughts about how QUIC
+could be used to carry RTP.
+
+The authors would like to thank Bernard Aboba, David Schinazi, Lucas Pardue,
+Sergio Garcia Murillo,  Spencer Dawkins, and Vidhi Goel for their valuable
+comments and suggestions contributing to this document.
