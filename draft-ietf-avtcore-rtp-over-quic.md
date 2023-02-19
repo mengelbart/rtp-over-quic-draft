@@ -781,5 +781,5 @@ Experimental results of the implementation can be found on
 # Acknowledgments
 {:numbered="false"}
 
-The authors would like to thank David Schinazi, Lucas Pardue, Spencer Dawkins, and Vidhi Goel
+The authors would like to thank Bernard Aboba, David Schinazi, Lucas Pardue, Sergio Garcia Murillo,  Spencer Dawkins, and Vidhi Goel
 for their valuable comments and suggestions contributing to this document.
