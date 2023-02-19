@@ -76,7 +76,7 @@ when, and only when, they appear in all capitals, as shown here.
 The following terms are used:
 
 Congestion Control:
-: A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver, but has not been acknowledged by the receiver. This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, causing some outstanding data to be discarded before it can be received by the receiver and acknowledged to the sender.
+: A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver, but has not been acknowledged by the receiver. This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, causing some outstanding data to be discarded before the receiver can receive the data and acknowledge it to the sender.
 
 Datagram:
 : Datagrams exist in UDP as well as in QUIC's unreliable datagram extension. If not explicitly noted
@@ -94,7 +94,7 @@ Media Encoder:
 packetized in RTP packets to be transmitted over QUIC.
 
 Rate Adaptation:
-: A mechanism to help a sender determine its sending rate, in order to maximize the amount of information that is sent to a receiver, without causing queues to build beyond a reasonable amount, causing "buffer bloat" and "jitter". Rate adapation is distinct from congestion control, because if a sender has multiple media streams to the receiver, the sending rate for each media stream, taken in total, must not be high enough to cause congestion on the path these media streams share between sender and receiver.
+: A mechanism to help a sender determine and adjust its sending rate, in order to maximize the amount of information that is sent to a receiver, without causing queues to build beyond a reasonable amount, causing "buffer bloat" and "jitter". Rate adapation is one way to accomplish congestion control for realtime media, especially when a sender has multiple media streams to the receiver, because the sum of all sending rates for media streams must not be high enough to cause congestion on the path these media streams share between sender and receiver.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
