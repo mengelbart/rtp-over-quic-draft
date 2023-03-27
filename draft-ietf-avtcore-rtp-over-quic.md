@@ -25,6 +25,13 @@ author:
     organization: Technical University Munich
     email: mathis.engelbart@gmail.com
 
+informative:
+
+  3GPP-TS-26.114:
+    target: (https://portal.3gpp.org/desktopmodules/Specifications/specificationId=1404)
+    title: "IP Multimedia Subsystem (IMS); Multimedia telephony; Media handling and interaction"
+    date: 2023-01-05
+
 --- abstract
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
@@ -672,6 +679,111 @@ defined in {{!RFC4585}}, which can for example be used to control the codec
 behavior of the sender. Since QUIC does not provide any kind of application
 layer control messaging, these RTCP packet types SHOULD be used in the same way
 as they would be used over any other transport protocol.
+
+## What QUIC feedback replaces AVP and AVPF?
+One could assume that the choice of AVP vs. AVPF is independent of the underlying transport.
+In the minimal case, i.e., without any optimizations, RTP-over-QUIC reduces to a 1:1 mapping
+of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
+
+### RTCP Control Packet Types
+
+| Name | Shortcut | PT | Defining Document | Replaced by QUIC | Comments |
+| ---- | -------- | -- | ----------------- | ---------------- | -------- |
+| SMPTE time-code mapping | SMPTETC | 194 | {{?RFC5484}}  | no | |
+| Extended inter-arrival jitter report | IJ | 195 | {{?RFC5450}} | possibly | Jitter can be calculated using QUIC timestamps instead. *IJ* was introduced to improve jitter reports when RTP packets are not sent at the time indicated by their RTP timestamp. QUIC timestamps don't have this problem. |
+| Sender Reports | SR | 200 | {{?RFC3550}}  | partly | - NTP timestamps cannot be replaced by QUIC and are required for synchronization (but see note below)<br>- packet and octet counts cannot be provided by QUIC<br>- see below for *RR*s contained in *SR*s |
+| Receiver Reports | RR | 201 | {{?RFC3550}} | possibly | - *Fration Lost*/*Cumulative Lost*/*Highest Sequence Number received* can directly be inferred from QUIC ACKs<br>- *Interarrival Jitter*/*Last SR* need a QUIC timestamp extension. Using QUIC ts is slightly different because it ignores transmission offsets from RTP timestamps, but that seems like a good thing (see *IJ* above) |
+| Source description | SDES | 202 | {{?RFC3550}}  | no | |
+| Goodbye | BYE | 203 | {{?RFC3550}}  | possibly | using QUIC CONNECTION_CLOSE frame? |
+| Application-defined | APP | 204 | {{?RFC3550}}  | no | |
+| Generic RTP Feedback | RTPFB | 205 | {{?RFC4585}} | partly | see table below |
+| Payload-specific | PSFB | 205 | {{?RFC4585}}  | | see table below |
+| extended report | XR | 207 | {{?RFC3611}} | partly | see table below |
+| AVB RTCP packet | AVB | | |
+| Receiver Summary Information | RSI | | 209 | {{?RFC5760}}
+| Port Mapping | TOKEN | 210 | {{?RFC6284}}  | no? | |
+| IDMS Settings | IDMS | 211 | {{?RFC7272}}  | no | |
+| Reporting Group Reporting Sources | RGRS | 212 | {{?RFC8861}} | |
+| Splicing Notification Message | SNM | 213 | {{?RFC8286}} | no | |
+
+#### Notes
+
+* *SR* NTP timestamps: We cannot send NTP timestamps in the same format the SRs use, but couldn't a QUIC timestamp extension provide the same information?
+
+### Generic RTP Feedback (RTPFB)
+
+| Name     | Long Name | Document | Replaced by QUIC | Comments |
+| -------- | --------- | -------- | ---------------- | -------- |
+| Generic NACK | Generic negative acknowledgement | {{?RFC4585}}   | possibly | Using QUIC ACKs |
+| TMMBR | Temporary Maximum Media Stream Bit Rate Request | {{?RFC5104}}  | no | |
+| TMMBN | Temporary Maximum Media Stream Bit Rate Notification | {{?RFC5104}}   | no | |
+| RTCP-SR-REQ | RTCP Rapid Resynchronisation Request | {{?RFC6051}}  | no | |
+| RAMS | Rapid Acquisition of Multicast Sessions | {{?RFC6285}} | no | |
+| TLLEI | Transport-Layer Third-Party Loss Early Indication | {{?RFC6642}}  | no? | no way of telling QUIC peer "don't ask for retransmission", but QUIC would not ask that anyway, only RTCP NACK? |
+| RTCP-ECN-FB | RTCP ECN Feedback | {{?RFC6679}} | partly | QUIC does not provide info about duplicates |
+| PAUSE-RESUME | Media Pause/Resume | {{?RFC7728}} | no | |
+| DBI | Delay Budget Information (DBI) | {{3GPP-TS-26.114}} | |
+| CCFB | RTP Congestion Control Feedback | {{?RFC8888}} | possibly | - *ECN*/*ACK* natively in QUIC<br>- timestamps require QUIC timestamp extension |
+
+### Payload-specific RTP Feedback (PSFB)
+
+| Name     | Long Name | Document | Replaced by QUIC | Comments |
+| -------- | --------- | -------- | ---------------- | -------- |
+| PLI | Picture Loss Indication | {{?RFC4585}}   | no | |
+| SLI | Slice Loss Indication | {{?RFC4585}}   | no | |
+| RPSI | Reference Picture Selection Indication | {{?RFC4585}}   | no | |
+| FIR | Full Intra Request Command | {{?RFC5104}}   | no | |
+| TSTR | Temporal-Spatial Trade-off Request | {{?RFC5104}}   | no | |
+| TSTN | Temporal-Spatial Trade-off Notification | {{?RFC5104}}   | no | |
+| VBCM | Video Back Channel Message | {{?RFC5104}}   | no | |
+| PSLEI | Payload-Specific Third-Party Loss Early Indication | {{?RFC6642}}   | no | |
+| ROI | Video region-of-interest (ROI) | {{3GPP-TS-26.114}}  | no | |
+| LRR | Layer Refresh Request Command | {{?I-D.draft-ietf-avtext-lrr-07}}| no | |
+| AFB | Application Layer Feedback | {{?RFC4585}}   | no | |
+
+### Extended Reports
+
+| Name | Document | Replaced by QUIC | Comments |
+| ---- | -------- | ---------------- | -------- |
+| Loss RLE Report Block | {{?RFC3611}} | yes | QUIC ACKs |
+| Duplicate RLE Report Block | {{?RFC3611}}  | no | |
+| Packet Receipt Times Report Block | {{?RFC3611}}  | possibly | - Could be replaced by QUIC timestamps.<br>- Would not use RTP timestamps.<br>- Only if QUIC timestamps for **every** packet is included (e.g. *draft-smith-quic-receive-ts* but not *draft-huitema-quic-ts*) |
+| Receiver Reference Time Report Block | {{?RFC3611}}  | possibly | QUIC timestamps |
+| DLRR Report Block | {{?RFC3611}}  | possibly | QUIC ACKs and QUIC timestamps. In general, however, it seems to be useful only to calculate RTT, which is natively available in QUIC. |
+| Statistics Summary Report Block | {{?RFC3611}}  | partly | - loss and jitter as described in other reports above.<br>- *TTL*/*HL*/*Duplicates* not available in QUIC |
+| VoIP Metrics Report Block | {{?RFC3611}}  | no | as in other reports above, only loss and RTT available |
+| RTCP XR | {{?RFC5093}} | no | |
+| Texas Instruments Extended VoIP Quality Block | | | |
+| Post-repair Loss RLE Report Block | {{?RFC5725}} | no | |
+| Multicast Acquisition Report Block | {{?RFC6332}}  | no | |
+| IDMS Report Block | {{?RFC7272}} | no | |
+| ECN Summary Report | {{?RFC6679}} | partly | QUIC does not provide info about duplicates |
+| Measurement Information Block | {{?RFC6776}} | no | |
+| Packet Delay Variation Metrics Block | {{?RFC6798}} | no | QUIC timestamps may be used to achieve the same goal? |
+| Delay Metrics Block | {{?RFC6843}} | no | QUIC has RTT and can provide timestamps for one-way delay, but no way of informing peers about end-to-end statistics when QUIC is only used on one segment of the path. |
+| Burst/Gap Loss Summary Statistics Block | {{?RFC7004}} | | QUIC ACKs? |
+| Burst/Gap Discard Summary Statistics Block | {{?RFC7004}}  | no | |
+| Frame Impairment Statistics Summary | {{?RFC7004}}   | no | |
+| Burst/Gap Loss Metrics Block | {{?RFC6958}} | | QUIC ACKs? |
+| Burst/Gap Discard Metrics Block | {{?RFC7003}} | no | |
+| MPEG2 Transport Stream PSI-Independent Decodability Statistics Metrics Block | {{?RFC6990}} | no | |
+| De-Jitter Buffer Metrics Block | {{?RFC7005}} | no | |
+| Discard Count Metrics Block | {{?RFC7002}} | no | |
+| DRLE (Discard RLE Report) | {{?RFC7097}} | no | |
+| BDR (Bytes Discarded Report) | {{?RFC7243}} | no | |
+| RFISD (RTP Flows Initial Synchronization Delay) | {{?RFC7244}}  | no | |
+| RFSO (RTP Flows Synchronization Offset Metrics Block) | {{?RFC7244}} | no | |
+| MOS Metrics Block | {{?RFC7266}}  | no | |
+| LCB (Loss Concealment Metrics Block) | {{?RFC7294, Section 4.1}} | no | |
+| CSB (Concealed Seconds Metrics Block) | {{?RFC7294, Section 4.1}}  | no | |
+| MPEG2 Transport Stream PSI Decodability Statistics Metrics Block | {{?RFC7380}}  | no | |
+| Post-Repair Loss Count Metrics Report Block | {{?RFC7509}} | no | |
+| Video Loss Concealment Metric Report Block | {{?RFC7867}} | no | |
+| Independent Burst/Gap Discard Metrics Block | {{?RFC8015}}  | no | |
+
+### RTP Header extensions?
+
+* *Transmission offset* {{?RFC5450}} is used for better jitter calculation. If we have QUIC timestamps, we don't need to work around RTP timestamps offsets because we can use the QUIC timestamps to calculate network jitter.
 
 # Congestion Control and Rate Adaptation {#congestion-control}
 
