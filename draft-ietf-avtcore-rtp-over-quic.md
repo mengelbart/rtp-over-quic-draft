@@ -263,6 +263,32 @@ the translator may need to rewrite the RTP packets to fit into the smaller MTU
 of the other protocol. Such a translator may need codec-specific knowledge to
 packetize the payload of the incoming RTP packets in smaller RTP packets.
 
+Additional details are provided in the following table.
+
+| RFC 7667 Section | RFC 7667 Shortcut | Supported by RTP over QUIC | Comments |
+| --------         | --------          | --------                   | -------- |
+| [3.1](https://datatracker.ietf.org/doc/html/rfc7667#section-3.1) | Topo-Point-to-Point | yes | |
+| [3.2.1](https://datatracker.ietf.org/doc/html/rfc7667#section-3.2.1) | Topo-PtP-Translator | possibly | may need to adapt MTU |
+| [3.2.1.1](https://datatracker.ietf.org/doc/html/rfc7667#section-3.2.1.1) | Topo-PtP-Relay | possibly | may need to adapt MTU |
+| [3.2.1.2](https://datatracker.ietf.org/doc/html/rfc7667#section-3.2.1.2) | Topo-Trn-Translator | possibly | may need to adapt MTU [^1]  |
+| [3.2.1.3](https://datatracker.ietf.org/doc/html/rfc7667#section-3.2.1.3) | Topo-Media-Translator | possibly | may need to adapt MTU |
+| [3.2.2](https://datatracker.ietf.org/doc/html/rfc7667#section-3.2.2) | Topo-Back-To-Back | possibly | may need to adapt MTU |
+| [3.3.1](https://datatracker.ietf.org/doc/html/rfc7667#section-3.3.1) | Topo-ASM | no | QUIC does not support multicast |
+| [3.3.2](https://datatracker.ietf.org/doc/html/rfc7667#section-3.3.2) | Topo-SSM | no (?)[^2] | QUIC does not support multicast |
+| [3.3.3](https://datatracker.ietf.org/doc/html/rfc7667#section-3.3.3) | Topo-SSM-RAMS | partly | QUIC can only be used in the unicast PtP RTP session between Burst/Retransmission Source and Receiver |
+| [3.4](https://datatracker.ietf.org/doc/html/rfc7667#section-3.4) | Topo-Mesh | yes | |
+| [3.5.1](https://datatracker.ietf.org/doc/html/rfc7667#section-3.5.1) | Topo-PtM-Trn-Translator | possibly | QUIC does not support multicast,<br>may need to adapt MTU |
+| [3.6](https://datatracker.ietf.org/doc/html/rfc7667#section-3.6) | Topo-Mixer | possibly | QUIC does not support multicast |
+| [3.7](https://datatracker.ietf.org/doc/html/rfc7667#section-3.7) | Selective Forwarding Middlebox | yes | |
+| [3.8](https://datatracker.ietf.org/doc/html/rfc7667#section-3.8) | Topo-Video-switch-MCU | possibly | may need to adapt MTU |
+| [3.9](https://datatracker.ietf.org/doc/html/rfc7667#section-3.9) | Topo-RTCP-terminating-MCU | possibly | may need to adapt MTU |
+| [3.10](https://datatracker.ietf.org/doc/html/rfc7667#section-3.10) | Topo-Split-Terminal | yes | |
+| [3.11](https://datatracker.ietf.org/doc/html/rfc7667#section-3.11) | Topo-Asymmetric[^3] | Possibly | No multicast,<br> may need to adapt MTU |
+
+[^1]: (Note that RTP-over-QUIC provides mandatory security, and other RTP transports do not. For this reason, a Topo-Trn-Translator providing an RTP-over-QUIC path MUST forward RTP packets on non-RTP-over-QUIC paths using a secure AVP profile ({{?RFC3711}}, {{?RFC4585}}, or another AVP profile providing equivalent RTP-level security), whether or not RTP-over-QUIC senders are using a secure AVP profile)
+[^2]: (The topology refers to a *Distribution Source*, which receives and relays RTP from a number of different media senders before relaying it to the receivers via multicast. QUIC could be used between the senders and the *Distribution Source*, if it is not just a logical entity but a real node)
+[^3]: (Quote from {{?RFC7667}}: *This topology is so problematic and it is so easy to get the RTCP processing wrong, that it is NOT RECOMMENDED to implement this topology.*)
+
 # Connection Establishment and ALPN {#alpn}
 
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
