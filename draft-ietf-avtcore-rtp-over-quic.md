@@ -562,11 +562,13 @@ for other RTCP format types. It is RECOMMENDED to expose relevant information
 from the QUIC layer to the application instead of exchanging additional RTCP
 packets, where applicable.
 
-This section discusses what information can be exposed from the QUIC connection
+{{transport-layer-feedback}} and {{al-repair}} discuss what information can be exposed from the QUIC connection
 layer to reduce the RTCP overhead and which type of RTCP messages cannot be
 replaced by similar feedback from the transport layer. The list of RTCP packets
 in this section is not exhaustive and similar considerations SHOULD be taken
 into account before exchanging any other type of RTCP control packets.
+
+A more complete analysis of RTCP Control Packet Types, Generic RTP Feedback (RTPFB), Payload-specific RTP Feedback (PSFB), Extended Reports, and RTP Header Extensions is provided in {{control-packets}}, {{generic-feedback}}, {{payload-specific-feedback}},  {{extended-reports}}, and {{rtp-header-extensions}}, respectively.
 
 ## Transport Layer Feedback {#transport-layer-feedback}
 
@@ -652,7 +654,7 @@ The list of RTCP Receiver Reports that could be replaced by feedback from QUIC f
     in QUIC, too. For other report blocks, it SHOULD be evaluated individually,
     if the contained information can be transmitted using QUIC instead.
 
-## Application Layer Repair and other Control Messages
+## Application Layer Repair and other Control Messages {#al-repair}
 
 While the previous section presented some RTCP packet that can be replaced by
 QUIC features, QUIC cannot replace all of the available RTCP packet types. This
@@ -680,12 +682,7 @@ behavior of the sender. Since QUIC does not provide any kind of application
 layer control messaging, these RTCP packet types SHOULD be used in the same way
 as they would be used over any other transport protocol.
 
-## What QUIC feedback replaces AVP and AVPF?
-One could assume that the choice of AVP vs. AVPF is independent of the underlying transport.
-In the minimal case, i.e., without any optimizations, RTP-over-QUIC reduces to a 1:1 mapping
-of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
-
-### RTCP Control Packet Types
+## RTCP Control Packet Types {#control-packets}
 
 | Name | Shortcut | PT | Defining Document | Replaced by QUIC | Comments |
 | ---- | -------- | -- | ----------------- | ---------------- | -------- |
@@ -706,11 +703,11 @@ of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
 | Reporting Group Reporting Sources | RGRS | 212 | {{?RFC8861}} | |
 | Splicing Notification Message | SNM | 213 | {{?RFC8286}} | no | |
 
-#### Notes
+### Notes
 
 * *SR* NTP timestamps: We cannot send NTP timestamps in the same format the SRs use, but couldn't a QUIC timestamp extension provide the same information?
 
-### Generic RTP Feedback (RTPFB)
+## Generic RTP Feedback (RTPFB) {#generic-feedback}
 
 | Name     | Long Name | Document | Replaced by QUIC | Comments |
 | -------- | --------- | -------- | ---------------- | -------- |
@@ -725,7 +722,7 @@ of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
 | DBI | Delay Budget Information (DBI) | {{3GPP-TS-26.114}} | |
 | CCFB | RTP Congestion Control Feedback | {{?RFC8888}} | possibly | - *ECN*/*ACK* natively in QUIC<br>- timestamps require QUIC timestamp extension |
 
-### Payload-specific RTP Feedback (PSFB)
+## Payload-specific RTP Feedback (PSFB) {#payload-specific-feedback}
 
 | Name     | Long Name | Document | Replaced by QUIC | Comments |
 | -------- | --------- | -------- | ---------------- | -------- |
@@ -741,7 +738,7 @@ of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
 | LRR | Layer Refresh Request Command | {{?I-D.draft-ietf-avtext-lrr-07}}| no | |
 | AFB | Application Layer Feedback | {{?RFC4585}}   | no | |
 
-### Extended Reports
+## Extended Reports {#extended-reports}
 
 | Name | Document | Replaced by QUIC | Comments |
 | ---- | -------- | ---------------- | -------- |
@@ -781,7 +778,7 @@ of RTP/RTCP packets onto UDP datagrams with a "QUIC encapsulation".
 | Video Loss Concealment Metric Report Block | {{?RFC7867}} | no | |
 | Independent Burst/Gap Discard Metrics Block | {{?RFC8015}}  | no | |
 
-### RTP Header extensions?
+## RTP Header extensions {#rtp-header-extensions}
 
 * *Transmission offset* {{?RFC5450}} is used for better jitter calculation. If we have QUIC timestamps, we don't need to work around RTP timestamps offsets because we can use the QUIC timestamps to calculate network jitter.
 
