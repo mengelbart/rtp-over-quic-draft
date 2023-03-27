@@ -167,18 +167,27 @@ Datagram:
 differently, the term datagram in this document refers to a QUIC Datagram as defined in
 {{!RFC9221}}.
 
+Delay-based or Low-latency congestion control algorithm:
+: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of congestion.
+
 Endpoint:
 : A QUIC server or client that participates in an RTP over QUIC session.
 
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
 
+Loss-based congestion control algorithm:
+: A congestion control algorithm that uses packet loss, or an Explicit Congestion Notification (ECN) that is interpreted as loss (as in {{?RFC3168}}), as a signal for congestion. Loss-based congestion control algorithms allow senders to send data on a path until packets are dropped by intermediary network elements, which the algorithm treats as a signal of congestion.
+
 Media Encoder:
 : An entity that is used by an application to produce a stream of encoded media, which can be
 packetized in RTP packets to be transmitted over QUIC.
 
+QUIC congestion controller:
+: A software component of an application's QUIC implementation that implements a congestion control algorithm.
+
 Rate Adaptation:
-: A mechanism to help a sender determine and adjust its sending rate, in order
+: A congestion control mechanism that helps a sender determine and adjust its sending rate, in order
 to maximize the amount of information that is sent to a receiver, without
 causing queues to build beyond a reasonable amount, causing "buffer bloat" and
 "jitter". Rate adapation is one way to accomplish congestion control for
@@ -189,6 +198,9 @@ sender and receiver.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
+
+RTP congestion controller:
+: A software component of an application's RTP implementation that implements a congestion control algorithm.
 
 Sender:
 : An endpoint that sends media in RTP packets and may send or receive RTCP packets.
