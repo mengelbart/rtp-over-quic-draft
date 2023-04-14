@@ -50,7 +50,8 @@ Protocol (RTP) {{!RFC3550}} and RTP Control Protocol (RTCP) {{!RFC3550}} packets
 within the QUIC protocol ({{!RFC9000}}). It also discusses how to leverage state
 from the QUIC implementation in the endpoints, in order to reduce the need to
 exchange RTCP packets, and how to implement congestion control and rate
-adaptation without relying on RTCP feedback.
+adaptation without relying on RTCP feedback. The mapping described in this
+document is called RTP over QUIC (RoQ).
 
 ## Background {#background}
 
@@ -80,7 +81,7 @@ This document defines a mapping for RTP and RTCP over QUIC (this mapping is
 hereafter referred to as "RTP-over-QUIC"), and describes ways to reduce the
 amount of RTCP traffic by leveraging state information readily available within
 a QUIC endpoint. This document also describes different options for implementing
-congestion control and rate adaptation for RTP over QUIC.
+congestion control and rate adaptation for RoQ.
 
 This specification focuses on providing a secure encapsulation of RTP packets
 for transmission over QUIC. The expected usage is wherever RTP is used to carry
@@ -178,7 +179,7 @@ Delay-based or Low-latency congestion control algorithm:
 : A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of congestion.
 
 Endpoint:
-: A QUIC server or client that participates in an RTP over QUIC session.
+: A QUIC server or client that participates in an RoQ session.
 
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
@@ -218,7 +219,7 @@ illustrate the order and size of fields.
 # Protocol Overview
 
 This document introduces a mapping of the Real-time Transport Protocol (RTP) to
-the QUIC transport protocol. RTP over QUIC allows the use of QUIC streams and
+the QUIC transport protocol. RoQ allows the use of QUIC streams and
 QUIC datagrams to transport real-time data, and thus, the QUIC
 implementation MUST support QUIC's datagram extension, if RTP packets
 should be sent over QUIC datagrams. Since datagram frames cannot be fragmented,
@@ -227,13 +228,13 @@ size so that an application can create RTP packets that always fit into a QUIC
 datagram frame.
 
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different
-transport addresses to allow multiplexing between them. RTP over QUIC uses a
+transport addresses to allow multiplexing between them. RoQ uses a
 different approach to leverage the advantages of QUIC connections without
 managing a separate QUIC connection per RTP session. QUIC does not provide
 demultiplexing between different flows on datagrams but suggests that an
 application implement a demultiplexing mechanism if required. An example of such
 a mechanism are flow identifiers prepended to each datagram frame as described
-in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RTP over QUIC uses a
+in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RoQ uses a
 flow identifier to replace the network address and port number to multiplex many
 RTP sessions over the same QUIC connection.
 
@@ -251,24 +252,24 @@ RTCP stream.
 
 ## Supported RTP Topologies {#topologies}
 
-RTP over QUIC only supports some of the RTP topologies described in
+RoQ only supports some of the RTP topologies described in
 {{?RFC7667}}. Most notably, due to QUIC {{!RFC9000}} being a purely IP unicast
-protocol at the time of writing, RTP over QUIC cannot be used as a transport
+protocol at the time of writing, RoQ cannot be used as a transport
 protocol for any of the paths that rely on IP multicast in several multicast
 topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
 
 Some "multicast topologies" can include IP unicast paths (e.g., *Topo-SSM*,
-*Topo-SSM-RAMS*). In these cases, the unicast paths can use RTP over QUIC.
+*Topo-SSM-RAMS*). In these cases, the unicast paths can use RoQ.
 
 RTP supports different types of translators and mixers. Whenever a middlebox
 such as a translator or a mixer needs to access the content of RTP/RTCP-packets,
 the QUIC connection has to be terminated at that middlebox.
 
-RTP over QUIC streams (see {{quic-streams}}) can support much larger RTP
+RoQ streams (see {{quic-streams}}) can support much larger RTP
 packet sizes than other transport protocols such as UDP can, which can lead to
-problems with transport translators which translate from RTP over QUIC to RTP
+problems with transport translators which translate from RoQ to RTP
 over a different transport protocol. A similar problem can occur if a translator
-needs to translate from RTP over UDP to RTP over QUIC datagrams, where the MTU
+needs to translate from RTP over UDP to RoQ datagrams, where the MTU
 of a QUIC datagram may be smaller than the MTU of a UDP datagram. In both cases,
 the translator may need to rewrite the RTP packets to fit into the smaller MTU
 of the other protocol. Such a translator may need codec-specific knowledge to
@@ -335,8 +336,8 @@ topology.*
 
 # Connection Establishment and ALPN {#alpn}
 
-QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RTP
-over QUIC uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
+QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RoQ
+uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
 {{iana-considerations}}.
 
 Note that the use of a given RTP profile is not reflected in the ALPN token even
@@ -349,7 +350,7 @@ carried within the same QUIC connection.
 > described in {{encapsulation}}. Applications are responsible for negotiation
 > of protocols in use by appropriate use of a signaling protocol such as SDP.
 
-> **Editor's note:** This implies that applications cannot use RTP over QUIC as
+> **Editor's note:** This implies that applications cannot use RoQ as
 > specified in this document over WebTransport.
 
 ## Draft version identification
@@ -357,7 +358,7 @@ carried within the same QUIC connection.
 > **RFC Editor's note:** Please remove this section prior to publication of a
 > final version of this document.
 
-RTP over QUIC uses the token "rtp-mux-quic" to identify itself in ALPN.
+RoQ uses the token "rtp-mux-quic" to identify itself in ALPN.
 
 Only implementations of the final, published RFC can identify themselves as
 "rtp-mux-quic". Until such an RFC exists, implementations MUST NOT identify
@@ -388,7 +389,7 @@ QUIC datagrams, respectively.
 
 ## Multiplexing {#multiplexing}
 
-RTP over QUIC uses flow identifiers to multiplex different RTP, RTCP, and
+RoQ uses flow identifiers to multiplex different RTP, RTCP, and
 non-RTP data streams on a single QUIC connection. A flow identifier is a QUIC
 variable-length integer as described in {{Section 16 of !RFC9000}}. Each flow
 identifier is associated with a stream of RTP packets, RTCP packets, or a data
@@ -436,7 +437,7 @@ synchronous relationship between sent and received RTP/RTCP packets. A sender
 MAY open new QUIC streams for different packets using the same flow identifier,
 for example, to avoid head-of-line blocking.
 
-{{fig-stream-payload}} shows the encapsulation format for RTP over QUIC Streams.
+{{fig-stream-payload}} shows the encapsulation format for RoQ Streams.
 
 ~~~
 Payload {
@@ -444,7 +445,7 @@ Payload {
   RTP/RTCP Payload(..) ...,
 }
 ~~~
-{: #fig-stream-payload title="RTP over QUIC Streams Payload Format"}
+{: #fig-stream-payload title="RoQ Streams Payload Format"}
 
 Flow Identifier:
 
@@ -519,7 +520,7 @@ without additional framing. Senders SHOULD consider the header overhead
 associated with QUIC datagrams and ensure that the RTP/RTCP packets, including
 their payloads, flow identifier, QUIC, and IP headers, will fit into path MTU.
 
-{{fig-dgram-payload}} shows the encapsulation format for RTP over QUIC
+{{fig-dgram-payload}} shows the encapsulation format for RoQ
 Datagrams.
 
 ~~~
@@ -528,7 +529,7 @@ Payload {
   RTP/RTCP Packet (..),
 }
 ~~~
-{: #fig-dgram-payload title="RTP over QUIC Datagram Payload Format"}
+{: #fig-dgram-payload title="RoQ Datagram Payload Format"}
 
 Flow Identifier:
 
@@ -585,10 +586,10 @@ differences are described in {{roc-d}} and {{roc-s}}.
 
 > **Editor's Note:** Additional discussion of bandwidth minimization could go in
 > this section, or in an earlier proposed section on motivations for defining
-> and deploying RTP over QUIC.
+> and deploying RoQ.
 
-While RTP over QUIC places no restrictions on applications sending RTCP, this
-document assumes that the reason an implementor chooses to support RTP over QUIC
+While RoQ places no restrictions on applications sending RTCP, this
+document assumes that the reason an implementor chooses to support RoQ
 is to obtain benefits beyond what's available when RTP uses UDP as its
 underlying transport layer. It is RECOMMENDED to expose relevant information
 from the QUIC layer to the application instead of exchanging additional RTCP
@@ -599,7 +600,7 @@ exposed from the QUIC connection layer to reduce the RTCP overhead.
 
 The list of RTCP packets in this section is not exhaustive and similar
 considerations SHOULD be taken into account before exchanging any other type of
-RTCP control packets using RTP over QUIC.
+RTCP control packets using RoQ.
 
 A more complete analysis of RTCP Control Packet Types (in {{control-packets}}),
 Generic RTP Feedback (RTPFB) (in {{generic-feedback}}), Payload-specific RTP
@@ -607,7 +608,7 @@ Feedback (PSFB) (in {{payload-specific-feedback}}), Extended Reports (in
 {{extended-reports}}), and RTP Header Extensions (in {{rtp-header-extensions}}),
 including the information that cannot be mapped from QUIC.
 
-## RTP Over QUIC Datagrams {#roc-d}
+## RoQ Datagrams {#roc-d}
 
 QUIC Datagrams are ack-eliciting packets, which means, that an acknowledgment is
 triggered when a datagram frame is received. Thus, a sender can assume that an
@@ -616,7 +617,7 @@ acknowledgments of QUIC Datagram frames. In the following, an RTP packet is
 regarded as acknowledged, when the QUIC Datagram frame that carried the RTP
 packet, was acknowledged.
 
-## RTP Over QUIC Streams {#roc-s}
+## RoQ Streams {#roc-s}
 
 For RTP packets that are sent over QUIC streams, an
 RTP packet can be considered acknowledged, when all frames which carried
@@ -725,7 +726,7 @@ protocol itself.
   synchronize streams. QUIC cannot provide a similar control information, since
   it does not know about RTP timestamps. Nor can a QUIC receiver calculate the
   packet or octet counts, since it does not know about lost datagrams. Thus,
-  sender reports are required in RTP over QUIC to synchronize streams at the
+  sender reports are required in RoQ to synchronize streams at the
   receiver. The sender reports SHOULD not contain any receiver report blocks, as
   the information can be inferred from the QUIC transport as explained in
   {{RR-mappings}}.
@@ -856,7 +857,7 @@ following Payload-specific RTP Feedback (PSFB) feedback.
 
 # Congestion Control and Rate Adaptation {#congestion-control}
 
-Like any other application on the internet, RTP over QUIC needs to perform
+Like any other application on the internet, RoQ needs to perform
 congestion control to avoid overloading the network.
 
 QUIC is a congestion controlled transport protocol. Senders are required to
@@ -877,7 +878,7 @@ reconfigure media codecs to produce media at a rate that can be sent in
 real-time under the observed network conditions.
 
 This section defines two architectures for congestion control and bandwidth
-estimation for RTP over QUIC, but it does not mandate any specific rate adaptation algorithm
+estimation for RoQ, but it does not mandate any specific rate adaptation algorithm
 to use. The section also discusses congestion control
 implications of using shared or multiple separate QUIC connections to send and
 receive multiple independent data streams.
@@ -960,8 +961,8 @@ functions that a QUIC implementation SHOULD expose to an application
 ({{quic-api-write}}).
 
 Each item in the following list can be considered individually. Any exposed
-information or function can be used by RTP over QUIC regardless of whether the
-other items are available. Thus, RTP over QUIC does not depend on the
+information or function can be used by RoQ regardless of whether the
+other items are available. Thus, RoQ does not depend on the
 availability of all of the listed features but can apply different optimizations
 depending on the functionality exposed by the QUIC implementation.
 
@@ -1018,7 +1019,7 @@ previous sections of this document.
 
 {{!RFC9221}} suggests to use flow identifiers to multiplex different streams on
 QUIC Datagrams, which is implemented in {{encapsulation}}, but it is unclear how
-applications can combine RTP over QUIC with other data streams using the same
+applications can combine RoQ with other data streams using the same
 QUIC connections. If the non-RTP data streams use the same flow identifies, too
 and the application can make sure, that flow identifiers are unique, there
 should be no problem. Flow identifiers could be problematic, if different
@@ -1051,7 +1052,7 @@ imply that the two signaling and data "layers" get (temporarily) out of sync.
 For repeated connections between peers, the initiator of a QUIC connection can
 use 0-RTT data for both QUIC streams and datagrams. As such packets are subject to
 replay attacks, applications shall carefully specify which data types and operations
-are allowed.  0-RTT data may be beneficial for use with RTP over QUIC to reduce the
+are allowed.  0-RTT data may be beneficial for use with RoQ to reduce the
 risk of media clipping, e.g., at the beginning of a conversation.
 
 This specification defines carrying RTP on top of QUIC and thus does not finally
@@ -1069,13 +1070,13 @@ to determine if 0-RTT data is permissible.
 
 # Security Considerations {#sec-considerations}
 
-RTP over QUIC is subject to the security considerations of RTP described in
+RoQ is subject to the security considerations of RTP described in
 {{Section 9 of !RFC3550}} and the security considerations of any RTP profile in
 use.
 
 The security considerations for the QUIC protocol and datagram extension
 described in {{Section 21 of !RFC9000}}, {{Section 9 of !RFC9001}}, {{Section 8
-of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RTP over QUIC.
+of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RoQ.
 
 Note that RTP-over-QUIC provides mandatory security, and other RTP transports do
 not. In order to prevent the inadvertent disclosure of RTP sessions to
@@ -1088,16 +1089,16 @@ profile for those RTP packets.
 
 # IANA Considerations {#iana-considerations}
 
-## Registration of a RTP over QUIC Identification String
+## Registration of a RoQ Identification String
 
-This document creates a new registration for the identification of RTP over QUIC
+This document creates a new registration for the identification of RoQ
 in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 {{?RFC7301}}.
 
-The "rtp-mux-quic" string identifies RTP over QUIC:
+The "rtp-mux-quic" string identifies RoQ:
 
   Protocol:
-  : RTP over QUIC
+  : RTP over QUIC (RoQ)
 
   Identification Sequence:
   : 0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")
@@ -1111,7 +1112,7 @@ The "rtp-mux-quic" string identifies RTP over QUIC:
 
 An experimental implementation of the mapping described in this document can be
 found on [Github](https://github.com/mengelbart/rtp-over-quic). The application
-implements the RTP over QUIC Datagrams mapping and implements SCReAM congestion
+implements the RoQ Datagrams mapping and implements SCReAM congestion
 control at the application layer. It can optionally disable the builtin QUIC
 congestion control (NewReno). The endpoints only use RTCP for congestion control
 feedback, which can optionally be disabled and replaced by the QUIC connection
