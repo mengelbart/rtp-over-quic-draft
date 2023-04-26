@@ -289,10 +289,10 @@ Note-MCast:
 : QUIC {{!RFC9000}} cannot be used for multicast paths.
 
 Note-UCast-MCast:
-: The topology refers to a *Distribution Source*, which receives and relays RTP from a number of different media senders via unicast before relaying it to the receivers via multicast. QUIC can be used between the senders and the *Distribution Source*, if the *Distribution Source* is not just a logical entity but a real node.
+: The topology refers to a *Distribution Source*, which receives and relays RTP from a number of different media senders via unicast before relaying it to the receivers via multicast. QUIC can be used between the senders and the *Distribution Source*.
 
 Note-MCast-UCast:
-: The topology refers to a *Burst Source* or *Retransmission Source*, which retransmits RTP to receivers via unicast. QUIC can be used between the *Retransmission Source* and the receivers, if the *Distribution Source* is not just a logical entity but a real node.
+: The topology refers to a *Burst Source* or *Retransmission Source*, which retransmits RTP to receivers via unicast. QUIC can be used between the *Retransmission Source* and the receivers.
 
 Note-Topo-PtM-Trn-Translator:
 : Supports unicast paths between RTP sources and translators.
