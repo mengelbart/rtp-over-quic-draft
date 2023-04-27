@@ -245,11 +245,13 @@ RTCP stream.
 ## Supported RTP Topologies {#topologies}
 
 RTP over QUIC only supports some of the RTP topologies described in
-{{?RFC7667}}. Most notably, due to QUIC {{!RFC9000}} being a purely IP unicast protocol at the
-time of writing, RTP over QUIC cannot be used as a transport protocol for any of
-the paths that rely on IP multipath in several multipcast topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
+{{?RFC7667}}. Most notably, due to QUIC {{!RFC9000}} being a purely IP unicast
+protocol at the time of writing, RTP over QUIC cannot be used as a transport
+protocol for any of the paths that rely on IP multicast in several multicast
+topologies (e.g., *Topo-ASM*, *Topo-SSM*, *Topo-SSM-RAMS*).
 
-Some "multicast topologies" can include IP unicast paths (e.g., *Topo-SSM*, *Topo-SSM-RAMS*). In these cases, the unicast paths can use RTP over QUIC.
+Some "multicast topologies" can include IP unicast paths (e.g., *Topo-SSM*,
+*Topo-SSM-RAMS*). In these cases, the unicast paths can use RTP over QUIC.
 
 RTP supports different types of translators and mixers. Whenever a middlebox
 such as a translator or a mixer needs to access the content of RTP/RTCP-packets,
@@ -295,16 +297,23 @@ Note-MTU:
 : Supported, but may require MTU adaptation.
 
 Note-Sec:
-: Note that RTP-over-QUIC provides mandatory security, and other RTP transports do not. {{sec-considerations}} describes strategies to prevent the inadvertent disclosure of RTP sessions to unintended third parties.
+: Note that RTP-over-QUIC provides mandatory security, and other RTP transports
+do not. {{sec-considerations}} describes strategies to prevent the inadvertent
+disclosure of RTP sessions to unintended third parties.
 
 Note-MCast:
 : QUIC {{!RFC9000}} cannot be used for multicast paths.
 
 Note-UCast-MCast:
-: The topology refers to a *Distribution Source*, which receives and relays RTP from a number of different media senders via unicast before relaying it to the receivers via multicast. QUIC can be used between the senders and the *Distribution Source*.
+: The topology refers to a *Distribution Source*, which receives and relays RTP
+from a number of different media senders via unicast before relaying it to the
+receivers via multicast. QUIC can be used between the senders and the
+*Distribution Source*.
 
 Note-MCast-UCast:
-: The topology refers to a *Burst Source* or *Retransmission Source*, which retransmits RTP to receivers via unicast. QUIC can be used between the *Retransmission Source* and the receivers.
+: The topology refers to a *Burst Source* or *Retransmission Source*, which
+retransmits RTP to receivers via unicast. QUIC can be used between the
+*Retransmission Source* and the receivers.
 
 Note-Topo-PtM-Trn-Translator:
 : Supports unicast paths between RTP sources and translators.
@@ -313,7 +322,9 @@ Note-Topo-Mixer:
 : Supports unicast paths between RTP senders and mixers.
 
 Note-Warn:
-: Quote from {{?RFC7667}}: *This topology is so problematic and it is so easy to get the RTCP processing wrong, that it is NOT RECOMMENDED to implement this topology.*
+: Quote from {{?RFC7667}}: *This topology is so problematic and it is so easy to
+get the RTCP processing wrong, that it is NOT RECOMMENDED to implement this
+topology.*
 
 # Connection Establishment and ALPN {#alpn}
 
@@ -759,7 +770,7 @@ allocation.
 # API Considerations
 
 The mapping described in the previous sections poses some interface requirements
-on the QUIC implementation. Although a basic mapping shoul d work without any of
+on the QUIC implementation. Although a basic mapping should work without any of
 these requirements most of the optimizations regarding rate adaptation and
 RTCP mapping require certain functionalities to be exposed to the application.
 The following to sections contain a list of information that is required by an
@@ -885,7 +896,14 @@ The security considerations for the QUIC protocol and datagram extension
 described in {{Section 21 of !RFC9000}}, {{Section 9 of !RFC9001}}, {{Section 8
 of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RTP over QUIC.
 
-Note that RTP-over-QUIC provides mandatory security, and other RTP transports do not. In order to prevent the inadvertent disclosure of RTP sessions to unintended third parties, RTP topologies described in {{topologies}} that include middleboxes supporting both RTP-over-QUIC and non-RTP-over-QUIC paths MUST forward RTP packets on non-RTP-over-QUIC paths using a secure AVP profile ({{?RFC3711}}, {{?RFC4585}}, or another AVP profile providing equivalent RTP-level security), whether or not RTP-over-QUIC senders are using a secure AVP profile for those RTP packets.
+Note that RTP-over-QUIC provides mandatory security, and other RTP transports do
+not. In order to prevent the inadvertent disclosure of RTP sessions to
+unintended third parties, RTP topologies described in {{topologies}} that
+include middleboxes supporting both RTP-over-QUIC and non-RTP-over-QUIC paths
+MUST forward RTP packets on non-RTP-over-QUIC paths using a secure AVP profile
+({{?RFC3711}}, {{?RFC4585}}, or another AVP profile providing equivalent
+RTP-level security), whether or not RTP-over-QUIC senders are using a secure AVP
+profile for those RTP packets.
 
 # IANA Considerations {#iana-considerations}
 
