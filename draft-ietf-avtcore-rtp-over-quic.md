@@ -554,34 +554,60 @@ the RTP Control Protocol (RTCP) so that RTP senders and receivers can exchange
 control information to monitor connection statistics and to identify and
 synchronize streams.
 
-Because QUIC provides its own transport-level feedback, at least some RTP transport level feedback can be replaced with current QUIC feedback {{!rfc9000}}.
-In adition, RTP-level feedback that is not available in QUIC by default can be replaced with generally useful QUIC extensions. Examples of these extentions include:
+Because QUIC provides its own transport-level feedback, at least some RTP
+transport level feedback can be replaced with current QUIC feedback
+{{!rfc9000}}. In adition, RTP-level feedback that is not available in QUIC by
+default can be replaced with generally useful QUIC extensions. Examples of these
+extentions include:
 
-* Arrival timestamps, which are not part of QUIC's default acknowledgment frames, but can be added using {{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}, or
-* Adjusting the frequency of QUIC acknowledgments, using {{!I-D.draft-ietf-quic-ack-frequency}}.
+* Arrival timestamps, which are not part of QUIC's default acknowledgment
+  frames, but can be added using {{!I-D.draft-smith-quic-receive-ts}} or
+  {{!I-D.draft-huitema-quic-ts}}, or
+* Adjusting the frequency of QUIC acknowledgments, using
+  {{!I-D.draft-ietf-quic-ack-frequency}}.
 
-When statistics contained in RTCP packets are also available from QUIC, or can be derived from statistics available from QUIC, it is desireable to provide these statistics at only one protocol layer. This avoids consumption of bandwidth to deliver duplicated control information.
-Because QUIC relies on certain frames being sent, it is not possible to supress QUIC signaliing in favor of RTCP signaling, so if bandwidth is to be conserved, this must be accomplished by surpressing RTCP signaling in favor of QUIC signalling.
+When statistics contained in RTCP packets are also available from QUIC, or can
+be derived from statistics available from QUIC, it is desireable to provide
+these statistics at only one protocol layer. This avoids consumption of
+bandwidth to deliver duplicated control information. Because QUIC relies on
+certain frames being sent, it is not possible to supress QUIC signaling in favor
+of RTCP signaling, so if bandwidth is to be conserved, this must be accomplished
+by surpressing RTCP signaling in favor of QUIC signalling.
 
-This document specifies a baseline for replacing some of the RTCP packet types by mapping the contents to QUIC connection statistics.
-Future documents can extend this mapping for other RTCP format types, and can make use of new QUIC extensions that become available over time.
+This document specifies a baseline for replacing some of the RTCP packet types
+by mapping the contents to QUIC connection statistics. Future documents can
+extend this mapping for other RTCP format types, and can make use of new QUIC
+extensions that become available over time.
 
-Most statements about "QUIC" in {{rtcp-mapping}} are applicable to both RTP encapsulated in QUIC streams and RTP encapsulated in QUIC datagrams. The differences are described in {{roc-d}} and {{roc-s}}.
+Most statements about "QUIC" in {{rtcp-mapping}} are applicable to both RTP
+encapsulated in QUIC streams and RTP encapsulated in QUIC datagrams. The
+differences are described in {{roc-d}} and {{roc-s}}.
 
-> **Editor's Note:** Additionsl iscussion of bandwidth minimization could go in this section, or in an earlier proposed section on motivations for defining and deploying RTP over QUIC.
+> **Editor's Note:** Additional discussion of bandwidth minimization could go in
+> this section, or in an earlier proposed section on motivations for defining
+> and deploying RTP over QUIC.
 
-While RTP over QUIC places no restrictions on applications sending RTCP, this document assumes that the reason an implementor chooses to support RTP over QUIC is to obtain benefits beyond what's available when RTP uses UDP as its underlying transport layer.
-It is RECOMMENDED to expose relevant information om the QUIC layer to the application instead of exchanging additional RTCP
+While RTP over QUIC places no restrictions on applications sending RTCP, this
+document assumes that the reason an implementor chooses to support RTP over QUIC
+is to obtain benefits beyond what's available when RTP uses UDP as its
+underlying transport layer. It is RECOMMENDED to expose relevant information
+from the QUIC layer to the application instead of exchanging additional RTCP
 packets, where applicable.
 
-{{transport-layer-feedback}} and {{al-repair}} discuss what information can be exposed from the QUIC connection layer to reduce the RTCP overhead.
+{{transport-layer-feedback}} and {{al-repair}} discuss what information can be
+exposed from the QUIC connection layer to reduce the RTCP overhead.
 
-The list of RTCP packets in this section is not exhaustive and similar considerations SHOULD be taken
-into account before exchanging any other type of RTCP control packets using RTP over QUIC.
+The list of RTCP packets in this section is not exhaustive and similar
+considerations SHOULD be taken into account before exchanging any other type of
+RTCP control packets using RTP over QUIC.
 
-A more complete analysis of RTCP Control Packet Types (in {{control-packets}}), Generic RTP Feedback (RTPFB) (in {{generic-feedback}}), Payload-specific RTP Feedback (PSFB) (in {{payload-specific-feedback}}), Extended Reports (in {{extended-reports}}), and RTP Header Extensions (in {{rtp-header-extensions}}), including the information that cannot be mapped from QUIC.
+A more complete analysis of RTCP Control Packet Types (in {{control-packets}}),
+Generic RTP Feedback (RTPFB) (in {{generic-feedback}}), Payload-specific RTP
+Feedback (PSFB) (in {{payload-specific-feedback}}), Extended Reports (in
+{{extended-reports}}), and RTP Header Extensions (in {{rtp-header-extensions}}),
+including the information that cannot be mapped from QUIC.
 
-### RTP Over QUIC Datagrams {#roc-d}
+## RTP Over QUIC Datagrams {#roc-d}
 
 QUIC Datagrams are ack-eliciting packets, which means, that an acknowledgment is
 triggered when a datagram frame is received. Thus, a sender can assume that an
@@ -590,7 +616,7 @@ acknowledgments of QUIC Datagram frames. In the following, an RTP packet is
 regarded as acknowledged, when the QUIC Datagram frame that carried the RTP
 packet, was acknowledged.
 
-### RTP Over QUIC Streams {#roc-s}
+## RTP Over QUIC Streams {#roc-s}
 
 For RTP packets that are sent over QUIC streams, an
 RTP packet can be considered acknowledged, when all frames which carried
@@ -611,7 +637,8 @@ for the individual fields of different RTCP packet types.
 
 ### Mapping QUIC Feedback to RTCP Receiver Reports ("RR") {#RR-mappings}
 
-Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`, `Name=RR`, {{!RFC3550}}) are:
+Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`,
+`Name=RR`, {{!RFC3550}}) are:
 
   * *Fraction lost*: When RTP packets are carried in QUIC datagrams, the fraction of lost packets can be directly inferred from
     QUIC's acknowledgments. The calculation SHOULD include all packets up to the
@@ -639,7 +666,8 @@ Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`, `Nam
 
 ### Mapping QUIC Feedback to RTCP Negative Acknowledgments* ("NACK") {#NACK-mappings}
 
-Considerations for mapping QUIC feedback into *Negative Acknowledgments* (`PT=205`, `FMT=1`, `Name=Generic NACK`, {{!RFC4585}}) are:
+Considerations for mapping QUIC feedback into *Negative Acknowledgments*
+(`PT=205`, `FMT=1`, `Name=Generic NACK`, {{!RFC4585}}) are:
 
   * The generic negative acknowledgment packet contains information about
     packets which the receiver considered lost. {{Section 6.2.1. of !RFC4585}}
@@ -649,7 +677,8 @@ Considerations for mapping QUIC feedback into *Negative Acknowledgments* (`PT=20
 
 ### Mapping QUIC Feedback to RTCP ECN Feedback ("ECN") {#ECN-mappings}
 
-Considerations for mapping QUIC feedback into *ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}}) are:
+Considerations for mapping QUIC feedback into *ECN Feedback* (`PT=205`, `FMT=8`,
+`Name=RTCP-ECN-FB`, {{!RFC6679}}) are:
 
   * ECN feedback packets report the count of observed ECN-CE marks. {{!RFC6679}}
     defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`) and a
@@ -660,7 +689,8 @@ Considerations for mapping QUIC feedback into *ECN Feedback* (`PT=205`, `FMT=8`,
 
 ### Mapping QUIC Feedback to RTCP Congestion Control Feedback ("CCFB") {#CCFB-mappings}
 
-Considerations for mapping QUIC feedback into *Congestion Control Feedback* (`PT=205`, `FMT=11`, `Name=CCFB`, {{!RFC8888}}) are:
+Considerations for mapping QUIC feedback into *Congestion Control Feedback*
+(`PT=205`, `FMT=11`, `Name=CCFB`, {{!RFC8888}}) are:
 
   * RTP Congestion Control Feedback contains acknowledgments, arrival timestamps
     and ECN notifications for each received packet. Acknowledgments and ECNs can
@@ -670,38 +700,55 @@ Considerations for mapping QUIC feedback into *Congestion Control Feedback* (`PT
 
 ### Mapping QUIC Feedback to RTCP Extended Report ("XR") {#XR-mappings}
 
-Considerations for mapping QUIC feedback into  *Extended Reports* (`PT=207`, `Name=XR`, {{!RFC3611}}) are:
+Considerations for mapping QUIC feedback into  *Extended Reports* (`PT=207`,
+`Name=XR`, {{!RFC3611}}) are:
 
   * Extended Reports offer an extensible framework for a variety of different
     control messages. Some of the standard report blocks which can be
-    implemented in extended reports such as loss RLE or ECNs can be implemented in QUIC, too.
-  * Other report blocks SHOULD be evaluated individually, to determine whether if the contained information can be transmitted using QUIC instead.
+    implemented in extended reports such as loss RLE or ECNs can be implemented
+    in QUIC, too.
+  * Other report blocks SHOULD be evaluated individually, to determine whether
+    if the contained information can be transmitted using QUIC instead.
 
 ## Application Layer Repair and other Control Messages {#al-repair}
 
-While {{RR-mappings}} presented some RTCP packets that can be replaced by QUIC features, QUIC cannot replace all of the defined RTCP packet types.
-This mostly affects RTCP packet types which carry control information that is to be interpreted by the RTP application layer, rather than the underlying transport protocol itself.
+While {{RR-mappings}} presented some RTCP packets that can be replaced by QUIC
+features, QUIC cannot replace all of the defined RTCP packet types. This mostly
+affects RTCP packet types which carry control information that is to be
+interpreted by the RTP application layer, rather than the underlying transport
+protocol itself.
 
-* *Sender Reports* (`PT=200`, `Name=SR`, {{!RFC3550}}) are similar to *Receiver Reports*, as described in {{RR-mappings}}.
-They are sent by media senders and additionally contain an NTP and a RTP timestamp and the number of packets and octets transmitted by the sender.
-The timestamps can be used by a receiver to synchronize streams.
-QUIC cannot provide a similar control information, since it does not know about RTP timestamps.
-Nor can a QUIC receiver calculate the packet or octet counts, since it does not know about lost datagrams.
-Thus, sender reports are required in RTP over QUIC to synchronize streams at the receiver.
-The sender reports SHOULD not contain any receiver report blocks, as the information can be inferred from the QUIC transport as explained in {{RR-mappings}}.
+* *Sender Reports* (`PT=200`, `Name=SR`, {{!RFC3550}}) are similar to *Receiver
+  Reports*, as described in {{RR-mappings}}. They are sent by media senders and
+  additionally contain an NTP and a RTP timestamp and the number of packets and
+  octets transmitted by the sender. The timestamps can be used by a receiver to
+  synchronize streams. QUIC cannot provide a similar control information, since
+  it does not know about RTP timestamps. Nor can a QUIC receiver calculate the
+  packet or octet counts, since it does not know about lost datagrams. Thus,
+  sender reports are required in RTP over QUIC to synchronize streams at the
+  receiver. The sender reports SHOULD not contain any receiver report blocks, as
+  the information can be inferred from the QUIC transport as explained in
+  {{RR-mappings}}.
 
-In addition to carrying transmission statistics, RTCP packets can contain application layer control information, that cannot directly be mapped to QUIC.
+In addition to carrying transmission statistics, RTCP packets can contain
+application layer control information, that cannot directly be mapped to QUIC.
 Examples of this information may include:
 
-* *Source Description* (`PT=202`, `Name=SDES`), *Bye* (`PT=203`, `Name=BYE`) and *Application* (`PT=204`, `Name=APP`) packet types from {{!RFC3550}}, or
-* many of the payload specific feedback messages (`PT=206`) defined in {{!RFC4585}}, used to control the codec behavior of the sender.
+* *Source Description* (`PT=202`, `Name=SDES`), *Bye* (`PT=203`, `Name=BYE`) and
+  *Application* (`PT=204`, `Name=APP`) packet types from {{!RFC3550}}, or
+* many of the payload specific feedback messages (`PT=206`) defined in
+  {{!RFC4585}}, used to control the codec behavior of the sender.
 
-Since QUIC does not provide any kind of application layer control messaging, QUIC feedback cannot be mapped into these RTCP packet types.
-If the RTP application needs this information, the RTCP packet types are used in the same way as they would be used over any other transport protocol.
+Since QUIC does not provide any kind of application layer control messaging,
+QUIC feedback cannot be mapped into these RTCP packet types. If the RTP
+application needs this information, the RTCP packet types are used in the same
+way as they would be used over any other transport protocol.
 
 ## RTCP Control Packet Types {#control-packets}
 
-Several. but not all. of these control packets and their attributes can be mapped from QUIC, as described in {{RR-mappings}}. "Mappable from QUIC" has one of three values: "yes", "QUIC extension required", and "no".
+Several but not all of these control packets and their attributes can be mapped
+from QUIC, as described in {{RR-mappings}}. "Mappable from QUIC" has one of
+three values: "yes", "QUIC extension required", and "no".
 
 | Name | Shortcut | PT | Defining Document | Mappable from QUIC | Comments |
 | ---- | -------- | -- | ----------------- | ---------------- | -------- |
@@ -724,7 +771,8 @@ Several. but not all. of these control packets and their attributes can be mappe
 
 ### Notes
 
-* *SR* NTP timestamps: We cannot send NTP timestamps in the same format the SRs use, but couldn't a QUIC timestamp extension provide the same information?
+* *SR* NTP timestamps: We cannot send NTP timestamps in the same format the SRs
+  use, but couldn't a QUIC timestamp extension provide the same information?
 
 ## Generic RTP Feedback (RTPFB) {#generic-feedback}
 
@@ -743,7 +791,8 @@ Several. but not all. of these control packets and their attributes can be mappe
 
 ## Payload-specific RTP Feedback (PSFB) {#payload-specific-feedback}
 
-Because QUIC is a generic transport protocol, QUIC feedback cannot replace the following Payload-specific RTP Feedback (PSFB) feedback.
+Because QUIC is a generic transport protocol, QUIC feedback cannot replace the
+following Payload-specific RTP Feedback (PSFB) feedback.
 
 | Name     | Long Name | Document |
 | -------- | --------- | -------- |
@@ -801,7 +850,9 @@ Because QUIC is a generic transport protocol, QUIC feedback cannot replace the f
 
 ## RTP Header extensions {#rtp-header-extensions}
 
-* *Transmission offset* {{?RFC5450}} is used for better jitter calculation. If we have QUIC timestamps, we don't need to work around RTP timestamps offsets because we can use the QUIC timestamps to calculate network jitter.
+* *Transmission offset* {{?RFC5450}} is used for better jitter calculation. If
+  we have QUIC timestamps, we don't need to work around RTP timestamps offsets
+  because we can use the QUIC timestamps to calculate network jitter.
 
 # Congestion Control and Rate Adaptation {#congestion-control}
 
