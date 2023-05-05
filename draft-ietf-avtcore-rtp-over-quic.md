@@ -240,15 +240,18 @@ RTP sessions over the same QUIC connection.
 
 A rate adaptation algorithm can be plugged in to adapt the media bitrate to the
 available bandwidth. This document does not mandate any specific rate adaptation
-algorithm. Some examples include Network-Assisted Dynamic Adaptation (NADA)
+algorithm, because the desired response to congestion can be application and codec-specific. For example, adjusting quantization in response to congestion may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
+
+As of this writing, the IETF has produced two Experimental-track rate adaptation specifications, Network-Assisted Dynamic Adaptation (NADA)
 {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
 {{!RFC8298}}. These rate adaptation algorithms require some feedback about
 the network's performance to calculate target bitrates. Traditionally this
 feedback is generated at the receiver and sent back to the sender via RTCP.
+
 Since QUIC also collects some metrics about the network's performance, these
 metrics can be used to generate the required feedback at the sender-side and
 provide it to the rate adaptation algorithm to avoid the additional overhead of the
-RTCP stream.
+RTCP stream. This is discussed in more detail in {{rtcp-mapping}}.
 
 ## Supported RTP Topologies {#topologies}
 
