@@ -487,16 +487,36 @@ If a sender knows that a packet, which was not yet successfully and completely
 transmitted, is no longer needed, the sender MAY close the stream by sending a
 RESET\_STREAM frame.
 
+QUIC allows an application to abort reading the stream and specify an error code
+{{Section 3.5 of !RFC9000}}. An RTP receiver can signal this to the RTP sender
+by sending a QUIC STOP\_SENDING frame, which is exported to the RTP sender
+through the ROQ API, as described in {{api-considerations}}. The RTP-sender
+SHOULD not interpret the reception of STOP\_SENDING as an indication that the
+RTP receiver lost interest in the media stream as a whole, but rather that a
+part of the media stream was not received timely. In this case, the late data
+could also delay the following media frames due to head-of-line blocking, which
+the sender can avoid by transmitting new media frames on new QUIC streams. A
+sender that receives STOP\_SENDING MUST NOT retransmit any media frames already
+sent on the QUIC stream, on which it received the STOP\_SENDING, on a new QUIC
+stream. An RTP sender SHOULD instead continue to send media frames on new QUIC
+streams starting with the first frame that was not transmitted on the stream
+that received STOP\_SENDING.
+
+Note that an RTP receiver cannot request a reset of only a particular media
+frame because the sending QUIC implementation might already have sent data for
+the following frame on the same stream. In that case, STOP\_SENDING might lead
+to unintentionally skipping one or more frames.
+
+> **Editor's note:** A receiver cannot cancel a certain frame but still receive
+> retransmissions for a frame the was following on the same stream using
+> STOP\_SENDING, because STOP\_SENDING does not include an offset which would
+> allow signaling where retransmissions should continue. If this is a required
+> feature for RoQ, it could be implemented using an extended STOP\_SENDING frame
+> as, for example, proposed in {{?I-D.draft-thomson-quic-enough-00}}.
+
 A translator that translates between two endpoints, both connected via QUIC,
 MUST forward RESET\_STREAM frames received from one end to the other unless it
 forwards the RTP packets on QUIC datagrams.
-
-> **Editor's Note:** It might be desired to also allow the receiver to request
-> cancellation of a stream by sending STOP\_SENDING frame. However, this might
-> lead to unintended packet loss because the receiver does not know which and
-> how many packets follow on the same stream. If this feature is required, a
-> solution could be to require senders to open new streams for each application
-> data unit, as described in a previous version of this document.
 
 Large RTP packets sent on a stream will be fragmented into smaller QUIC frames.
 The QUIC frames are transmitted reliably and in order such that a receiving
@@ -1019,7 +1039,7 @@ in the shared QUIC connection. For this reason, applications multiplexing
 multiple streams in one connection SHOULD implement some form of stream
 prioritization or bandwidth allocation.
 
-# API Considerations
+# API Considerations {#api-considerations}
 
 The mapping described in the previous sections poses some interface requirements
 on the QUIC implementation. Although a basic mapping should work without any of
