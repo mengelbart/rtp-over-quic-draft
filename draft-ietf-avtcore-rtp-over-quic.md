@@ -511,8 +511,18 @@ parallel streams, which it can update using QUIC MAX\_STREAMS frames. The number
 of packets that have to be transmitted concurrently depends on several factors,
 such as the number of RTP streams within a QUIC connection, the bitrate of the
 media streams, and the maximum acceptable transmission delay of a given packet.
-Receivers are responsible for providing senders with enough credit to open new
-streams for new packets at any time.
+Receivers are responsible for providing senders enough credit to open new
+streams for new packets anytime. As an example, consider a conference scenario
+with 20 participants. Each participant receives audio and video streams of every
+other participant from a central server. If the sender opens a new QUIC stream
+for every frame at 30 frames per second video and 50 frames per second audio, it
+will open 1520 new QUIC streams per second. A receiver must provide at least
+that many credits for opening new unidirectional streams to the server every
+second. In addition, the receiver should also consider the requirements of
+protocols into account that are multiplexed with RTP, including RTCP and data
+streams. These considerations may also be relevant when implementing signaling
+since it may be necessary to inform the receiver about how fast and how much
+stream credits it will have to provide to the media-sending peer.
 
 ## QUIC Datagrams {#quic-datagrams}
 
