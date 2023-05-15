@@ -1018,17 +1018,6 @@ previous sections of this document.
 
 # Discussion
 
-## Flow Identifier
-
-{{!RFC9221}} suggests to use flow identifiers to multiplex different streams on
-QUIC Datagrams, which is implemented in {{encapsulation}}, but it is unclear how
-applications can combine RoQ with other data streams using the same
-QUIC connections. If the non-RTP data streams use the same flow identifies, too
-and the application can make sure, that flow identifiers are unique, there
-should be no problem. Flow identifiers could be problematic, if different
-specifications for RTP and non-RTP data streams over QUIC mandate different
-incompatible flow identifiers.
-
 ## Impact of Connection Migration
 
 RTP sessions are characterized by a continuous flow of packets into either or
