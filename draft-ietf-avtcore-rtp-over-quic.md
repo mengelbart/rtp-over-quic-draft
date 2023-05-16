@@ -1166,6 +1166,46 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 | urn:ietf:params:rtp-hdrext:sdes:CaptId | CLUE CaptId | [RFC8849] | no |
 | urn:ietf:params:rtp-hdrext:sdes:mid | Media identification | [RFC9143] | no |
 
+# Error Handling
+
+The following error codes are defined for use when abruptly terminating streams,
+aborting reading of streams, or immediately closing RoQ connections.
+
+## RoQ Error Codes
+
+ROQ\_NO\_ERROR (0x????):
+: No error. This is used when the connection or stream needs to be closed, but
+there is no error to signal.
+
+ROQ\_GENERAL\_PROTOCOL\_ERROR (0x????):
+: Peer violated protocol requirements in a way that does not match a more
+specific error code or endpoint declines to use the more specific error code.
+
+ROQ\_INTERNAL\_ERROR (0x????):
+: An internal error has occured in the RoQ stack.
+
+ROQ\_STREAM\_CREATION\_ERROR (0x????):
+: The endpoint detected that its peer created a stream that it will not accept.
+
+ROQ\_PACKET\_ERROR (0x????):
+: Invalid payload format, e.g., length does not match packet, invalid flow id
+encoding, non-RTP on RTP-flow ID, etc.
+
+ROQ\_FRAME\_CANCELLED (0x????):
+: A receiving endpoint stopped reading a frame from a stream and requests new
+frames be sent on new streams using STOP\_SENDING or a sender notifies a
+receiver that retransmissions of a frame were stopped using RESET\_STREAM and
+new frames will be sent on new streams.
+
+ROQ\_UNKNOWN\_FLOW\_ID (0x????):
+: An endpoint was unable to handle a flow identifier, e.g., because it was not
+signalled or it does not support multiplexing using arbitrary flow identifiers.
+
+ROQ\_SIGNALING\_ERROR (0x????):
+: Parameters that were set during out of band signaling are incompatible with
+the connection properties that were negotiated when the connection was
+established using transport parameters.
+
 # API Considerations {#api-considerations}
 
 The mapping described in the previous sections poses some interface requirements
