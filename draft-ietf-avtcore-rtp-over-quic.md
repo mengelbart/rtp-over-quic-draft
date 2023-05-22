@@ -490,17 +490,16 @@ RESET\_STREAM frame.
 QUIC allows an application to abort reading the stream and specify an error code
 {{Section 3.5 of !RFC9000}}. An RTP receiver can signal this to the RTP sender
 by sending a QUIC STOP\_SENDING frame, which is exported to the RTP sender
-through the ROQ API, as described in {{api-considerations}}. The RTP-sender
-SHOULD not interpret the reception of STOP\_SENDING as an indication that the
-RTP receiver lost interest in the media stream as a whole, but rather that a
-part of the media stream was not received timely. In this case, the late data
-could also delay the following media frames due to head-of-line blocking, which
-the sender can avoid by transmitting new media frames on new QUIC streams. A
-sender that receives STOP\_SENDING MUST NOT retransmit any media frames already
-sent on the QUIC stream, on which it received the STOP\_SENDING, on a new QUIC
-stream. An RTP sender SHOULD instead continue to send media frames on new QUIC
-streams starting with the first frame that was not transmitted on the stream
-that received STOP\_SENDING.
+through the ROQ API, as described in {{api-considerations}}. STOP\_SENDING is
+not an indication that the RTP receiver lost interest in the media stream as a
+whole, but rather that a part of the media stream was not received timely. In
+this case, the late data could also delay the following media frames due to
+head-of-line blocking, which the sender can avoid by transmitting new media
+frames on new QUIC streams. A sender that receives STOP\_SENDING MUST NOT
+retransmit any media frames already sent on the QUIC stream, on which it
+received the STOP\_SENDING, on a new QUIC stream. An RTP sender MUST continue to
+send media frames on new QUIC streams starting with the first frame that was not
+transmitted on the stream that received STOP\_SENDING.
 
 Note that an RTP receiver cannot request a reset of only a particular media
 frame because the sending QUIC implementation might already have sent data for
