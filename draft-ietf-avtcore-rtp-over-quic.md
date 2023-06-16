@@ -485,7 +485,7 @@ RTP/RTCP Payload {
 
 Length:
 
-: A QUIC variable length integer {{Section 16 of !RFC9000}} describing the
+: A QUIC variable length integer (see {{Section 16 of !RFC9000}}) describing the
 length of the following RTP/RTCP packets in bytes.
 
 RTP/RTCP Packet:
