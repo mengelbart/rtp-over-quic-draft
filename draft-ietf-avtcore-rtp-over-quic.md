@@ -436,9 +436,12 @@ of flows.
 
 To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
 unidirectional QUIC stream. Streams are unidirectional because there is no
-synchronous relationship between sent and received RTP/RTCP packets. A sender
-MAY open new QUIC streams for different packets using the same flow identifier,
-for example, to avoid head-of-line blocking.
+synchronous relationship between sent and received RTP/RTCP packets. A RoQ
+sender MAY open new QUIC streams for different packets using the same flow
+identifier, for example, to avoid head-of-line blocking. A RoQ receiver MUST be
+able to receive packets of a single RTP/RTCP stream on multiple QUIC streams.
+
+### Stream Encapsulation
 
 {{fig-stream-payload}} shows the encapsulation format for RoQ Streams.
 
@@ -483,28 +486,28 @@ RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-If a sender knows that a packet, which was not yet successfully and completely
-transmitted, is no longer needed, the sender MAY close the stream by sending a
-RESET\_STREAM frame.
+### RESET\_STREAM and STOP\_SENDING
 
-QUIC allows an application to abort reading the stream and specify an error code
-{{Section 3.5 of !RFC9000}}. An RTP receiver can signal this to the RTP sender
-by sending a QUIC STOP\_SENDING frame, which is exported to the RTP sender
-through the ROQ API, as described in {{api-considerations}}. The RTP-sender
-SHOULD not interpret the reception of STOP\_SENDING as an indication that the
-RTP receiver lost interest in the media stream as a whole, but rather that a
-part of the media stream was not received timely. In this case, the late data
-could also delay the following media frames due to head-of-line blocking, which
-the sender can avoid by transmitting new media frames on new QUIC streams. A
-sender that receives STOP\_SENDING MUST NOT retransmit any media frames already
-sent on the QUIC stream, on which it received the STOP\_SENDING, on a new QUIC
-stream. An RTP sender SHOULD instead continue to send media frames on new QUIC
-streams starting with the first frame that was not transmitted on the stream
-that received STOP\_SENDING.
+QUIC uses RESET\_STREAM and STOP\_SENDING frames to terminate the sending part
+of a stream and to request termination of an incoming stream by the sending
+peer respectively.
+
+A RoQ sender MAY use RESET\_STREAM if it knows that a packet, which was not yet
+successfully and completely transmitted, is no longer needed.
+
+A RoQ receiver that is no longer interested in reading a certain partition of
+the media stream MAY signal this to the sending peer using a STOP\_SENDING
+frame.
+
+When a RoQ sender receives a STOP\_SENDING frame, the RoQ sender MUST open one
+or more new QUIC streams to send new media frames. Any media frame that has
+already been sent on the QUIC stream that received the STOP\_SENDING frame, MUST
+NOT be sent again on the new QUIC stream(s).
 
 Note that an RTP receiver cannot request a reset of only a particular media
 frame because the sending QUIC implementation might already have sent data for
-the following frame on the same stream. In that case, STOP\_SENDING might lead
+the following frame on the same stream. In that case, STOP\_SENDING and the
+following RESET\_STREAM would also drop the following media frame and thus lead
 to unintentionally skipping one or more frames.
 
 > **Editor's note:** A receiver cannot cancel a certain frame but still receive
@@ -524,6 +527,8 @@ application can read a complete RTP packet from the stream as long as the stream
 is not closed with a RESET\_STREAM frame. No retransmission has to be
 implemented by the application since QUIC frames lost in transit are
 retransmitted by QUIC.
+
+### Flow control and MAX\_STREAMS
 
 Opening new streams for new packets MAY implicitly limit the number of packets
 concurrently in transit because the QUIC receiver provides an upper bound of
