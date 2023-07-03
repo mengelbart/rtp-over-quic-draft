@@ -1223,6 +1223,32 @@ The "rtp-mux-quic" string identifies RoQ:
 
 --- back
 
+# List of optional QUIC Extensions
+
+The following is a list of QUIC protocol extensions that might be beneficial for
+RoQ, but are not required by RoQ.
+
+* *An Unreliable Datagram Extension to QUIC* {{?RFC9221}}. Without support for
+  unreliable datagrams, RoQ cannot use the encapsulation specified in
+  {{quic-datagrams}}, but can still use QUIC streams as specified in
+  {{quic-streams}}.
+* A version of QUIC receive timestamps can be helpful for improved jitter
+  calculations and congestion control.
+  * *Quic Timestamps For Measuring One-Way Delays*
+    {{?I-D.draft-huitema-quic-ts}}
+  * *QUIC Extension for Reporting Packet Receive Timestamps*
+    {{?I-D.draft-smith-quic-receive-ts}}
+* *QUIC Acknowledgement Frequency* {{?I-D.draft-ietf-quic-ack-frequency}} can
+  be used by a sender to optimize the acknowledgement behaviour of the receiver,
+  e.g., to optimize congestion control.
+* *Signaling That a QUIC Receiver Has Enough Stream Data*
+  {{?I-D.draft-thomson-quic-enough}} and *Reliable QUIC Stream Resets*
+  {{?I-D.draft-ietf-quic-reliable-stream-reset}} would allow RoQ senders and
+  receivers to use versions of CLOSE\_STREAM and STOP\_SENDING that contain
+  offsets. The offset could be used to reliably retransmit all frames up to a
+  certain frame that should be cancelled before resuming transmission of further
+  frames on new QUIC streams.
+
 # Experimental Results
 
 An experimental implementation of the mapping described in this document can be
