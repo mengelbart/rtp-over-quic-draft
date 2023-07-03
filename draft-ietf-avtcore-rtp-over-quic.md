@@ -466,8 +466,10 @@ they MAY use different flow identifiers.
 The association between flow identifiers and data streams MUST be negotiated
 using appropriate signaling. Applications MAY send data using flow identifiers
 not associated with any RTP or RTCP stream. If a receiver cannot associate a
-flow identifier with any RTP/RTCP or non-RTP stream, it MAY drop the data
-stream.
+flow identifier with any RTP/RTCP or non-RTP flow, it MAY drop the data flow. If
+the data flow was sent on a QUIC stream, the receiver SHOULD send a
+STOP\_SENDING frame with the application error code set to
+ROQ\_UNKNOWN\_FLOW\_ID.
 
 There are different use cases for sharing the same QUIC connection between RTP
 and non-RTP data streams. Peers might use the same connection to exchange
@@ -484,10 +486,15 @@ of flows.
 
 ## QUIC Streams {#quic-streams}
 
-To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
-unidirectional QUIC stream. Streams are unidirectional because there is no
-synchronous relationship between sent and received RTP/RTCP packets. A RoQ
-sender MAY open new QUIC streams for different packets using the same flow
+To send RTP/RTCP packets over QUIC streams, a sender MUST open a
+new unidirectional QUIC stream. Streams are unidirectional because there is no
+synchronous relationship between sent and received RTP/RTCP packets. A peer that
+receives a bidirectional stream with a flow identifier that is associated with
+an RTP or RTCP stream, SHOULD stop reading from the stream and send a
+STOP\_SENDING frame with the application protocol error code set to
+ROQ\_STREAM\_CREATION\_ERROR.
+
+A RoQ sender MAY open new QUIC streams for different packets using the same flow
 identifier, for example, to avoid head-of-line blocking.
 
 A receiver MUST be prepared to receive RTP packets on any number of QUIC streams
@@ -542,7 +549,7 @@ RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
-### RESET\_STREAM and STOP\_SENDING
+### Media Frame Cancellation
 
 QUIC uses RESET\_STREAM and STOP\_SENDING frames to terminate the sending part
 of a stream and to request termination of an incoming stream by the sending
@@ -554,6 +561,9 @@ successfully and completely transmitted, is no longer needed.
 A RoQ receiver that is no longer interested in reading a certain partition of
 the media stream MAY signal this to the sending peer using a STOP\_SENDING
 frame.
+
+In both cases, the error code of the RESET\_STREAM frame or the STOP\_SENDING
+frame MUST be set to ROQ\_FRAME\_CANCELLED.
 
 When a RoQ sender receives a STOP\_SENDING frame for the last open stream
 available to send RTP/RTCP-data, the RoQ sender MUST open one or more new QUIC
@@ -618,11 +628,17 @@ stream credits it will have to provide to the media-sending peer.
 ## QUIC Datagrams {#quic-datagrams}
 
 Senders can also transmit RTP packets in QUIC datagrams. QUIC datagrams are an
-extension to QUIC described in {{!RFC9221}}. QUIC datagrams preserve frame
-boundaries. Thus, a single RTP packet can be mapped to a single QUIC datagram
-without additional framing. Senders SHOULD consider the header overhead
-associated with QUIC datagrams and ensure that the RTP/RTCP packets, including
-their payloads, flow identifier, QUIC, and IP headers, will fit into path MTU.
+extension to QUIC described in {{!RFC9221}}. QUIC datagrams can only be used if
+the use of the extension was successfully negotiated during the QUIC handshake.
+If the use of datagrams was signalled using a signalling protocol, but the
+datagram extension was not negotiated during the handshake, a peer MAY close the
+connection with the ROQ\_SIGNALING\_ERROR error code.
+
+QUIC datagrams preserve frame boundaries. Thus, a single RTP packet can be
+mapped to a single QUIC datagram without additional framing. Senders SHOULD
+consider the header overhead associated with QUIC datagrams and ensure that the
+RTP/RTCP packets, including their payloads, flow identifier, QUIC, and IP
+headers, will fit into path MTU.
 
 {{fig-dgram-payload}} shows the encapsulation format for RoQ
 Datagrams.
@@ -664,6 +680,12 @@ retransmit lost RTP packets, the retransmission has to be implemented by the
 application. RTP retransmissions can be done in the same RTP session or a
 separate RTP session {{!RFC4588}} and the flow identifier MUST be set to the
 flow identifier of the RTP session in which the retransmission happens.
+
+# Connection Shutdown
+
+Both peers MAY close the connection for variety of reasons. If one of the peers
+wants to close the RoQ connection, the peer can use a QUIC CONNECTION\_CLOSE
+frame with one of the error codes defined in {{error-handling}}.
 
 # Congestion Control and Rate Adaptation {#congestion-control}
 
@@ -1166,12 +1188,10 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 | urn:ietf:params:rtp-hdrext:sdes:CaptId | CLUE CaptId | [RFC8849] | no |
 | urn:ietf:params:rtp-hdrext:sdes:mid | Media identification | [RFC9143] | no |
 
-# Error Handling
+# Error Handling {#error-handling}
 
 The following error codes are defined for use when abruptly terminating streams,
 aborting reading of streams, or immediately closing RoQ connections.
-
-## RoQ Error Codes
 
 ROQ\_NO\_ERROR (0x????):
 : No error. This is used when the connection or stream needs to be closed, but
