@@ -1032,6 +1032,8 @@ following Payload-specific RTP Feedback (PSFB) feedback.
 | ROI | Video region-of-interest (ROI) | {{3GPP-TS-26.114}} |
 | LRR | Layer Refresh Request Command | {{?I-D.draft-ietf-avtext-lrr-07}}|
 | AFB | Application Layer Feedback | {{?RFC4585}} |
+| TSRR | Temporal-Spatial Resolution Request | {{?I-D.draft-ietf-avtcore-rtcp-green-metadata}} |
+| TSRN | Temporal-Spatial Resolution Notification | {{?I-D.draft-ietf-avtcore-rtcp-green-metadata}} |
 
 ## Extended Reports (XR) {#extended-reports}
 
