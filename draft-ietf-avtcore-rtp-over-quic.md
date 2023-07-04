@@ -584,6 +584,20 @@ RTP/RTCP Packet:
 
 : The RTP/RTCP packet to transmit.
 
+RoQ senders need to be aware that QUIC uses the concept of QUIC frames.
+Different kinds of QUIC frames are used for different application and control
+data types. A single QUIC packet can contain more than one QUIC frame,
+including, for example, QUIC stream or datagram frames carrying application data
+and acknowledgement frames carrying QUIC acknowledgements, as long as the
+overall size fits into the MTU. One implication is that the number of packets a
+QUIC stack transmits depends on whether it can fit acknowledgement and datagram
+frames in the same QUIC packet. Suppose the application creates many datagram
+frames that fill up the QUIC packet. In that case, the QUIC stack might have to
+create additional packets for acknowledgement- (and possibly other control-)
+frames. The additional overhead could, in some cases, be reduced if the
+application creates smaller RTP packets, such that the resulting datagram frame
+can fit into a QUIC packet that can also carry acknowledgement frames.
+
 Since QUIC datagrams are not retransmitted on loss (see also
 {{transport-layer-feedback}} for loss signaling), if an application wishes to
 retransmit lost RTP packets, the retransmission has to be implemented by the
