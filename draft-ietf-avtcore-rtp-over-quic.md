@@ -438,8 +438,14 @@ To send RTP/RTCP packets over QUIC streams, a sender MUST open a new
 unidirectional QUIC stream. Streams are unidirectional because there is no
 synchronous relationship between sent and received RTP/RTCP packets. A RoQ
 sender MAY open new QUIC streams for different packets using the same flow
-identifier, for example, to avoid head-of-line blocking. A RoQ receiver MUST be
-able to receive packets of a single RTP/RTCP stream on multiple QUIC streams.
+identifier, for example, to avoid head-of-line blocking.
+
+A receiver MUST be prepared to receive RTP packets on any number of QUIC streams
+(subject to its limit on parallel open streams) and SHOULD not make assumptions
+which RTP sequence numbers are carried in which streams.
+
+Note: A sender may or may not decide to discontinue using a lower stream number
+after starting packet transmission on a higher stream number.
 
 ### Stream Encapsulation
 
