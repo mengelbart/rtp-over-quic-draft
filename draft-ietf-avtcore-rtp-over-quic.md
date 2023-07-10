@@ -510,10 +510,11 @@ A RoQ receiver that is no longer interested in reading a certain partition of
 the media stream MAY signal this to the sending peer using a STOP\_SENDING
 frame.
 
-When a RoQ sender receives a STOP\_SENDING frame, the RoQ sender MUST open one
-or more new QUIC streams to send new media frames. Any media frame that has
-already been sent on the QUIC stream that received the STOP\_SENDING frame, MUST
-NOT be sent again on the new QUIC stream(s).
+When a RoQ sender receives a STOP\_SENDING frame for the last open stream
+available to send RTP/RTCP-data, the RoQ sender MUST open one or more new QUIC
+streams before sending new media frames. Any media frame that has already been
+sent on the QUIC stream that received the STOP\_SENDING frame, MUST NOT be sent
+again on the new QUIC stream(s).
 
 Note that an RTP receiver cannot request a reset of only a particular media
 frame because the sending QUIC implementation might already have sent data for
