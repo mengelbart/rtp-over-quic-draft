@@ -524,9 +524,18 @@ to unintentionally skipping one or more frames.
 > **Editor's note:** A receiver cannot cancel a certain frame but still receive
 > retransmissions for a frame the was following on the same stream using
 > STOP\_SENDING, because STOP\_SENDING does not include an offset which would
-> allow signaling where retransmissions should continue. If this is a required
-> feature for RoQ, it could be implemented using an extended STOP\_SENDING frame
-> as, for example, proposed in {{?I-D.draft-thomson-quic-enough-00}}.
+> allow signaling where retransmissions should continue.
+
+Instead of using RESET\_STREAM and STOP\_SENDING frames, RoQ senders and
+receivers might benefit from negotiating the use of
+{{?I-D.draft-ietf-quic-reliable-stream-reset-01}} and
+{{?I-D.draft-thomson-quic-enough-00}}. These extensions provide two new frame
+types, the CLOSE\_STREAM and the ENOUGH frame, equivalent to RESET\_STREAM and
+STOP\_SENDING, respectively, but with an additional offset. The offset indicates
+the point to which data will be reliably retransmitted, while everything
+following might be dropped. Using CLOSE\_STREAM and ENOUGH instead of
+RESET\_STREAM and STOP\_SENDING could prevent accidentally stopping
+retransmissions for preceding frames.
 
 A translator that translates between two endpoints, both connected via QUIC,
 MUST forward RESET\_STREAM frames received from one end to the other unless it
