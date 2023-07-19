@@ -76,9 +76,35 @@ Beyond this baseline, real-time applications can benefit from QUIC extensions su
 real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
 blocking).
 
-Moreover, with QUIC's multiplexing capabilities, reliable and unreliable
-transport connections as, e.g., needed for WebRTC, can be established with only
-a single port used at either end of the connection.
+## Motivations {#motivations}
+
+From time to time, someone asks the reasonable question, "why should anyone implement and deploy RoQ"? This reasonable question deserves a better answer than "because we can". Upon reflection, the following motivations seem useful to state.
+
+### "Always-On" Transport-level Authentication and Encryption {#alwas-on}
+
+Although application-level mechanisms to encrypt RTP and RTCP payloads have existed since the introduction of Secure Real-time Transport Protocol (SRTP) {{?RFC3711}}, encryption of RTP and RTCP header fields and contributing sources has only been defined recently (in Cryptex {{?RFC9335}}, and both SRTP and Cryptex are optional capabilities for RTP.
+
+This is in sharp contrast to "always-on" transport-level encryption in the QUIC protocol, using Transport Layer Security (TLS 1.3) as described in {{?RFC9001}}. QUIC implementations always authenticate the entirety of each packet, and encrypt as much of each packet as is practical, even switching from "long headers", which expose more QUIC header fields needed to establish a connection, to "short headers", which only expose the absolute minimum QUIC header fields needed to identify the connection to the receiver, so that the QUIC payload is presented to the right QUIC application {{?RFC8999}}.
+
+### Path MTU Discovery and RTP Media Coalescence {#mtu-coal}
+
+The minimum Path MTU supported by conformant QUIC implementations is 1200 bytes {{?RFC9000}}, and in addition, QUIC implementations allow senders to use either DPLPMTUD ({{?RFC8899}}) or PMTUD ({{?RFC1191}}, {{?RFC8201}}) to determine the actual MTU size that the receiver and path between sender and receiver support, which can be even larger.
+
+This is especially useful in certain conferencing topologies, where otherwise senders have no choice but to use the lowest path MTU for all conference participants, but even in point-to-point RTP sessions, this also allows senders to piggyback audio media in the same UDP packet as video media, for example, and also allows QUIC receivers to piggyback QUIC ACK frames on any QUIC frames being transmitted in the other direction.
+
+#### Multiplexing RTP, RTCP, and Non-RTP Flows on a Single QUIC Connection {#single-path}
+
+In order to conserve ports, especially at NATs and Firewalls, this specification defines a flow identifier, so that multiple RTP flows, RTCP flows, and non-RTP flows can be distinguished even if they are carried on the same QUIC connection.
+
+### Exploiting Multiple Connections {#multiple-paths}
+
+Although there is much interest in multiplexing flows on a single QUIC connection as described in {{single-path}}, QUIC also provides the capability of establishing and validating multiple paths for a single QUIC connection {{?RFC9000}}. Once multiple paths have been validated, a sender can migrate from one path to another with no additional signaling, allowing an endpoint to move from one endpoint address to another without interruption, as long as only a single path is in active use at any point in time.
+
+Connection migration may be desireable for a number of reasons, but to give one example, this allows a sender to distinguish between more costly cellular paths and less costly WiFi paths, with no action required from the application.
+
+### Exploiting New QUIC Capabilities {#new-quic}
+
+In addition to connection migration as described in {{multiple-paths}}, the capability of validating multiple paths for simultaneous active use is under active development in the IETF {{?I-D.draft-ietf-quic-multipath}}. We don't discuss Multipath QUIC further in this document, because the specification hasn't been approved yet, but it's one example of ways that RTP, a mature protocol, can exploit new transport capabilities as they become available.
 
 ## What's in Scope for this Specification {#in-scope}
 
