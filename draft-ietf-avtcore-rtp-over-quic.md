@@ -1,5 +1,5 @@
 ---
-title: "RTP over QUIC"
+title: "RTP over QUIC (RoQ)"
 docname: draft-ietf-avtcore-rtp-over-quic-latest
 category: std
 date: {DATE}
@@ -41,6 +41,7 @@ informative:
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
 Protocol (RTP) and RTP Control Protocol (RTCP) packets within the QUIC protocol.
+This mapping is called RTP over QUIC (RoQ).
 It also discusses how to leverage state from the QUIC implementation in the
 endpoints, in order to reduce the need to exchange RTCP packets and how to
 implement congestion control and rate adaptation without relying on RTCP
@@ -52,11 +53,12 @@ feedback.
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
 Protocol (RTP) {{!RFC3550}} and RTP Control Protocol (RTCP) {{!RFC3550}} packets
-within the QUIC protocol ({{!RFC9000}}). It also discusses how to leverage state
+within the QUIC protocol ({{!RFC9000}}).
+This mapping is called RTP over QUIC (RoQ).
+It also discusses how to leverage state
 from the QUIC implementation in the endpoints, in order to reduce the need to
 exchange RTCP packets, and how to implement congestion control and rate
-adaptation without relying on RTCP feedback. The mapping described in this
-document is called RTP over QUIC (RoQ).
+adaptation without relying on RTCP feedback.
 
 ## Background {#background}
 
@@ -82,8 +84,7 @@ a single port used at either end of the connection.
 
 ## What's in Scope for this Specification {#in-scope}
 
-This document defines a mapping for RTP and RTCP over QUIC (this mapping is
-hereafter referred to as "RTP-over-QUIC"), and describes ways to reduce the
+This document defines a mapping for RTP and RTCP over QUIC, called RoQ, and describes ways to reduce the
 amount of RTCP traffic by leveraging state information readily available within
 a QUIC endpoint. This document also describes different options for implementing
 congestion control and rate adaptation for RoQ.
@@ -91,31 +92,31 @@ congestion control and rate adaptation for RoQ.
 This specification focuses on providing a secure encapsulation of RTP packets
 for transmission over QUIC. The expected usage is wherever RTP is used to carry
 media packets, allowing QUIC in place of other transport protocols such as TCP,
-UDP, SCTP, DTLS, etc. That is, we expect RTP-over-QUIC to be used in contexts in
+UDP, SCTP, DTLS, etc. That is, we expect RoQ to be used in contexts in
 which a signaling protocol is used to announce or negotiate a media
 encapsulation and the associated transport parameters (such as IP address, port
-number). RTP-over-QUIC is not intended as a stand-alone media transport,
+number). RoQ is not intended as a stand-alone media transport,
 although QUIC transport parameters could be statically configured.
 
-The above implies that RTP-over-QUIC is targeted at peer-to-peer operation; but
+The above implies that RoQ is targeted at peer-to-peer operation; but
 it may also be used in client-server-style settings, e.g., when talking to a
-conference server as described in RFC 7667 ({{!RFC7667}}), or, if RTP-over-QUIC
+conference server as described in RFC 7667 ({{!RFC7667}}), or, if RoQ
 is used to replace RTSP ({{?RFC7826}}), to a media server.
 
 Moreover, this document describes how a QUIC implementation and its API can be
-extended to improve efficiency of the RTP-over-QUIC protocol operation.
+extended to improve efficiency of the RoQ protocol operation.
 
-RTP-over-QUIC does not impact the usage of RTP Audio Video Profiles (AVP)
+RoQ does not impact the usage of RTP Audio Video Profiles (AVP)
 ({{!RFC3551}}), or any RTP-based mechanisms, even though it may render some of
 them unnecessary, e.g., Secure Real-Time Transport Prococol (SRTP)
 ({{?RFC3711}}) might not be needed, because end-to-end security is already
 provided by QUIC, and double encryption by QUIC and by SRTP might have more
-costs than benefits.  Nor does RTP-over-QUIC limit the use of RTCP-based
+costs than benefits.  Nor does RoQ limit the use of RTCP-based
 mechanisms, even though some information or functions obtained by using RTCP
 mechanisms may also be available from the underlying QUIC implementation by
 other means.
 
-Between two (or more) endpoints, RTP-over-QUIC supports multiplexing multiple
+Between two (or more) endpoints, RoQ supports multiplexing multiple
 RTP-based media streams within a single QUIC connection and thus using a single
 (destination IP address, destination port number, source IP address, source port
 number, protocol) 5-tuple..  We note that multiple independent QUIC connections
@@ -130,12 +131,12 @@ This document does not attempt to enhance QUIC for real-time media or define a
 replacement for, or evolution of, RTP. Work to map other media transport
 protocols to QUIC is under way elsewhere in the IETF.
 
-RTP-over-QUIC is designed for use with point-to-point connections, because QUIC
+RoQ is designed for use with point-to-point connections, because QUIC
 itself is not defined for multicast operation. The scope of this document is
 limited to unicast RTP/RTCP, even though nothing would or should prevent its use
 in multicast setups once QUIC supports multicast.
 
-RTP-over-QUIC does not define congestion control and rate adaptation algorithms
+RoQ does not define congestion control and rate adaptation algorithms
 for use with media. However, {{congestion-control}} discusses options for how
 congestion control and rate adaptation could be performed at the QUIC and/or at
 the RTP layer, and how information available at the QUIC layer could be exposed
@@ -145,11 +146,11 @@ via an API for the benefit of RTP layer implementation.
 > describe the QUIC interface that's being exposed, or if that ends up somewhere
 > else in the document.
 
-RTP-over-QUIC does not define prioritization mechanisms when handling different
+RoQ does not define prioritization mechanisms when handling different
 media as those would be dependent on the media themselves and their
-relationships. Prioritization is left to the application using RTP-over-QUIC.
+relationships. Prioritization is left to the application using RoQ.
 
-This document does not cover signaling for session setup. SDP for RTP-over-QUIC
+This document does not cover signaling for session setup. SDP for RoQ
 is defined in separate documents such as
 {{?I-D.draft-dawkins-avtcore-sdp-rtp-quic}}, and can be carried in any signaling
 protocol that can carry SDP, including the Session Initiation Protocol (SIP)
@@ -313,7 +314,7 @@ Note-MTU:
 : Supported, but may require MTU adaptation.
 
 Note-Sec:
-: Note that RTP-over-QUIC provides mandatory security, and other RTP transports
+: Note that RoQ provides mandatory security, and other RTP transports
 do not. {{sec-considerations}} describes strategies to prevent the inadvertent
 disclosure of RTP sessions to unintended third parties.
 
@@ -1191,13 +1192,13 @@ The security considerations for the QUIC protocol and datagram extension
 described in {{Section 21 of !RFC9000}}, {{Section 9 of !RFC9001}}, {{Section 8
 of !RFC9002}} and {{Section 6 of !RFC9221}} also apply to RoQ.
 
-Note that RTP-over-QUIC provides mandatory security, and other RTP transports do
+Note that RoQ provides mandatory security, and other RTP transports do
 not. In order to prevent the inadvertent disclosure of RTP sessions to
 unintended third parties, RTP topologies described in {{topologies}} that
-include middleboxes supporting both RTP-over-QUIC and non-RTP-over-QUIC paths
-MUST forward RTP packets on non-RTP-over-QUIC paths using a secure AVP profile
+include middleboxes supporting both RoQ and non-RoQ paths
+MUST forward RTP packets on non-RoQ paths using a secure AVP profile
 ({{?RFC3711}}, {{?RFC4585}}, or another AVP profile providing equivalent
-RTP-level security), whether or not RTP-over-QUIC senders are using a secure AVP
+RTP-level security), whether or not RoQ senders are using a secure AVP
 profile for those RTP packets.
 
 # IANA Considerations {#iana-considerations}
