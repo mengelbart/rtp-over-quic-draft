@@ -1197,19 +1197,15 @@ ROQ\_NO\_ERROR (0x????):
 : No error. This is used when the connection or stream needs to be closed, but
 there is no error to signal.
 
-ROQ\_GENERAL\_PROTOCOL\_ERROR (0x????):
-: Peer violated protocol requirements in a way that does not match a more
-specific error code or endpoint declines to use the more specific error code.
-
 ROQ\_INTERNAL\_ERROR (0x????):
 : An internal error has occured in the RoQ stack.
-
-ROQ\_STREAM\_CREATION\_ERROR (0x????):
-: The endpoint detected that its peer created a stream that it will not accept.
 
 ROQ\_PACKET\_ERROR (0x????):
 : Invalid payload format, e.g., length does not match packet, invalid flow id
 encoding, non-RTP on RTP-flow ID, etc.
+
+ROQ\_STREAM\_CREATION\_ERROR (0x????):
+: The endpoint detected that its peer created a stream that it will not accept.
 
 ROQ\_FRAME\_CANCELLED (0x????):
 : A receiving endpoint stopped reading a frame from a stream and requests new
