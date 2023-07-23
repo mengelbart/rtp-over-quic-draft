@@ -86,15 +86,31 @@ Although application-level mechanisms to encrypt RTP and RTCP payloads have exis
 
 This is in sharp contrast to "always-on" transport-level encryption in the QUIC protocol, using Transport Layer Security (TLS 1.3) as described in {{?RFC9001}}. QUIC implementations always authenticate the entirety of each packet, and encrypt as much of each packet as is practical, even switching from "long headers", which expose more QUIC header fields needed to establish a connection, to "short headers", which only expose the absolute minimum QUIC header fields needed to identify the connection to the receiver, so that the QUIC payload is presented to the right QUIC application {{?RFC8999}}.
 
+### "Always-On" Internet-Safe Congestion Avoidance
+
+When RTP is carried directly over UDP, as is commonly done, the underlying UDP protocol provides no transport services beyond path multiplexing using UDP ports. All congestion avoidance behavior is up to the RTP application itself, and if anything goes wrong with the application resulting in an RTP sender failing to recognize that it is contributing to path congestion, the "worst case" response is to invoke RTP "circuit breaker" procedures {{?RFC8083}}, resulting in "ceasing transmission", as described in {{Section 4.5 of ?RFC8083}}. Because RTCP-based circuit breakers only detect long-lived congestion, a response based on these mechanisms will not happen quickly.
+
+In contrast, when RTP is carried over QUIC, QUIC implementations maintain their own estimates of key transport parameters needed to detect and respond to possible congestion, and these are independent of any measurements RTP senders and receivers are maintaining. The result is that even if an RTP sender continues to "send", QUIC congestion avoidance procedures (for example, the procedures defined in {{?RFC9002}}) will cause the RTP packets to be buffered and only placed on the network path as part of a response to detected loss. This happens without any action being requied on the part of RTP senders.
+
+While the effect of QUIC's response to congestion means that some RTP packets will arrive at the receiver later than a user of the RTP flow might prefer, it is still preferable to "ceasing transmission" completely until the RTP sender has a reason to believe that restarting the flow will not result in congestion.
+
+Moreover, when a single QUIC connection is used to multiplex both RTP-RTCP and non-RTP packets as described in {{single-path}}, the QUIC connection will still be Internet-safe, with no coordination required.
+
+### Rate Adaptation Based on QUIC Feedback {#ra-quic-feedback}
+
+RTP makes use of a large number of RTP-specific feedback mechanisms because when RTP is carried directly over UDP, there is no other way to receive feedback. Some of these mechanisms are specific to the type of media RTP is sending, but others can be mapped from underlying QUIC implementations that are using this feedback to perform rate adaptation for any QUIC connection, regardless of the application reflected in the QUIC STREAM {{?RFC9000}} and DATAGRAM {{?RFC9221}} frames. This is described in (much) more detail in {{congestion-control}} on rate adaptation, and in {{rtcp-mapping}} on replacing RTCP and RTP header extensions with QUIC feedback.
+
+One word of caution is in order - RTP implementations may rely on at least some minimal periodic RTCP feedback, in order to determine that an RTP flow is still active, and is not causing sustained congestion (as described in {{?RFC8083}}, but since this "periodicity" is measured in seconds, the impact of this "duplicate" feedback on path bandwidth utilization is likely close to zero.
+
 ### Path MTU Discovery and RTP Media Coalescence {#mtu-coal}
 
 The minimum Path MTU supported by conformant QUIC implementations is 1200 bytes {{?RFC9000}}, and in addition, QUIC implementations allow senders to use either DPLPMTUD ({{?RFC8899}}) or PMTUD ({{?RFC1191}}, {{?RFC8201}}) to determine the actual MTU size that the receiver and path between sender and receiver support, which can be even larger.
 
 This is especially useful in certain conferencing topologies, where otherwise senders have no choice but to use the lowest path MTU for all conference participants, but even in point-to-point RTP sessions, this also allows senders to piggyback audio media in the same UDP packet as video media, for example, and also allows QUIC receivers to piggyback QUIC ACK frames on any QUIC frames being transmitted in the other direction.
 
-#### Multiplexing RTP, RTCP, and Non-RTP Flows on a Single QUIC Connection {#single-path}
+### Multiplexing RTP, RTCP, and Non-RTP Flows on a Single QUIC Connection {#single-path}
 
-In order to conserve ports, especially at NATs and Firewalls, this specification defines a flow identifier, so that multiple RTP flows, RTCP flows, and non-RTP flows can be distinguished even if they are carried on the same QUIC connection.
+In order to conserve ports, especially at NATs and Firewalls, this specification defines a flow identifier, so that multiple RTP flows, RTCP flows, and non-RTP flows can be distinguished even if they are carried on the same QUIC connection. This is described in more detail in {{multiplexing}}.
 
 ### Exploiting Multiple Connections {#multiple-paths}
 
