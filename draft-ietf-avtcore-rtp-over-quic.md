@@ -683,9 +683,10 @@ flow identifier of the RTP session in which the retransmission happens.
 
 # Connection Shutdown
 
-Both peers MAY close the connection for variety of reasons. If one of the peers
-wants to close the RoQ connection, the peer can use a QUIC CONNECTION\_CLOSE
-frame with one of the error codes defined in {{error-handling}}.
+Either peers MAY close the connection for variety of reasons. If one of the
+peers wants to close the RoQ connection, the peer can use a QUIC
+CONNECTION\_CLOSE frame with one of the error codes defined in
+{{error-handling}}.
 
 # Congestion Control and Rate Adaptation {#congestion-control}
 
@@ -1205,17 +1206,18 @@ ROQ\_PACKET\_ERROR (0x????):
 encoding, non-RTP on RTP-flow ID, etc.
 
 ROQ\_STREAM\_CREATION\_ERROR (0x????):
-: The endpoint detected that its peer created a stream that it will not accept.
+: The endpoint detected that its peer created a stream that violates the ROQ protocol.
 
 ROQ\_FRAME\_CANCELLED (0x????):
-: A receiving endpoint stopped reading a frame from a stream and requests new
-frames be sent on new streams using STOP\_SENDING or a sender notifies a
-receiver that retransmissions of a frame were stopped using RESET\_STREAM and
-new frames will be sent on new streams.
+: A receiving endpoint is using STOP_SENDING on the current stream to request
+new frames be sent on new streams. Similarly, a sender notifies a receiver that
+retransmissions of a frame were stopped using RESET\_STREAM and new frames will
+be sent on new streams.
 
 ROQ\_UNKNOWN\_FLOW\_ID (0x????):
 : An endpoint was unable to handle a flow identifier, e.g., because it was not
-signalled or it does not support multiplexing using arbitrary flow identifiers.
+signalled or because the endpoint does not support multiplexing using arbitrary
+flow identifiers.
 
 ROQ\_SIGNALING\_ERROR (0x????):
 : Parameters that were set during out of band signaling are incompatible with
