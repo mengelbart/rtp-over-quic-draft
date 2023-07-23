@@ -80,6 +80,8 @@ blocking).
 
 From time to time, someone asks the reasonable question, "why should anyone implement and deploy RoQ"? This reasonable question deserves a better answer than "because we can". Upon reflection, the following motivations seem useful to state.
 
+The motivations in this section are in no particular order, and this reflects the reality that not all implementers and deployers would agree on "the most important motivations".
+
 ### "Always-On" Transport-level Authentication and Encryption {#alwas-on}
 
 Although application-level mechanisms to encrypt RTP and RTCP payloads have existed since the introduction of Secure Real-time Transport Protocol (SRTP) {{?RFC3711}}, encryption of RTP and RTCP header fields and contributing sources has only been defined recently (in Cryptex {{?RFC9335}}, and both SRTP and Cryptex are optional capabilities for RTP.
