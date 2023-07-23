@@ -630,8 +630,8 @@ stream credits it will have to provide to the media-sending peer.
 Senders can also transmit RTP packets in QUIC datagrams. QUIC datagrams are an
 extension to QUIC described in {{!RFC9221}}. QUIC datagrams can only be used if
 the use of the extension was successfully negotiated during the QUIC handshake.
-If the use of datagrams was signalled using a signalling protocol, but the
-datagram extension was not negotiated during the handshake, a peer MAY close the
+If the use of an extension was signaled using a signaling protocol, but the
+extension was not negotiated during the QUIC handshake, a peer MAY close the
 connection with the ROQ\_SIGNALING\_ERROR error code.
 
 QUIC datagrams preserve frame boundaries. Thus, a single RTP packet can be
@@ -1222,7 +1222,7 @@ flow identifiers.
 ROQ\_SIGNALING\_ERROR (0x????):
 : Parameters that were set during out of band signaling are incompatible with
 the connection properties that were negotiated when the connection was
-established using transport parameters.
+established using QUIC transport parameters.
 
 # API Considerations {#api-considerations}
 
