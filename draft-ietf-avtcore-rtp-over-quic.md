@@ -1364,6 +1364,20 @@ The "rtp-mux-quic" string identifies RoQ:
   Specification:
   : This document
 
+## RoQ Error Codes
+
+This document establishes a registry for RoQ error codes.
+
+| Name                          | Value  | Description                            | Specification  |
+| ----------------------------- | ------ | -------------------------------------- | -------------- |
+| ROQ\_NO\_ERROR                | 0x???? | No Error                               | TODO: This doc |
+| ROQ\_INTERNAL\_ERROR          | 0x???? | Internal Error                         | TODO: This doc |
+| ROQ\_PACKET\_ERROR            | 0x???? | Invalid payload format                 | TODO: This doc |
+| ROQ\_STREAM\_CREATION\_ERROR  | 0x???? | Invalid stream type                    | TODO: This doc |
+| ROQ\_FRAME\_CANCELLED         | 0x???? | Frame cancelled                        | TODO: This doc |
+| ROQ\_UNKNOWN\_FLOW\_ID        | 0x???? | Unknown Flow ID                        | TODO: This doc |
+| ROQ\_SIGNALING\_ERROR         | 0x???? | Externally signalled requirement unmet | TODO: This doc |
+
 --- back
 
 # List of optional QUIC Extensions
