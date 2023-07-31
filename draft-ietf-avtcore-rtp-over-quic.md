@@ -632,7 +632,7 @@ extension to QUIC described in {{!RFC9221}}. QUIC datagrams can only be used if
 the use of the extension was successfully negotiated during the QUIC handshake.
 If the use of an extension was signaled using a signaling protocol, but the
 extension was not negotiated during the QUIC handshake, a peer MAY close the
-connection with the ROQ\_SIGNALING\_ERROR error code.
+connection with the ROQ\_EXPECTATION\_UNMET error code.
 
 QUIC datagrams preserve frame boundaries. Thus, a single RTP packet can be
 mapped to a single QUIC datagram without additional framing. Senders SHOULD
@@ -1222,10 +1222,9 @@ ROQ\_UNKNOWN\_FLOW\_ID (0x????):
 signalled or because the endpoint does not support multiplexing using arbitrary
 flow identifiers.
 
-ROQ\_SIGNALING\_ERROR (0x????):
-: Parameters that were set during out of band signaling are incompatible with
-the connection properties that were negotiated when the connection was
-established using QUIC transport parameters.
+ROQ\_EXPECTATION\_UNMET (0x????):
+: Expectiations of the QUIC transport set by RoQ out-of-band signalling were not
+met by the QUIC connection.
 
 # API Considerations {#api-considerations}
 
@@ -1380,7 +1379,7 @@ This document establishes a registry for RoQ error codes.
 | ROQ\_STREAM\_CREATION\_ERROR  | 0x???? | Invalid stream type                    | TODO: This doc |
 | ROQ\_FRAME\_CANCELLED         | 0x???? | Frame cancelled                        | TODO: This doc |
 | ROQ\_UNKNOWN\_FLOW\_ID        | 0x???? | Unknown Flow ID                        | TODO: This doc |
-| ROQ\_SIGNALING\_ERROR         | 0x???? | Externally signalled requirement unmet | TODO: This doc |
+| ROQ\_EXPECTATION\_UNMET       | 0x???? | Externally signalled requirement unmet | TODO: This doc |
 
 --- back
 
