@@ -1198,6 +1198,9 @@ ROQ\_NO\_ERROR (0x????):
 : No error. This is used when the connection or stream needs to be closed, but
 there is no error to signal.
 
+ROQ\_GENERAL\_ERROR (0x????):
+: An error that does not match a more specific error code occured.
+
 ROQ\_INTERNAL\_ERROR (0x????):
 : An internal error has occured in the RoQ stack.
 
@@ -1371,6 +1374,7 @@ This document establishes a registry for RoQ error codes.
 | Name                          | Value  | Description                            | Specification  |
 | ----------------------------- | ------ | -------------------------------------- | -------------- |
 | ROQ\_NO\_ERROR                | 0x???? | No Error                               | TODO: This doc |
+| ROQ\_GENERAL\_ERROR           | 0x???? | General error                          | TODO: This doc |
 | ROQ\_INTERNAL\_ERROR          | 0x???? | Internal Error                         | TODO: This doc |
 | ROQ\_PACKET\_ERROR            | 0x???? | Invalid payload format                 | TODO: This doc |
 | ROQ\_STREAM\_CREATION\_ERROR  | 0x???? | Invalid stream type                    | TODO: This doc |
