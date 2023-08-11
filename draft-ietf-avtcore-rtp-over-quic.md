@@ -852,7 +852,7 @@ prioritization or bandwidth allocation.
 # Replacing RTCP and RTP Header Extensions with QUIC Feedback {#rtcp-mapping}
 
 Because RTP has so often used UDP as its underlying transport protocol, and
-receiving little or no feedback from UTP, RTP implementations rely on feedback from
+receiving little or no feedback from UDP, RTP implementations rely on feedback from
 the RTP Control Protocol (RTCP) so that RTP senders and receivers can exchange
 control information to monitor connection statistics and to identify and
 synchronize streams.
