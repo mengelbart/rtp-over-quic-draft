@@ -1177,10 +1177,10 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 | urn:ietf:params:rtp-hdrext:ntp-56 | Synchronisation metadata: 56-bit timestamp format | {{?RFC6051}} | no |
 | urn:ietf:params:rtp-hdrext:encrypt | Encrypted extension header element | {{?RFC6904}} | no, but maybe irrelevant? |
 | urn:ietf:params:rtp-hdrext:csrc-audio-level | Mixer-to-client audio level indicators | {{?RFC6465}} | no |
-| urn:3gpp:video-orientation:6 | Higher granularity (6-bit) coordination of video orientation (CVO) feature, see clause 6.2.3 | [3GPP TS 26.114, version 12.5.0}} | probably not(?) |
-| urn:3gpp:video-orientation | Coordination of video orientation (CVO) feature, see clause 6.2.3 | [3GPP TS 26.114, version 12.5.0}} | probably not(?) |
-| urn:3gpp:roi-sent | Signalling of the arbitrary region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | [3GPP TS 26.114, version 13.1.0}} | probably not(?) |
-| urn:3gpp:predefined-roi-sent | Signalling of the predefined region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | [3GPP TS 26.114, version 13.1.0}} | probably not(?) |
+| urn:3gpp:video-orientation:6 | Higher granularity (6-bit) coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}}, version 12.5.0 | probably not(?) |
+| urn:3gpp:video-orientation | Coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}}, version 12.5.0 | probably not(?) |
+| urn:3gpp:roi-sent | Signalling of the arbitrary region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}}, version 13.1.0 | probably not(?) |
+| urn:3gpp:predefined-roi-sent | Signalling of the predefined region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}}, version 13.1.0 | probably not(?) |
 
 ### SDES Compact Header Extensions
 
