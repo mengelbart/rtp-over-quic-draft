@@ -303,6 +303,23 @@ metrics can be used to generate the required feedback at the sender-side and
 provide it to the rate adaptation algorithm to avoid the additional overhead of the
 RTCP stream. This is discussed in more detail in {{rtcp-mapping}}.
 
+## RTP with QUIC Streams, QUIC Datagrams, and a Mixture of Both
+
+This document describes the use of QUIC streams and QUIC datagrams as RTP encapsulations. The choice of which encapsulation is used is up to the application developer, but it is worth noting the differences.
+
+QUIC {{!RFC9000}} was initially designed to carry HTTP {{?RFC9114}} in QUIC streams, and QUIC streams provide what HTTP application developers require - for example, QUIC streams provide a stateful, connection-oriented, flow-controlled, reliable, ordered stream of bytes to an application. QUIC streams can be multiplexed over a single QUIC connection, using stream IDs to demultiplex incoming messages.
+
+QUIC Datagrams ((!RFC9221}} were developed as a QUIC extension, intended to support applications that do not require reliable delivery of application data. This extension defines two QUIC DATAGRAM frame types (one including a length field, the other not including a length field), and these DATAGRAM frames can co-exist with QUIC STREAM frames within a single QUIC connection, sharing the connection's cryptographic and authentication context, and congestion controller context.
+
+There is no default relative priority between DATAGRAM frames with respect to each other, and there is no default priority between DATAGRAM frames and QUIC streams. The implementation likely presents an API to allow appplications to assign relative priorities, but this is not mandated by the standard and may not be present in all implementations.
+
+Because QUIC datagrams are an extension to QUIC, they inherit a great deal of functionality from QUIC (much of which is described in {{motivations}}); so much so that it is easier to explain what datagrams do NOT inherit.
+
+* DATAGRAM frames do not provide any explicit flow control signaling. This means that a QUIC receiver may not be able to commit the necessary resources to process incoming frames, but the purpose for DATAGRAM frames is to carry application-level information that can be lost and will not be retransmitted,
+* DATAGRAM frames do inherit the QUIC connection's congestion controller. This means that although there is no frame-level flow control, DATAGRAM frames may be delayed until the controller allows them to be sent, or dropped (with an optional notification to the sending application). Implementations can also delay sending DATAGRAM frames to maintain consistent packet pacing (as described in {{Section 7.7 of ?RFC9002}}), and can allow an application to specify a sending expiration time, but these capabilities are not mandated by the standard and may not be present in all implementations.
+* DATAGRAM frames cannot be fragmented. They are limited in size by the max_datagram_frame_size transport parameter, and further limited by the max_udp_payload_size transport parameter and the Maximum Transmission Unit (MTU) of the path between endpoints.
+* DATAGRAM frames belong to a QUIC connection as a whole. There is no QUIC-level way to multiplex/demultiplex DATAGRAM frames within a single QUIC connection. Any multiplexing identifiers must be added, interpreted, and removed by an application, and they will be sent as part of the DATAGRAM frame itself.
+
 ## Supported RTP Topologies {#topologies}
 
 RoQ only supports some of the RTP topologies described in
