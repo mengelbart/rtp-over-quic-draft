@@ -283,14 +283,17 @@ different approach to leverage the advantages of QUIC connections without
 managing a separate QUIC connection per RTP session. QUIC does not provide
 demultiplexing between different flows on datagrams but suggests that an
 application implement a demultiplexing mechanism if required. An example of such
-a mechanism are flow identifiers prepended to each datagram frame as described
+a mechanism would be flow identifiers prepended to each datagram frame as described
 in {{Section 2.1 of ?I-D.draft-ietf-masque-h3-datagram}}. RoQ uses a
 flow identifier to replace the network address and port number to multiplex many
 RTP sessions over the same QUIC connection.
 
+An RTP application is responsible for determining what to send in an encoded media stream, and how to send that encoded media stream within a targeted bitrate.
+
+This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
+
 A rate adaptation algorithm can be plugged in to adapt the media bitrate to the
-available bandwidth. This document does not mandate any specific rate adaptation
-algorithm, because the desired response to congestion can be application and codec-specific. For example, adjusting quantization in response to congestion may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
+available bandwidth. This document does not mandate any specific rate adaptation mechanism, so the application can use a rate adaption mechanism of its choice.
 
 As of this writing, the IETF has produced two Experimental-track rate adaptation specifications, Network-Assisted Dynamic Adaptation (NADA)
 {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
@@ -1182,29 +1185,29 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 
 | Extension URI | Description | Reference | QUIC |
 | ------------- | ----------- | --------- | ---- |
-| urn:ietf:params:rtp-hdrext:toffset | Transmission Time offsets | [RFC5450] | no |
-| urn:ietf:params:rtp-hdrext:ssrc-audio-level | Audio Level | [RFC6464] | no |
-| urn:ietf:params:rtp-hdrext:splicing-interval | Splicing Interval | [RFC8286] | no |
-| urn:ietf:params:rtp-hdrext:smpte-tc | SMPTE time-code mapping | [RFC5484] | no |
-| urn:ietf:params:rtp-hdrext:sdes | Reserved as base URN for RTCP SDES items that are also defined as RTP compact header extensions. | [RFC7941] | no |
-| urn:ietf:params:rtp-hdrext:ntp-64 | Synchronisation metadata: 64-bit timestamp format | [RFC6051] | no |
-| urn:ietf:params:rtp-hdrext:ntp-56 | Synchronisation metadata: 56-bit timestamp format | [RFC6051] | no |
-| urn:ietf:params:rtp-hdrext:encrypt | Encrypted extension header element | [RFC6904] | no, but maybe irrelevant? |
-| urn:ietf:params:rtp-hdrext:csrc-audio-level | Mixer-to-client audio level indicators | [RFC6465] | no |
-| urn:3gpp:video-orientation:6 | Higher granularity (6-bit) coordination of video orientation (CVO) feature, see clause 6.2.3 | [3GPP TS 26.114, version 12.5.0] | probably not(?) |
-| urn:3gpp:video-orientation | Coordination of video orientation (CVO) feature, see clause 6.2.3 | [3GPP TS 26.114, version 12.5.0] | probably not(?) |
-| urn:3gpp:roi-sent | Signalling of the arbitrary region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | [3GPP TS 26.114, version 13.1.0] | probably not(?) |
-| urn:3gpp:predefined-roi-sent | Signalling of the predefined region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | [3GPP TS 26.114, version 13.1.0] | probably not(?) |
+| urn:ietf:params:rtp-hdrext:toffset | Transmission Time offsets | {{?RFC5450}} | no |
+| urn:ietf:params:rtp-hdrext:ssrc-audio-level | Audio Level | {{?RFC6464}} | no |
+| urn:ietf:params:rtp-hdrext:splicing-interval | Splicing Interval | {{?RFC8286}} | no |
+| urn:ietf:params:rtp-hdrext:smpte-tc | SMPTE time-code mapping | {{?RFC5484}} | no |
+| urn:ietf:params:rtp-hdrext:sdes | Reserved as base URN for RTCP SDES items that are also defined as RTP compact header extensions. | {{?RFC7941}} | no |
+| urn:ietf:params:rtp-hdrext:ntp-64 | Synchronisation metadata: 64-bit timestamp format | {{?RFC6051}} | no |
+| urn:ietf:params:rtp-hdrext:ntp-56 | Synchronisation metadata: 56-bit timestamp format | {{?RFC6051}} | no |
+| urn:ietf:params:rtp-hdrext:encrypt | Encrypted extension header element | {{?RFC6904}} | no, but maybe irrelevant? |
+| urn:ietf:params:rtp-hdrext:csrc-audio-level | Mixer-to-client audio level indicators | {{?RFC6465}} | no |
+| urn:3gpp:video-orientation:6 | Higher granularity (6-bit) coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}}, version 12.5.0 | probably not(?) |
+| urn:3gpp:video-orientation | Coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}}, version 12.5.0 | probably not(?) |
+| urn:3gpp:roi-sent | Signalling of the arbitrary region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}}, version 13.1.0 | probably not(?) |
+| urn:3gpp:predefined-roi-sent | Signalling of the predefined region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}}, version 13.1.0 | probably not(?) |
 
 ### SDES Compact Header Extensions
 
 | Extension URI | Description | Reference | QUIC |
 | ------------- | ----------- | --------- | ---- |
-| urn:ietf:params:rtp-hdrext:sdes:cname | Source Description: Canonical End-Point Identifier (SDES CNAME) | [RFC7941] | no |
-| urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id | RTP Stream Identifier | [RFC8852] | no |
-| urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id | RTP Repaired Stream Identifier | [RFC8852] | no |
-| urn:ietf:params:rtp-hdrext:sdes:CaptId | CLUE CaptId | [RFC8849] | no |
-| urn:ietf:params:rtp-hdrext:sdes:mid | Media identification | [RFC9143] | no |
+| urn:ietf:params:rtp-hdrext:sdes:cname | Source Description: Canonical End-Point Identifier (SDES CNAME) | {{?RFC7941}} | no |
+| urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id | RTP Stream Identifier | {{?RFC8852}} | no |
+| urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id | RTP Repaired Stream Identifier | {{?RFC8852}} | no |
+| urn:ietf:params:rtp-hdrext:sdes:CaptId | CLUE CaptId | {{?RFC8849}} | no |
+| urn:ietf:params:rtp-hdrext:sdes:mid | Media identification | {{?RFC9143}} | no |
 
 # Error Handling {#error-handling}
 
