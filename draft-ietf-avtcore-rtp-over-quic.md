@@ -990,12 +990,12 @@ Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`,
 ### Mapping QUIC Feedback to RTCP Extended Report ("XR") {#XR-mappings}
 
 *Extended Reports* (`PT=207`, `Name=XR`, {{!RFC3611}}) offer an extensible
-framework for a variety of different control messages. Some of the standard
-report blocks which can be implemented in extended reports can be implemented in
-QUIC, too. Other report blocks need to be evaluated individually, to determine
-whether if the contained information can be transmitted using QUIC instead.
-{{tab-xr-blocks}} in {{extended-reports}} lists considerations for mapping QUIC
-feedback to some of the *Extended Reports*.
+framework for a variety of different control messages. Some of the statistics
+that are defined as extended report blocks can be derived from QUIC, too. Other
+report blocks need to be evaluated individually, to determine whether if the
+contained information can be transmitted using QUIC instead. {{tab-xr-blocks}}
+in {{extended-reports}} lists considerations for mapping QUIC feedback to some
+of the *Extended Reports*.
 
 ### Mapping QUIC Feedback to Generic RTP Feedback ("RTPFB") {#rtpfb-mappings}
 
@@ -1007,9 +1007,9 @@ types to QUIC.
 Generic *Negative Acknowledgments* (`PT=205`, `FMT=1`, `Name=Generic NACK`,
 {{!RFC4585}}) contain information about RTP packets which the receiver
 considered lost. {{Section 6.2.1. of !RFC4585}} recommends to use this feature
-only, if the underlying protocol cannot provide similar feedback. QUIC does not
+only if the underlying protocol cannot provide similar feedback. QUIC does not
 provide negative acknowledgments, but can detect lost packets based on the Gap
-numbers contained in QUIC ACK frames {{Section 6 of !RFC9002}}.
+numbers contained in QUIC ACK frames ({{Section 6 of !RFC9002}}).
 
 #### ECN Feedback ("ECN") {#ECN-mappings}
 
@@ -1295,11 +1295,14 @@ RoQ, but are not required by RoQ.
 This section lists all the RTCP packet types and RTP header extensions that were
 considered in the analysis described in {{rtcp-mapping}}.
 
-## RTCP Control Packet Types {#control-packets}
-
 Several but not all of these control packets and their attributes can be mapped
 from QUIC, as described in {{transport-layer-feedback}}. *Mappable from QUIC*
-has one of three values: *yes*, *QUIC extension required*, and *no*.
+has one of three values: *yes*, *partly*, *possibly*, and *no*. *Partly*
+is used for packet types for which some fields can be mapped from QUIC, but not
+all. *Possibly* describes packet types which could be mapped with help from one
+or more QUIC extensions.
+
+## RTCP Control Packet Types {#control-packets}
 
 | Name | Shortcut | PT | Defining Document | Mappable from QUIC | Comments |
 | ---- | -------- | -- | ----------------- | ---------------- | -------- |
@@ -1308,7 +1311,7 @@ has one of three values: *yes*, *QUIC extension required*, and *no*.
 | Sender Reports | SR | 200 | {{?RFC3550}}  | partly | see {{al-repair}} and {{RR-mappings}} |
 | Receiver Reports | RR | 201 | {{?RFC3550}} | possibly | see {{RR-mappings}} |
 | Source description | SDES | 202 | {{?RFC3550}}  | no | |
-| Goodbye | BYE | 203 | {{?RFC3550}}  | possibly | see {{BYE-mapping}} |
+| Goodbye | BYE | 203 | {{?RFC3550}}  | partly | see {{BYE-mapping}} |
 | Application-defined | APP | 204 | {{?RFC3550}}  | no | |
 | Generic RTP Feedback | RTPFB | 205 | {{?RFC4585}} | partly | see {{generic-feedback}} |
 | Payload-specific | PSFB | 205 | {{?RFC4585}}  | partly | see {{payload-specific-feedback}} |
@@ -1329,7 +1332,7 @@ has one of three values: *yes*, *QUIC extension required*, and *no*.
 | Packet Receipt Times Report Block | {{?RFC3611}}  | possibly | QUIC could provide packet receive timestamps when using a timestamp extension that reports timestamp for every received packet, such as {{?I-D.draft-smith-quic-receive-ts}}. However, QUIC does not provide feedback in RTP timestamp format. |
 | Receiver Reference Time Report Block | {{?RFC3611}}  | possibly | Used together with DLRR Report Blocks to calculate RTTs of non-senders. RTT measurements can natively be provided by QUIC. |
 | DLRR Report Block | {{?RFC3611}}  | possibly | Used together with Receiver Reference Time Report Blocks to calculate RTTs of non-senders. RTT can natively be provided by QUIC natively. |
-| Statistics Summary Report Block | {{?RFC3611}}  | partly | Packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see {{?I-D.draft-smith-quic-receive-ts}} or {{?I-D.draft-huitema-quic-ts}}). The remaining fields cannot be mapped to QUIC. |
+| Statistics Summary Report Block | {{?RFC3611}}  | possibly/partly | Packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see {{?I-D.draft-smith-quic-receive-ts}} or {{?I-D.draft-huitema-quic-ts}}). The remaining fields cannot be mapped to QUIC. |
 | VoIP Metrics Report Block | {{?RFC3611}}  | no | as in other reports above, only loss and RTT available |
 | RTCP XR | {{?RFC5093}} | no | |
 | Texas Instruments Extended VoIP Quality Block | | | |
@@ -1408,7 +1411,7 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 
 ### Compact Header Extensions
 
-| Extension URI | Description | Reference | QUIC |
+| Extension URI | Description | Reference | Mappable from QUIC |
 | ------------- | ----------- | --------- | ---- |
 | urn:ietf:params:rtp-hdrext:toffset | Transmission Time offsets | {{?RFC5450}} | no |
 | urn:ietf:params:rtp-hdrext:ssrc-audio-level | Audio Level | {{?RFC6464}} | no |
@@ -1426,7 +1429,7 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 
 ### SDES Compact Header Extensions
 
-| Extension URI | Description | Reference | QUIC |
+| Extension URI | Description | Reference | Mappable from QUIC |
 | ------------- | ----------- | --------- | ---- |
 | urn:ietf:params:rtp-hdrext:sdes:cname | Source Description: Canonical End-Point Identifier (SDES CNAME) | {{?RFC7941}} | no |
 | urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id | RTP Stream Identifier | {{?RFC8852}} | no |
