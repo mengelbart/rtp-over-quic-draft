@@ -892,15 +892,19 @@ extentions include:
 When statistics contained in RTCP packets are also available from QUIC, or can
 be derived from statistics available from QUIC, it is desireable to provide
 these statistics at only one protocol layer. This avoids consumption of
-bandwidth to deliver duplicated control information. Because QUIC relies on
-certain frames being sent, it is not possible to supress QUIC signaling in favor
-of RTCP signaling, so if bandwidth is to be conserved, this must be accomplished
-by surpressing RTCP signaling in favor of QUIC signalling.
-
-This document specifies a baseline for replacing some of the RTCP packet types
-by mapping the contents to QUIC connection statistics. Future documents can
-extend this mapping for other RTCP format types, and can make use of new QUIC
-extensions that become available over time.
+bandwidth to deliver equivalent control information at more than one level of
+the protocol stack. QUIC and RTCP both have rules describing when certain
+signals have to be sent. This document does not change any of the rules
+described by either protocol, but specifies a baseline for replacing some of the
+RTCP packet types by mapping the contents to QUIC connection statistics, and
+reducing the transmission frequency and bandwidth requirements for some RTCP
+packet types that must be transmitted periodically. Future documents can extend
+this mapping for other RTCP format types, and can make use of new QUIC
+extensions that become available over time. The mechanisms described in this
+section can enhance the statistics provided by RTCP and reduce the bandwidth
+overhead required by certain RTCP packets. Applications using RoQ need to adhere
+to the rules for RTCP feedback given by {{!RFC3550}} and the RTP profiles in
+use.
 
 Most statements about "QUIC" in {{rtcp-mapping}} are applicable to both RTP
 encapsulated in QUIC streams and RTP encapsulated in QUIC datagrams. The
