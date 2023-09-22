@@ -951,6 +951,25 @@ RTP packet loss can seem lower than actual packet loss due to QUIC's automatic
 retransmissions. Similarly, timing information might be incorrect due to
 retransmissions.
 
+## Multihop Topologies {#multi-hop}
+
+In some topologies, RoQ may be used on only some of the links between multiple
+session participants. Other links may be using RTP over UDP, or over some other
+supported RTP encapsulation protocol, and some participants might be using
+implementations that don't support RoQ at all. These participants will not be
+able to infer feedback from QUIC, and they may receive less RTCP feedback than
+expected. On the other hand, participants using RoQ might not be aware that
+other participants are not using RoQ and send as little RTCP as possible since
+they assume their RoQ peer will be able to infer statistics from QUIC. There are
+two ways to solve this problem: if the middlebox translating between RoQ and RTP
+over other RTP transport protocols such as UDP or TCP provides Back-to-Back RTP
+sessions as described in {{Section 3.2.2 of !RFC7667}}, this middlebox can add
+RTCP packets for the participants not using RoQ by using the statistics the
+middlebox gets from QUIC and the mappings described in the following sections.
+If the middlebox does not provide Back-to-Back RTP sessions, participants may
+use additional signalling to let the RoQ participants know what RTCP is
+required.
+
 ## Transport Layer Feedback {#transport-layer-feedback}
 
 This section explains how some of the RTCP packet types which are used to signal
