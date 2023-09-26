@@ -1252,7 +1252,11 @@ profile for those RTP packets.
 
 # IANA Considerations {#iana-considerations}
 
-## Registration of a RoQ Identification String
+This document registers a new ALPN protocol ID {{iana-alpn}} and creates a new
+registry that manages the assignment of error code points in RoQ
+{{iana-error-codes}}.
+
+## Registration of a RoQ Identification String {#iana-alpn}
 
 This document creates a new registration for the identification of RoQ
 in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
@@ -1269,20 +1273,51 @@ The "rtp-mux-quic" string identifies RoQ:
   Specification:
   : This document
 
-## RoQ Error Codes
+## RoQ Error Codes Registry {#iana-error-codes}
 
-This document establishes a registry for RoQ error codes.
+This document establishes a registry for RoQ error codes. The "RoQ Error Codes"
+registry manages a 62-bit space.
 
-| Name                          | Value  | Description                            | Specification  |
-| ----------------------------- | ------ | -------------------------------------- | -------------- |
-| ROQ\_NO\_ERROR                | 0x???? | No Error                               | TODO: This doc |
-| ROQ\_GENERAL\_ERROR           | 0x???? | General error                          | TODO: This doc |
-| ROQ\_INTERNAL\_ERROR          | 0x???? | Internal Error                         | TODO: This doc |
-| ROQ\_PACKET\_ERROR            | 0x???? | Invalid payload format                 | TODO: This doc |
-| ROQ\_STREAM\_CREATION\_ERROR  | 0x???? | Invalid stream type                    | TODO: This doc |
-| ROQ\_FRAME\_CANCELLED         | 0x???? | Frame cancelled                        | TODO: This doc |
-| ROQ\_UNKNOWN\_FLOW\_ID        | 0x???? | Unknown Flow ID                        | TODO: This doc |
-| ROQ\_EXPECTATION\_UNMET       | 0x???? | Externally signalled requirement unmet | TODO: This doc |
+The new error codes registry created in this document operates under the QUIC
+registration policy documented in {{Section 22.1 of !RFC9000}}. This registry
+includes the common set of fields listed in {{Section 22.1.1 of !RFC9000}}.
+
+Permanent registrations in this registry are assigned using the Specification
+Required policy ({{!RFC8126}}), except for values between 0x00 and 0x3f (in
+hexadecimal; inclusive), which are assigned using Standards Action or IESG
+Approval as defined in {{Sections 4.9 and 4.10 of !RFC8126}}.
+
+Registrations for error codes are required to include a description of the error
+code. An expert reviewer is advised to examine new registrations for possible
+duplication with existing error codes.
+
+In addition to common fields as described in Section {{Section 22.1 of
+!RFC9000}}, this registry includes two additional fields. Permanent
+registrations in this registry MUST include the following fields:
+
+Name:
+: A name for the error code.
+
+Description:
+: A brief description of the error code semantics.
+
+The initial allocations in this registry are all assigned permanent status and
+list a change controller of the IETF and a contact of the AVTCORE working group
+(avt@ietf.org).
+
+The entries in {{tab-error-codes}} are registered by this document.
+
+| Name                          | Value  | Description                            | Specification      |
+| ----------------------------- | ------ | -------------------------------------- | ------------------ |
+| ROQ\_NO\_ERROR                | 0x01 | No Error                               | {{error-handling}} |
+| ROQ\_GENERAL\_ERROR           | 0x02 | General error                          | {{error-handling}} |
+| ROQ\_INTERNAL\_ERROR          | 0x03 | Internal Error                         | {{error-handling}} |
+| ROQ\_PACKET\_ERROR            | 0x04 | Invalid payload format                 | {{error-handling}} |
+| ROQ\_STREAM\_CREATION\_ERROR  | 0x05 | Invalid stream type                    | {{error-handling}} |
+| ROQ\_FRAME\_CANCELLED         | 0x06 | Frame cancelled                        | {{error-handling}} |
+| ROQ\_UNKNOWN\_FLOW\_ID        | 0x07 | Unknown Flow ID                        | {{error-handling}} |
+| ROQ\_EXPECTATION\_UNMET       | 0x08 | Externally signalled requirement unmet | {{error-handling}} |
+{: #tab-error-codes title="Initial RoQ Error Codes"}
 
 --- back
 
