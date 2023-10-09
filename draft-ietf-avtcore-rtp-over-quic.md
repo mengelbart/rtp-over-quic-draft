@@ -1044,9 +1044,15 @@ frames as described in {{!I-D.draft-smith-quic-receive-ts}} or
 
 ### Mapping QUIC Connection Close to RTCP Goodbye Packets ("BYE") {#BYE-mapping}
 
-*Goodbye* (`PT=203`, `Name=BYE`, {{!RFC3550}}) can be replaced by closing the
-QUIC connection. However, while QUIC allows application layer error codes, they
-do not carry string values.
+RTP session participants can use *Goodbye* RTCP packets (`PT=203`, `Name=BYE`,
+{{!RFC3550}}), to indicate that a source is no longer active. If the participant
+is also going to close the QUIC connection, the *BYE* packet can be replaced by
+a QUIC CONNECTION_CLOSE frame. In this case, the reason for leaving can be
+transmitted in QUIC's CONNECTION_CLOSE *Reason Phrase*. However, if the
+participant wishes to use this QUIC connection for any other multiplexed
+traffic, the participant has to use the BYE packet because the QUIC
+CONNECTION_CLOSE would close the entire QUIC connection for all other QUIC
+streams and datagrams.
 
 ## Application Layer Repair and other Control Messages {#al-repair}
 
