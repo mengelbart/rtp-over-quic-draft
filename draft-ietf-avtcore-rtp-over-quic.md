@@ -216,6 +216,11 @@ when, and only when, they appear in all capitals, as shown here.
 
 The following terms are used:
 
+Bandwidth Estimation:
+: An algorithm to estimate the available bandwidth of a link in a network. Such
+an estimation can be used for rate adaptation, i.e., adapt the rate at which an
+application transmits data.
+
 Congestion Control:
 : A mechanism to limit the aggregate amount of data that has been sent over a
 path to a receiver, but has not been acknowledged by the receiver. This prevents
@@ -248,14 +253,14 @@ QUIC congestion controller:
 : A software component of an application's QUIC implementation that implements a congestion control algorithm.
 
 Rate Adaptation:
-: A congestion control mechanism that helps a sender determine and adjust its sending rate, in order
-to maximize the amount of information that is sent to a receiver, without
-causing queues to build beyond a reasonable amount, causing "buffer bloat" and
-"jitter". Rate adapation is one way to accomplish congestion control for
-real-time media, especially when a sender has multiple media streams to the
-receiver, because the sum of all sending rates for media streams must not be
-high enough to cause congestion on the path these media streams share between
-sender and receiver.
+: A mechanism that adjusts the sending rate of an application in order to
+maximize the amount of information that is sent to a receiver without causing
+queues to build beyond a reasonable amount, causing *buffer bloat* and *jitter*.
+Rate adaptation is one way to respond to send rate limitations imposed by
+congestion control algorithms. When a sender has multiple media streams to the
+receiver, the sum of all sending rates for media streams must not be high enough
+to cause congestion on the path these media streams share between sender and
+receiver.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
@@ -706,111 +711,112 @@ CONNECTION\_CLOSE frame with one of the error codes defined in
 # Congestion Control and Rate Adaptation {#congestion-control}
 
 Like any other application on the internet, RoQ applications need a mechanism to
-perform congestion control to avoid overloading the network. While any generic
-congestion controller can protect the network, this document takes advantage of
-the opportunity to use rate adaptation mechanisms that are designed to provide
-superior user experiences for real-time media applications.
+perform congestion control to avoid overloading the network. QUIC is a
+congestion-controlled transport protocol. RTP does not mandate a single
+congestion control mechanism. RTP suggests that the RTP profile defines
+congestion control according to the expected properties of the application's
+environment.
 
-A wide variety of rate adaptation algorithms for real-time media have been
-developed (for example, "Google Congestion Controller"
-{{?I-D.draft-ietf-rmcat-gcc}}). The IETF has defined two algorithms in two
-Experimental RFCs (e.g. SCReAM {{?RFC8298}} and NADA {{?RFC8698}}). These rate
-adaptation algorithms for RTP are specifically tailored for real-time
-transmissions at low latencies, but this section would apply to any rate
-adaptation algorithm that meets the requirements described in "Congestion
-Control Requirements for Interactive Real-Time Media" {{!RFC8836}}.
+This document discusses aspects of transport level congestion control in
+{{cc-quic-layer}} and application layer rate control in
+{{rate-adaptation-application-layer}}. It does not mandate any specific
+congestion control or rate adaptation algorithm for QUIC or RTP.
 
-This document defines two architectures for congestion control and bandwidth
-estimation for RoQ, depending on whether most rate adaptation is performed
-within a QUIC implementation at the transport layer, as described in
-{{cc-quic-layer}}, or within an RTP application layer, as described in
-{{cc-application-layer}}, but this document does not mandate any specific
-congestion control or rate adaptation algorithm for either QUIC or RTP.
+This document also gives guidance about avoiding problems with *nested*
+congestion controllers in {{nested-CC}}.
 
-This document also gives guidance about avoiding problems with "nested"
-congestion controllers, in {{nested-CC}}.
-
-This document also discusses congestion control
-implications of using shared or multiple separate QUIC connections to send and
-receive multiple independent data streams, in {{shared-connections}}.
-
-It is assumed that the congestion controller in use provides a pacing mechanism
-to determine when a packet can be sent to avoid bursts. The currently proposed
-congestion control algorithms for real-time communications (e.g. SCReAM and
-NADA) provide such pacing mechanisms. The use of congestion controllers which
-don't provide a pacing mechanism is out of scope of this document.
+{{shared-connections}} discusses congestion control implications of using shared
+or multiple separate QUIC connections to send and receive multiple independent
+data streams.
 
 ## Congestion Control at the Transport Layer {#cc-quic-layer}
 
-QUIC is a congestion controlled transport protocol. Senders are required to
+QUIC is a congestion-controlled transport protocol. Senders are required to
 employ some form of congestion control. The default congestion control specified
 for QUIC in {{!RFC9002}} is similar to TCP NewReno {{?RFC6582}}, but senders are
 free to choose any congestion control algorithm as long as they follow the
 guidelines specified in {{Section 3 of ?RFC8085}}, and QUIC implementors make
 use of this freedom.
 
-If a QUIC implementation is to perform rate adaptation in a way that
-accommodates real-time media, one way for the implementation to recognize that
-it is carrying real-time media is to be explicitly told that this is the case.
-This document defines a new "TLS Application-Layer Protocol Negotiation (ALPN)
-Protocol ID", as described in {{alpn}}, that a QUIC implementation can use as a
-signal to choose a real-time media-centric rate controller, but this is not
-required for ROQ deployments.
+It is RECOMMENDED that the QUIC Implementation uses a congestion controller that
+keeps queueing delays short to keep the transmission latency for RTP and RTCP
+packets as low as possible.
 
-If congestion control is to be applied at the transport layer, it is RECOMMENDED
-that the QUIC Implementation uses a congestion controller that keeps queueing
-delays short to keep the transmission latency for RTP and RTCP packets as low as
-possible, such as the IETF-defined SCReAM {{?RFC8298}} and NADA {{?RFC8698}}
-algorithms.
+A wide variety of congestion control algorithms for real-time media have been
+developed (for example, "Google Congestion Controller"
+{{?I-D.draft-ietf-rmcat-gcc}}). The IETF has defined two algorithms in two
+Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}). These algorithms
+for RTP are specifically tailored for real-time transmissions at low latencies,
+but this section would apply to any rate adaptation algorithm that meets the
+requirements described in "Congestion Control Requirements for Interactive
+Real-Time Media" {{!RFC8836}}. Some of these low latency congestion control
+algorithms depend on detailed arrival time feedback to estimate the current
+one-way delay between sender and receiver, which is unavailable in QUIC. The
+QUIC implementations of the sender and receiver can use an extension to add this
+information to QUICs as described in {{optional-extensions}}. An alternative to
+these dedicated real-time media congestion-control algorithms that QUIC
+implementations could support without the need for a protocol extension is the
+Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service
+{{?RFC9330}}.
 
-Many low latency congestion control algorithms depend on detailed arrival time
-feedback to estimate the current one-way delay between sender and receiver. QUIC
-does not provide arrival timestamps in its acknowledgments. The QUIC
-implementations of the sender and receiver can use an extension to add this
-information to QUICs acknowledgment frames, e.g.
-{{!I-D.draft-smith-quic-receive-ts}} or {{!I-D.draft-huitema-quic-ts}}.
+The application needs a mechanism to query the available bandwidth to adapt
+media codec configurations. If the employed congestion controller of the QUIC
+connection keeps an estimate of the available bandwidth, it could expose an API
+to the application to query the current estimate. If the congestion controller
+cannot provide a current bandwidth estimate to the application, the sender can
+implement an alternative bandwidth estimation at the application layer as
+described in {{rate-adaptation-application-layer}}.
 
-If congestion control is done by the QUIC implementation, the application needs
-a mechanism to query the currently available bandwidth to adapt media codec
-configurations. The employed congestion controller of the QUIC connection SHOULD
-expose such an API to the application. If a current bandwidth estimate is not
-available from the QUIC congestion controller, the sender can either implement
-an alternative bandwidth estimation at the application layer as described in
-{{cc-application-layer}} or a receiver can feedback the observed bandwidth
-through RTCP, e.g., using {{?I-D.draft-alvestrand-rmcat-remb}}.
+It is assumed that the congestion controller in use provides a pacing mechanism
+to determine when a packet can be sent to avoid bursts. The currently proposed
+congestion control algorithms for real-time communications (e.g., SCReAM and
+NADA) provide such pacing mechanisms, and QUIC recommends pacing for senders
+based on the congestion control algorithm.
 
-## Congestion Control at the RTP Application Layer {#cc-application-layer}
+## Rate Adaptation at the Application Layer {#rate-adaptation-application-layer}
 
 RTP itself does not specify a congestion control algorithm, but {{!RFC8888}}
 defines an RTCP feedback message intended to enable rate adaptation for
 interactive real-time traffic using RTP, and successful rate adaptation will
 accomplish congestion control as well.
 
-The rate adaptation algorithms for RTP are specifically tailored for real-time
-transmissions at low latencies, as described in {{congestion-control}}. The
-available rate adaptation algorithms expose a `target_bitrate` that can be used
-to dynamically reconfigure media codecs to produce media at a rate that can be
-sent in real-time under the observed network conditions.
+If an application cannot access a bandwidth estimation from the QUIC layer, the
+application can alternatively implement a bandwidth estimation algorithm at the
+application layer. Congestion control algorithms for real-time media such as GCC
+{{?I-D.draft-ietf-rmcat-gcc}}, NADA {{?RFC8698}}, and SCReAM {{?RFC8298}} expose
+a `target_bitrate` to dynamically reconfigure media codecs to produce media at
+the rate of the observed available bandwidth. Applications can use the same
+bandwidth estimation to adapt their rate when using QUIC. However, running an
+additional congestion control algorithm at the application layer can have
+unintended effects due to the interaction of two *nested* congestion
+controllers.
 
-If an application cannot access a bandwidth estimation from the QUIC layer, or
-the QUIC implementation does not support a delay-based, low-latency congestion
-control algorithm, the application can alternatively implement a bandwidth estimation
-algorithm at the application layer. Calculating a bandwidth estimation at the
-application layer can be done using the same bandwidth estimation algorithms as
-described in {{congestion-control}} (NADA, SCReAM). The bandwidth estimation
-algorithm typically needs some feedback on the transmission performance. This
-feedback can be collected following the guidelines in {{rtcp-mapping}}.
+If the application transmits media that does not saturate path bandwidth and
+paces its transmission, more heavy-handed congestion control mechanisms (drastic
+reductions in the sending rate when loss is detected, with much slower increases
+when losses are no longer detected) should rarely come into play. If the
+application chooses RoQ as its transport, sends enough media to saturate the
+path bandwidth, and does not adapt it's sending rate, drastic measures will be
+required to avoid sustained or oscillating congestion along the path.
+
+Thus, applications are advised to only use the bandwidth estimation without
+running the complete congestion control algorithm at the application layer
+before passing data to the QUIC layer.
+
+The bandwidth estimation algorithm typically needs some feedback on the
+transmission performance. This feedback can be collected via RTCP or following
+the guidelines in {{rtcp-mapping}} and {{api-considerations}}.
 
 ## Resolving Interactions Between QUIC and Application-layer Congestion Control {#nested-CC}
 
 Because QUIC is a congestion-controlled transport, as described in
 {{cc-quic-layer}}, and RTP applications can also perform congestion control and
-rate adaptation, as described in {{cc-application-layer}}, implementers should
-be aware of the possibility that these "nested" congestion control loops, where
-both controllers are managing rate adaptation for the same packet stream
-independently, may deliver problematic performance. Because this document is
-describing a specific case (media transport), we can provide some guidance to
-avoid the worst possible problems.
+rate adaptation, as described in {{rate-adaptation-application-layer}},
+implementers should be aware of the possibility that these "nested" congestion
+control loops, where both controllers are managing rate adaptation for the same
+packet stream independently, may deliver problematic performance. Because this
+document is describing a specific case (media transport), we can provide some
+guidance to avoid the worst possible problems.
 
 - **Application-limited Media Flows** - if an application chooses RTP as its
   transport mechanism, the goal will be maximizing the user experience, not
@@ -848,6 +854,7 @@ other non-real-time data. This can be realized in different ways.
   disadvantage that transport ports are more quickly exhausted and these are
   limited by the 16-bit UDP source and destination port number sizes
   {{!RFC768}}.
+
 - Alternatively, all real-time channels are mapped to one QUIC connection, while
   a separate QUIC connection is created for the non-real-time channels.
 
@@ -1227,7 +1234,7 @@ The entries in {{tab-error-codes}} are registered by this document.
 
 --- back
 
-# List of optional QUIC Extensions
+# List of optional QUIC Extensions {#optional-extensions}
 
 The following is a list of QUIC protocol extensions that might be beneficial for
 RoQ, but are not required by RoQ.
