@@ -585,11 +585,15 @@ frame.
 In both cases, the error code of the RESET\_STREAM frame or the STOP\_SENDING
 frame MUST be set to ROQ\_FRAME\_CANCELLED.
 
-When a RoQ sender receives a STOP\_SENDING frame for the last open stream
-available to send RTP/RTCP-data, the RoQ sender MUST open one or more new QUIC
-streams before sending new media frames. Any media frame that has already been
-sent on the QUIC stream that received the STOP\_SENDING frame, MUST NOT be sent
-again on the new QUIC stream(s).
+STOP\_SENDING is not a request to the sender to stop sending the RTP media
+stream, only an indication that a receiver stopped reading the QUIC stream being
+used. A sender with additional media frames to send SHOULD continue sending them
+on another QUIC stream. Alternatively, new media frames can be sent as QUIC
+datagrams (see {{quic-datagrams}}).
+
+Any media frame that has already been sent on the QUIC stream that received the
+STOP\_SENDING frame, MUST NOT be sent again on the new QUIC stream(s) or
+datagrams.
 
 Note that an RTP receiver cannot request a reset of only a particular media
 frame because the sending QUIC implementation might already have sent data for
