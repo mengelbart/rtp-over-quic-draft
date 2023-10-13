@@ -1307,16 +1307,16 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 
 The entries in {{tab-error-codes}} are registered by this document.
 
-| Name                          | Value  | Description                            | Specification      |
-| ----------------------------- | ------ | -------------------------------------- | ------------------ |
-| ROQ\_NO\_ERROR                | 0x01 | No Error                               | {{error-handling}} |
-| ROQ\_GENERAL\_ERROR           | 0x02 | General error                          | {{error-handling}} |
-| ROQ\_INTERNAL\_ERROR          | 0x03 | Internal Error                         | {{error-handling}} |
-| ROQ\_PACKET\_ERROR            | 0x04 | Invalid payload format                 | {{error-handling}} |
-| ROQ\_STREAM\_CREATION\_ERROR  | 0x05 | Invalid stream type                    | {{error-handling}} |
-| ROQ\_FRAME\_CANCELLED         | 0x06 | Frame cancelled                        | {{error-handling}} |
-| ROQ\_UNKNOWN\_FLOW\_ID        | 0x07 | Unknown Flow ID                        | {{error-handling}} |
-| ROQ\_EXPECTATION\_UNMET       | 0x08 | Externally signalled requirement unmet | {{error-handling}} |
+| Value  | Name                          | Description                            | Specification      |
+| ------ | ----------------------------- | -------------------------------------- | ------------------ |
+| 0x01   | ROQ\_NO\_ERROR                | No Error                               | {{error-handling}} |
+| 0x02   | ROQ\_GENERAL\_ERROR           | General error                          | {{error-handling}} |
+| 0x03   | ROQ\_INTERNAL\_ERROR          | Internal Error                         | {{error-handling}} |
+| 0x04   | ROQ\_PACKET\_ERROR            | Invalid payload format                 | {{error-handling}} |
+| 0x05   | ROQ\_STREAM\_CREATION\_ERROR  | Invalid stream type                    | {{error-handling}} |
+| 0x06   | ROQ\_FRAME\_CANCELLED         | Frame cancelled                        | {{error-handling}} |
+| 0x07   | ROQ\_UNKNOWN\_FLOW\_ID        | Unknown Flow ID                        | {{error-handling}} |
+| 0x08   | ROQ\_EXPECTATION\_UNMET       | Externally signalled requirement unmet | {{error-handling}} |
 {: #tab-error-codes title="Initial RoQ Error Codes"}
 
 --- back
