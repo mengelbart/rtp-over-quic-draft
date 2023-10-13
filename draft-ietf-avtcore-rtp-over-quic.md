@@ -255,12 +255,12 @@ QUIC congestion controller:
 Rate Adaptation:
 : A mechanism that adjusts the sending rate of an application in order to
 maximize the amount of information that is sent to a receiver without causing
-queues to build beyond a reasonable amount, causing *buffer bloat* and *jitter*.
-Rate adaptation is one way to respond to send rate limitations imposed by
-congestion control algorithms. When a sender has multiple media streams to the
-receiver, the sum of all sending rates for media streams must not be high enough
-to cause congestion on the path these media streams share between sender and
-receiver.
+buffer bloat, when queues build beyond a reasonable amount, or jitter, when
+interpacket arrival times fluctuate due to queuing delays. Rate adaptation is
+one way to respond to sending rate limitations imposed by congestion control
+algorithms. When a sender has multiple media streams to the receiver, the sum of
+all sending rates for media streams must not be high enough to cause congestion
+on the path these media streams share between sender and receiver.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
@@ -725,9 +725,9 @@ congestion control or rate adaptation algorithm for QUIC or RTP.
 This document also gives guidance about avoiding problems with *nested*
 congestion controllers in {{nested-CC}}.
 
-{{shared-connections}} discusses congestion control implications of using shared
-or multiple separate QUIC connections to send and receive multiple independent
-data streams.
+This document also discusses congestion control implications of using shared or
+multiple separate QUIC connections to send and receive multiple independent data
+streams in {{shared-connections}}.
 
 ## Congestion Control at the Transport Layer {#cc-quic-layer}
 
@@ -768,10 +768,11 @@ implement an alternative bandwidth estimation at the application layer as
 described in {{rate-adaptation-application-layer}}.
 
 It is assumed that the congestion controller in use provides a pacing mechanism
-to determine when a packet can be sent to avoid bursts. The currently proposed
-congestion control algorithms for real-time communications (e.g., SCReAM and
-NADA) provide such pacing mechanisms, and QUIC recommends pacing for senders
-based on the congestion control algorithm.
+to determine when a packet can be sent to avoid bursts and minimize variation in
+inter-packet arrival times. The currently proposed congestion control algorithms
+for real-time communications (e.g., SCReAM and NADA) provide such pacing
+mechanisms, and QUIC recommends pacing for senders based on the congestion
+control algorithm.
 
 ## Rate Adaptation at the Application Layer {#rate-adaptation-application-layer}
 
@@ -794,7 +795,7 @@ controllers.
 If the application transmits media that does not saturate path bandwidth and
 paces its transmission, more heavy-handed congestion control mechanisms (drastic
 reductions in the sending rate when loss is detected, with much slower increases
-when losses are no longer detected) should rarely come into play. If the
+when losses are no longer being detected) should rarely come into play. If the
 application chooses RoQ as its transport, sends enough media to saturate the
 path bandwidth, and does not adapt it's sending rate, drastic measures will be
 required to avoid sustained or oscillating congestion along the path.
