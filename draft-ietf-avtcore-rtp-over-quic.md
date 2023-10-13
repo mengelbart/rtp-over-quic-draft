@@ -1289,7 +1289,7 @@ Approval as defined in {{Sections 4.9 and 4.10 of !RFC8126}}.
 
 Registrations for error codes are required to include a description of the error
 code. An expert reviewer is advised to examine new registrations for possible
-duplication with existing error codes.
+duplication or interaction with existing error codes.
 
 In addition to common fields as described in Section {{Section 22.1 of
 !RFC9000}}, this registry includes two additional fields. Permanent
@@ -1299,7 +1299,8 @@ Name:
 : A name for the error code.
 
 Description:
-: A brief description of the error code semantics.
+: A brief description of the error code semantics, which MAY be a summary if a
+specification reference is provided.
 
 The initial allocations in this registry are all assigned permanent status and
 list a change controller of the IETF and a contact of the AVTCORE working group
