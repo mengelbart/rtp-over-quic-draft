@@ -1275,8 +1275,9 @@ The "rtp-mux-quic" string identifies RoQ:
 
 ## RoQ Error Codes Registry {#iana-error-codes}
 
-This document establishes a registry for RoQ error codes. The "RoQ Error Codes"
-registry manages a 62-bit space.
+This document establishes a registry for RoQ error codes. The "RTP over QUIC
+(RoQ) Error Codes" registry manages a 62-bit space and is listed under the the
+"Real-Time Transport Protocol (RTP) Parameters" heading.
 
 The new error codes registry created in this document operates under the QUIC
 registration policy documented in {{Section 22.1 of !RFC9000}}. This registry
