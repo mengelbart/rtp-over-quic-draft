@@ -254,13 +254,7 @@ QUIC congestion controller:
 
 Rate Adaptation:
 : A mechanism that adjusts the sending rate of an application in order to
-maximize the amount of information that is sent to a receiver without causing
-buffer bloat, when queues build beyond a reasonable amount, or jitter, when
-interpacket arrival times fluctuate due to queuing delays. Rate adaptation is
-one way to respond to sending rate limitations imposed by congestion control
-algorithms. When a sender has multiple media streams to the receiver, the sum of
-all sending rates for media streams must not be high enough to cause congestion
-on the path these media streams share between sender and receiver.
+respond to sending rate limitations imposed by congestion control algorithms.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
