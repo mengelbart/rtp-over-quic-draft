@@ -1252,9 +1252,9 @@ profile for those RTP packets.
 
 # IANA Considerations {#iana-considerations}
 
-This document registers a new ALPN protocol ID {{iana-alpn}} and creates a new
-registry that manages the assignment of error code points in RoQ
-{{iana-error-codes}}.
+This document registers a new ALPN protocol ID (in {{iana-alpn}}) and creates a
+new registry that manages the assignment of error code points in RoQ (in
+{{iana-error-codes}}).
 
 ## Registration of a RoQ Identification String {#iana-alpn}
 
@@ -1276,7 +1276,7 @@ The "rtp-mux-quic" string identifies RoQ:
 ## RoQ Error Codes Registry {#iana-error-codes}
 
 This document establishes a registry for RoQ error codes. The "RTP over QUIC
-(RoQ) Error Codes" registry manages a 62-bit space and is listed under the the
+(RoQ) Error Codes" registry manages a 62-bit space and is listed under the
 "Real-Time Transport Protocol (RTP) Parameters" heading.
 
 The new error codes registry created in this document operates under the QUIC
