@@ -715,7 +715,7 @@ This document discusses aspects of transport level congestion control in
 congestion control algorithm for QUIC or rate adaptation algorithm for RTP.
 
 This document also gives guidance about avoiding problems with *nested*
-congestion controllers in {{nested-CC}}.
+congestion controllers in {{rate-adaptation-application-layer}}.
 
 This document also discusses congestion control implications of using shared or
 multiple separate QUIC connections to send and receive multiple independent data
@@ -799,41 +799,6 @@ before passing data to the QUIC layer.
 The bandwidth estimation algorithm typically needs some feedback on the
 transmission performance. This feedback can be collected via RTCP or following
 the guidelines in {{rtcp-mapping}} and {{api-considerations}}.
-
-## Resolving Interactions Between QUIC and Application-layer Congestion Control {#nested-CC}
-
-Because QUIC is a congestion-controlled transport, as described in
-{{cc-quic-layer}}, and RTP applications can also perform congestion control and
-rate adaptation, as described in {{rate-adaptation-application-layer}},
-implementers should be aware of the possibility that these "nested" congestion
-control loops, where both controllers are managing rate adaptation for the same
-packet stream independently, may deliver problematic performance. Because this
-document is describing a specific case (media transport), we can provide some
-guidance to avoid the worst possible problems.
-
-- **Application-limited Media Flows** - if an application chooses RTP as its
-  transport mechanism, the goal will be maximizing the user experience, not
-  maximizing path bandwidth utilization. If the application is, in fact,
-  transmitting media that does not saturate path bandwidth, and paces its
-  transmission, more heavy-handed congestion control mechanisms (drastic
-  reductions in the sending rate when loss is detected, with much slower
-  increases when losses are no longer detected) should rarely come into play. If
-  the application chooses ROQ as its transport, sends enough media to saturate
-  the path bandwidth, and does not adapt its own sending rate, drastic measures
-  will be required in order to avoid sustained or oscillating congestion along
-  the path.
-
-- **Awareness of Bufferbloat** - modern general-purpose congestion controllers
-  do not adjust  their sending rates based only on packet loss. For example, BBR
-  ("Bottleneck Bandwidth and Round-trip propagation time")
-  {{?I-D.cardwell-iccrg-bbr-congestion-control}} describes its strategy for
-  adapting sending rates in this way:
-
-> (BBR) "uses recent measurements of a transport connection's delivery rate,
-> round-trip time, and packet loss rate to build an explicit model of the
-> network path. BBR then uses this model to control both how fast it sends data
-> and the maximum volume of data it allows in flight in the network at any
-> time."
 
 ## Sharing QUIC connections {#shared-connections}
 
