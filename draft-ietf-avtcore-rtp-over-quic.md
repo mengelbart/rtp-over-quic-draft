@@ -305,7 +305,7 @@ metrics can be used to generate the required feedback at the sender-side and
 provide it to the rate adaptation algorithm to avoid the additional overhead of the
 RTCP stream. This is discussed in more detail in {{rtcp-mapping}}.
 
-## RTP with QUIC Streams, QUIC Datagrams, and a Mixture of Both
+## RTP with QUIC Streams, QUIC Datagrams, and a Mixture of Both {#streams-and-datagrams}
 
 This document describes the use of QUIC streams and QUIC datagrams as RTP encapsulations. The choice of which encapsulation is used is up to the application developer, but it is worth noting the differences.
 
@@ -732,9 +732,9 @@ free to choose any congestion control algorithm as long as they follow the
 guidelines specified in {{Section 3 of ?RFC8085}}, and QUIC implementors make
 use of this freedom.
 
-It is RECOMMENDED that the QUIC Implementation uses a congestion controller that
-keeps queueing delays short to keep the transmission latency for RTP and RTCP
-packets as low as possible.
+It is RECOMMENDED that the QUIC implementation use a congestion controller that
+seeks to minimize queueing delays. Further recommendations on the transport of
+RTP and RTCP are contained in {{streams-and-datagrams}}.
 
 A wide variety of congestion control algorithms for real-time media have been
 developed (for example, "Google Congestion Controller"
