@@ -712,7 +712,7 @@ environment.
 This document discusses aspects of transport level congestion control in
 {{cc-quic-layer}} and application layer rate control in
 {{rate-adaptation-application-layer}}. It does not mandate any specific
-congestion control or rate adaptation algorithm for QUIC or RTP.
+congestion control algorithm for QUIC or rate adaptation algorithm for RTP.
 
 This document also gives guidance about avoiding problems with *nested*
 congestion controllers in {{nested-CC}}.
