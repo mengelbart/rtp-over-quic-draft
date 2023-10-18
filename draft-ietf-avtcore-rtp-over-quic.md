@@ -506,8 +506,12 @@ of flows.
 
 ## QUIC Streams {#quic-streams}
 
-To send RTP/RTCP packets over QUIC streams, a sender MUST open a
-new unidirectional QUIC stream. Streams are unidirectional because there is no
+To send RTP/RTCP packets over QUIC streams, a sender MUST open at least one new unidirectional QUIC stream.
+In order to permit QUIC streams to open, a RoQ sender SHOULD configure non-zero minimum values for the number of permitted streams and the initial stream flow-control window, based on the number of parallel, or simultaneously active, RTP/RTCP flows.
+Endpoints that excessively restrict the number of streams or the flow-control window of these streams will increase the chance that the remote peer reaches the limit early and becomes blocked.
+More discussion about selecting these values appears in {{quic-flow-cc}}.
+
+RoQ uses unidirectional streams, because there is no
 synchronous relationship between sent and received RTP/RTCP packets. A peer that
 receives a bidirectional stream with a flow identifier that is associated with
 an RTP or RTCP stream, SHOULD stop reading from the stream and send a
@@ -517,8 +521,8 @@ ROQ\_STREAM\_CREATION\_ERROR.
 A RoQ sender MAY open new QUIC streams for different packets using the same flow
 identifier, for example, to avoid head-of-line blocking.
 
-A receiver MUST be prepared to receive RTP packets on any number of QUIC streams
-(subject to its limit on parallel open streams) and SHOULD not make assumptions
+A RoQ receiver MUST be prepared to receive RTP packets on any number of QUIC streams
+(subject to its limit on parallel open streams) and SHOULD not make assumptions about
 which RTP sequence numbers are carried in which streams.
 
 Note: A sender may or may not decide to discontinue using a lower stream number
@@ -617,7 +621,7 @@ is not closed with a RESET\_STREAM frame. No retransmission has to be
 implemented by the application since QUIC frames lost in transit are
 retransmitted by QUIC.
 
-### Flow control and MAX\_STREAMS
+### Flow control and MAX\_STREAMS {#quic-flow-cc}
 
 Opening new streams for new packets MAY implicitly limit the number of packets
 concurrently in transit because the QUIC receiver provides an upper bound of
@@ -1509,6 +1513,8 @@ Early versions of this document were similar in spirit to
 {{?I-D.draft-hurst-quic-rtp-tunnelling}}, although many details differ. The
 authors would like to thank Sam Hurst for providing his thoughts about how QUIC
 could be used to carry RTP.
+
+The guidance in {{quic-streams}} about configuring the number of parallel unidirectional QUIC streams is based on {{Section 6.2 of ?RFC9114}}, with obvious substitutions for RTP/RTCP.
 
 The authors would like to thank Bernard Aboba, David Schinazi, Lucas Pardue,
 Sergio Garcia Murillo,  Spencer Dawkins, and Vidhi Goel for their valuable
