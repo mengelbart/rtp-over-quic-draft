@@ -274,10 +274,7 @@ This document introduces a mapping of the Real-time Transport Protocol (RTP) to
 the QUIC transport protocol. RoQ allows the use of QUIC streams and
 QUIC datagrams to transport real-time data, and thus, the QUIC
 implementation MUST support QUIC's datagram extension, if RTP packets
-should be sent over QUIC datagrams. Since datagram frames cannot be fragmented,
-the QUIC implementation MUST also provide a way to query the maximum datagram
-size so that an application can create RTP packets that always fit into a QUIC
-datagram frame.
+should be sent over QUIC datagrams.
 
 {{!RFC3550}} specifies that RTP sessions need to be transmitted on different
 transport addresses to allow multiplexing between them. RoQ uses a
@@ -307,7 +304,7 @@ RTCP stream. This is discussed in more detail in {{rtcp-mapping}}.
 
 ## RTP with QUIC Streams, QUIC Datagrams, and a Mixture of Both {#streams-and-datagrams}
 
-This document describes the use of QUIC streams and QUIC datagrams as RTP encapsulations. The choice of which encapsulation is used is up to the application developer, but it is worth noting the differences.
+This document describes the use of both QUIC streams and QUIC datagrams as RTP encapsulations, but does not take a position on which encapsulation an application should use. Indeed, an application can use both QUIC streams and QUIC datagram encapsulations. The choice of which encapsulation is used is up to the application developer, but it is worth noting the differences.
 
 QUIC {{!RFC9000}} was initially designed to carry HTTP {{?RFC9114}} in QUIC streams, and QUIC streams provide what HTTP application developers require - for example, QUIC streams provide a stateful, connection-oriented, flow-controlled, reliable, ordered stream of bytes to an application. QUIC streams can be multiplexed over a single QUIC connection, using stream IDs to demultiplex incoming messages.
 
@@ -321,6 +318,11 @@ Because QUIC datagrams are an extension to QUIC, they inherit a great deal of fu
 * DATAGRAM frames do inherit the QUIC connection's congestion controller. This means that although there is no frame-level flow control, DATAGRAM frames may be delayed until the controller allows them to be sent, or dropped (with an optional notification to the sending application). Implementations can also delay sending DATAGRAM frames to maintain consistent packet pacing (as described in {{Section 7.7 of ?RFC9002}}), and can allow an application to specify a sending expiration time, but these capabilities are not mandated by the standard and may not be present in all implementations.
 * DATAGRAM frames cannot be fragmented. They are limited in size by the max_datagram_frame_size transport parameter, and further limited by the max_udp_payload_size transport parameter and the Maximum Transmission Unit (MTU) of the path between endpoints.
 * DATAGRAM frames belong to a QUIC connection as a whole. There is no QUIC-level way to multiplex/demultiplex DATAGRAM frames within a single QUIC connection. Any multiplexing identifiers must be added, interpreted, and removed by an application, and they will be sent as part of the payload of the DATAGRAM frame itself.
+
+Because QUIC datagrams are an extension to QUIC, a RoQ endpoint cannot count on a RoQ peer supporting that extension. The RoQ endpoint may discover that its peer does not support datagrams while using signaling to set up QUIC connections, but may also discover that its peer has not negotiated the use of this extension during the QUIC handshake. When this happens, the RoQ endpoint needs to make a decision about what to do next.
+
+* If the use of QUIC datagrams was critical, the endpoint can simply close the QUIC connection, allowing someone or something to correct this mismatch, so that QUIC datagrams can be used.
+* If the use of QUIC datagrams was not critical, the endpoint can negotiate the use of QUIC streams instead.
 
 ## Supported RTP Topologies {#topologies}
 
@@ -643,8 +645,8 @@ stream credits it will have to provide to the media-sending peer.
 
 Senders can also transmit RTP packets in QUIC datagrams. QUIC datagrams are an
 extension to QUIC described in {{!RFC9221}}. QUIC datagrams can only be used if
-the use of the extension was successfully negotiated during the QUIC handshake.
-If the use of an extension was signaled using a signaling protocol, but the
+the use of the datagram extension was successfully negotiated during the QUIC handshake.
+If the QUIC extension was signaled using a signaling protocol, but that
 extension was not negotiated during the QUIC handshake, a peer MAY close the
 connection with the ROQ\_EXPECTATION\_UNMET error code.
 
@@ -1026,8 +1028,7 @@ This section provides a list of items that an application might want to export
 from an underlying QUIC implementation. It is thus RECOMMENDED that a QUIC
 implementation exports the listed items to the application.
 
-* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection
-  can transmit.
+* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection can transmit. Since datagram frames cannot be fragmented, the QUIC implementation MUST also provide a way to query the maximum datagram size so that an application can create RTP packets that always fit into a QUIC datagram frame.
 * *Datagram Acknowledgment and Loss*: {{Section 5.2 of !RFC9221}} allows QUIC
   implementations to notify the application that a QUIC Datagram was
   acknowledged or that it believes a datagram was lost. The exposed information
