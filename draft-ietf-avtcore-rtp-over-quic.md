@@ -147,6 +147,9 @@ it may also be used in client-server-style settings, e.g., when talking to a
 conference server as described in RFC 7667 ({{!RFC7667}}), or, if RoQ
 is used to replace RTSP ({{?RFC7826}}), to a media server.
 
+An appropriate rate adaptation algorithm can be plugged in to adapt the media bitrate to the available bandwidth.
+This document does not mandate any specific rate adaptation mechanism, so the application can use a rate adaption mechanism of its choice.
+
 Moreover, this document describes how a QUIC implementation and its API can be
 extended to improve efficiency of the RoQ protocol operation.
 
@@ -291,9 +294,6 @@ RTP sessions over the same QUIC connection.
 An RTP application is responsible for determining what to send in an encoded media stream, and how to send that encoded media stream within a targeted bitrate.
 
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
-
-A rate adaptation algorithm can be plugged in to adapt the media bitrate to the
-available bandwidth. This document does not mandate any specific rate adaptation mechanism, so the application can use a rate adaption mechanism of its choice.
 
 As of this writing, the IETF has produced two Experimental-track rate adaptation specifications, Network-Assisted Dynamic Adaptation (NADA)
 {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
