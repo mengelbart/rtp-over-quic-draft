@@ -1028,7 +1028,7 @@ This section provides a list of items that an application might want to export
 from an underlying QUIC implementation. It is thus RECOMMENDED that a QUIC
 implementation exports the listed items to the application.
 
-* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection can transmit. Since datagram frames cannot be fragmented, the QUIC implementation MUST also provide a way to query the maximum datagram size so that an application can create RTP packets that always fit into a QUIC datagram frame.
+* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection can transmit on the network path to the QUIC receiver. If a RoQ sender using datagrams does not know the maximum datagram size for the path to the RoQ receiver, there are only two choices - either use heuristics to limit the size of RoQ messages, or be prepared to lose RoQ messages that were too large to be carried through the network path and delivered to the RoQ receiver.
 * *Datagram Acknowledgment and Loss*: {{Section 5.2 of !RFC9221}} allows QUIC
   implementations to notify the application that a QUIC Datagram was
   acknowledged or that it believes a datagram was lost. The exposed information
