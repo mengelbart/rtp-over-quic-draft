@@ -33,9 +33,14 @@ author:
 informative:
 
   3GPP-TS-26.114:
-    target: (https://portal.3gpp.org/desktopmodules/Specifications/specificationId=1404)
+    target: https://portal.3gpp.org/desktopmodules/Specifications/specificationId=1404
     title: "IP Multimedia Subsystem (IMS); Multimedia telephony; Media handling and interaction"
     date: 2023-01-05
+
+  VJMK88:
+    target: https://ee.lbl.gov/papers/congavoid.pdf
+    title: "Congestion Avoidance and Control"
+    date: November 1988
 
 --- abstract
 
@@ -94,13 +99,21 @@ This is in sharp contrast to "always-on" transport-level encryption in the QUIC 
 
 When RTP is carried directly over UDP, as is commonly done, the underlying UDP protocol provides no transport services beyond path multiplexing using UDP ports. All congestion avoidance behavior is up to the RTP application itself, and if anything goes wrong with the application resulting in an RTP sender failing to recognize that it is contributing to path congestion, the "worst case" response is to invoke RTP "circuit breaker" procedures {{?RFC8083}}, resulting in "ceasing transmission", as described in {{Section 4.5 of ?RFC8083}}. Because RTCP-based circuit breakers only detect long-lived congestion, a response based on these mechanisms will not happen quickly.
 
-In contrast, when RTP is carried over QUIC, QUIC implementations maintain their own estimates of key transport parameters needed to detect and respond to possible congestion, and these are independent of any measurements RTP senders and receivers are maintaining. The result is that even if an RTP sender continues to "send", QUIC congestion avoidance procedures (for example, the procedures defined in {{?RFC9002}}) will cause the RTP packets to be buffered and only placed on the network path as part of a response to detected loss. This happens without any action being requied on the part of RTP senders.
+In contrast, when RTP is carried over QUIC, QUIC implementations maintain their own estimates of key transport parameters needed to detect and respond to possible congestion, and these are independent of any measurements RTP senders and receivers are maintaining. The result is that even if an RTP sender continues to "send", QUIC congestion avoidance procedures (for example, the procedures defined in {{?RFC9002}}) will cause the RTP packets to be buffered and only placed on the network path as part of a response to detected loss. This happens without RTP senders taking any action.
 
-While the effect of QUIC's response to congestion means that some RTP packets will arrive at the receiver later than a user of the RTP flow might prefer, it is still preferable to "ceasing transmission" completely until the RTP sender has a reason to believe that restarting the flow will not result in congestion.
+Moreover, when a single QUIC connection is used to multiplex both RTP-RTCP and non-RTP packets as described in {{single-path}}, the shared QUIC connection will still be Internet-safe, with no coordination required.
 
-Moreover, when a single QUIC connection is used to multiplex both RTP-RTCP and non-RTP packets as described in {{single-path}}, the QUIC connection will still be Internet-safe, with no coordination required.
+While QUIC's response to congestion ensures that RoQ will be "Internet-safe", from the network's perspective, it is helpful to remember that a QUIC sender responds to detected congestion by delaying packets that are already available to send, to give the path to the QUIC receiver time to recover from congestion.
 
-### Rate Adaptation Based on QUIC Feedback {#ra-quic-feedback}
+* If the QUIC connection encapsulates RTP, this means that some RTP packets will be delayed, and will arrive at the receiver later than a user of the RTP flow might prefer.
+* If the QUIC connection also encapsulates RTCP, this means that these RTCP messages will also be delayed, and will not be sent in a timely manner. This delay can interfere with a sender's ability to stabilize rate control and achieve audio/video synchronization.
+
+Taken as a whole,
+
+* RTP stream-level rate adaptation can give a better user experience than QUIC connection-level congestion control by minimizing packet loss,
+* but QUIC connection-level congestion control can respond more quickly to the end of congestion than RTP "circuit breakers".
+
+### RTP Rate Adaptation Based on QUIC Feedback {#ra-quic-feedback}
 
 RTP makes use of a large number of RTP-specific feedback mechanisms because when RTP is carried directly over UDP, there is no other way to receive feedback. Some of these mechanisms are specific to the type of media RTP is sending, but others can be mapped from underlying QUIC implementations that are using this feedback to perform rate adaptation for any QUIC connection, regardless of the application reflected in the QUIC STREAM {{?RFC9000}} and DATAGRAM {{?RFC9221}} frames. This is described in (much) more detail in {{congestion-control}} on rate adaptation, and in {{rtcp-mapping}} on replacing RTCP and RTP header extensions with QUIC feedback.
 
@@ -211,6 +224,14 @@ when, and only when, they appear in all capitals, as shown here.
 
 > **Editor's note:** the list of terms below will almost certainly grow in size as the specification matures.
 
+> **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. At that time, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
+
+> "Rate adaptation" more commonly referred to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
+
+> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{nested-CC}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions.
+
+> In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
+
 The following terms are used:
 
 Congestion Control:
@@ -293,7 +314,7 @@ An RTP application is responsible for determining what to send in an encoded med
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
 
 A rate adaptation algorithm can be plugged in to adapt the media bitrate to the
-available bandwidth. This document does not mandate any specific rate adaptation mechanism, so the application can use a rate adaption mechanism of its choice.
+available bandwidth. This document does not mandate any specific rate adaptation mechanism, so the application can use a rate adaptation mechanism of its choice.
 
 As of this writing, the IETF has produced two Experimental-track rate adaptation specifications, Network-Assisted Dynamic Adaptation (NADA)
 {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
