@@ -1029,56 +1029,42 @@ met by the QUIC connection.
 # API Considerations {#api-considerations}
 
 The mapping described in the previous sections poses some interface requirements
-on the QUIC implementation. Although a basic mapping should work without any of
-these requirements most of the optimizations regarding rate adaptation and
-RTCP mapping require certain functionalities to be exposed to the application.
-The following to sections contain a list of information that is required by an
-application to implement different optimizations ({{quic-api-read}}) and
-functions that a QUIC implementation SHOULD expose to an application
-({{quic-api-write}}).
+for the QUIC implementation. Although RoQ works without these requirements, some
+optimizations regarding rate adaptation and RTCP mapping require certain
+functionalities to be exposed to the application.
 
 Each item in the following list can be considered individually. Any exposed
-information or function can be used by RoQ regardless of whether the
-other items are available. Thus, RoQ does not depend on the
-availability of all of the listed features but can apply different optimizations
-depending on the functionality exposed by the QUIC implementation.
+information or function can be used by RoQ regardless of whether the other items
+are available. Thus, RoQ does not depend on the availability of all of the
+listed features but can apply different optimizations depending on the
+functionality exposed by the QUIC implementation.
 
-## Information to be exported from QUIC {#quic-api-read}
-
-This section provides a list of items that an application might want to export
-from an underlying QUIC implementation. It is thus RECOMMENDED that a QUIC
-implementation exports the listed items to the application.
-
-* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection can transmit on the network path to the QUIC receiver. If a RoQ sender using datagrams does not know the maximum datagram size for the path to the RoQ receiver, there are only two choices - either use heuristics to limit the size of RoQ messages, or be prepared to lose RoQ messages that were too large to be carried through the network path and delivered to the RoQ receiver.
+* *Maximum Datagram Size*: The maximum datagram size that the QUIC connection
+  can transmit on the network path to the QUIC receiver. If a RoQ sender using
+  datagrams does not know the maximum datagram size for the path to the RoQ
+  receiver, there are only two choices - either use heuristics to limit the size
+  of RoQ messages, or be prepared to lose RoQ messages that were too large to be
+  carried through the network path and delivered to the RoQ receiver.
 * *Datagram Acknowledgment and Loss*: {{Section 5.2 of !RFC9221}} allows QUIC
   implementations to notify the application that a QUIC Datagram was
-  acknowledged or that it believes a datagram was lost. The exposed information
-  SHOULD include enough information to allow the application to maintain a
-  mapping between the datagram that was acknowledged/lost and the RTP packet
-  that was sent in that datagram.
-* *Stream States*: The QUIC implementation SHOULD expose to a sender, how much
-  of the data that was sent on a stream was successfully delivered and how much
-  data is still outstanding to be sent or retransmitted.
-* *Bandwidth Estimation*: If congestion control is done at the transport layer
-  in the QUIC implementation, the QUIC implementation SHOULD expose an
-  estimation of the currently available bandwidth to the application. Exposing
-  the bandwidth estimation avoids the implementation of an additional bandwidth
-  estimation algorithm in the application.
-* *ECN*: If ECN marks are available, they SHOULD be exposed to the application.
-
-## Functions to be exposed by QUIC {#quic-api-write}
-
-This sections lists functions that a QUIC implementation SHOULD expose to an
-application to implement different features of the mapping described in the
-previous sections of this document.
-
-* *Cancel Streams*: To allow an application to cancel (re)transmission of
-  packets that are no longer needed, the QUIC implementation MUST expose a way
-  to cancel the corresponding QUIC streams.
-* *Configure Congestion Controller*: If congestion control is to be implemented
-  at the QUIC connection layer as described in {{cc-quic-layer}}, the QUIC
-  implementation SHOULD expose an API to allow the application to configure the
-  specifics of the congestion controller.
+  acknowledged or that it believes a datagram was lost. Given the datagram
+  acknowledgments and losses, the application can deduce which RTP packets
+  arrived at the receiver and which were lost (see also {{roc-d}}).
+* *Stream States*: The stream states include which parts of the data sent on a
+  stream were successfully delivered and which are still outstanding to be sent
+  or retransmitted. If an application keeps track of the RTP packets sent on a
+  stream, their respective sizes, and in which order they were transmitted, it
+  can infer which RTP packets were acknowledged according to the definition in
+  {{roc-s}}.
+* *Arrival timestamps*: If the QUIC connection uses a timestamp extension like
+  {{?I-D.draft-smith-quic-receive-ts}} or {{?I-D.draft-huitema-quic-ts}}, the
+  arrival timestamps or one-way delays can support the application as described
+  in {{rtcp-mapping}} and {{congestion-control}}.
+* *Bandwidth Estimation*: If a bandwidth estimation is available in the QUIC
+  implementation, exposing it avoids the implementation of an additional
+  bandwidth estimation algorithm in the application.
+* *ECN*: If ECN marks are available, they can support the bandwidth estimation
+  of the application if necessary.
 
 # Discussion
 
