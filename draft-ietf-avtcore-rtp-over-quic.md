@@ -507,10 +507,6 @@ of flows.
 ## QUIC Streams {#quic-streams}
 
 To send RTP/RTCP packets over QUIC streams, a sender MUST open at least one new unidirectional QUIC stream.
-In order to permit QUIC streams to open, a RoQ sender SHOULD configure non-zero minimum values for the number of permitted streams and the initial stream flow-control window, based on the number of parallel, or simultaneously active, RTP/RTCP flows.
-Endpoints that excessively restrict the number of streams or the flow-control window of these streams will increase the chance that the remote peer reaches the limit early and becomes blocked.
-More discussion about selecting these values appears in {{quic-flow-cc}}.
-
 RoQ uses unidirectional streams, because there is no
 synchronous relationship between sent and received RTP/RTCP packets. A peer that
 receives a bidirectional stream with a flow identifier that is associated with
@@ -623,6 +619,9 @@ retransmitted by QUIC.
 
 ### Flow control and MAX\_STREAMS {#quic-flow-cc}
 
+In order to permit QUIC streams to open, a RoQ sender SHOULD configure non-zero minimum values for the number of permitted streams and the initial stream flow-control window, based on the number of parallel, or simultaneously active, RTP/RTCP flows.
+Endpoints that excessively restrict the number of streams or the flow-control window of these streams will increase the chance that the remote peer reaches the limit early and becomes blocked.
+
 Opening new streams for new packets MAY implicitly limit the number of packets
 concurrently in transit because the QUIC receiver provides an upper bound of
 parallel streams, which it can update using QUIC MAX\_STREAMS frames. The number
@@ -630,16 +629,20 @@ of packets that have to be transmitted concurrently depends on several factors,
 such as the number of RTP streams within a QUIC connection, the bitrate of the
 media streams, and the maximum acceptable transmission delay of a given packet.
 Receivers are responsible for providing senders enough credit to open new
-streams for new packets anytime. As an example, consider a conference scenario
+streams for new packets anytime.
+
+As an example, consider a conference scenario
 with 20 participants. Each participant receives audio and video streams of every
 other participant from a central server. If the sender opens a new QUIC stream
 for every frame at 30 frames per second video and 50 frames per second audio, it
 will open 1520 new QUIC streams per second. A receiver must provide at least
 that many credits for opening new unidirectional streams to the server every
-second. In addition, the receiver should also consider the requirements of
+second.
+
+In addition, the receiver should also consider the requirements of
 protocols into account that are multiplexed with RTP, including RTCP and data
 streams. These considerations may also be relevant when implementing signaling
-since it may be necessary to inform the receiver about how fast and how much
+since it may be necessary to inform the receiver about how fast and how many
 stream credits it will have to provide to the media-sending peer.
 
 ## QUIC Datagrams {#quic-datagrams}
