@@ -517,12 +517,7 @@ ROQ\_STREAM\_CREATION\_ERROR.
 A RoQ sender MAY open new QUIC streams for different packets using the same flow
 identifier, for example, to avoid head-of-line blocking.
 
-A RoQ receiver MUST be prepared to receive RTP packets on any number of QUIC streams
-(subject to its limit on parallel open streams) and SHOULD not make assumptions about
-which RTP sequence numbers are carried in which streams.
-
-Note: A sender may or may not decide to discontinue using a lower stream number
-after starting packet transmission on a higher stream number.
+Because a sender can continue sending on a lower stream number after starting packet transmission on a higher stream number, a RoQ receiver MUST be prepared to receive RoQ packets on any number of QUIC streams (subject to its limit on parallel open streams) and MUST not make assumptions about which RTP sequence numbers are carried in which streams.
 
 ### Stream Encapsulation
 
