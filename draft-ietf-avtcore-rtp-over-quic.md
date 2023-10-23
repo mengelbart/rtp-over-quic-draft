@@ -99,7 +99,7 @@ This is in sharp contrast to "always-on" transport-level encryption in the QUIC 
 
 When RTP is carried directly over UDP, as is commonly done, the underlying UDP protocol provides no transport services beyond path multiplexing using UDP ports. All congestion avoidance behavior is up to the RTP application itself, and if anything goes wrong with the application resulting in an RTP sender failing to recognize that it is contributing to path congestion, the "worst case" response is to invoke RTP "circuit breaker" procedures {{?RFC8083}}, resulting in "ceasing transmission", as described in {{Section 4.5 of ?RFC8083}}. Because RTCP-based circuit breakers only detect long-lived congestion, a response based on these mechanisms will not happen quickly.
 
-In contrast, when RTP is carried over QUIC, QUIC implementations maintain their own estimates of key transport parameters needed to detect and respond to possible congestion, and these are independent of any measurements RTP senders and receivers are maintaining. The result is that even if an RTP sender continues to "send", QUIC congestion avoidance procedures (for example, the procedures defined in {{?RFC9002}}) will cause the RTP packets to be buffered and only placed on the network path as part of a response to detected loss. This happens without RTP senders taking any action.
+In contrast, when RTP is carried over QUIC, QUIC implementations maintain their own estimates of key transport parameters needed to detect and respond to possible congestion, and these are independent of any measurements RTP senders and receivers are maintaining. The result is that even if an RTP sender continues to "send", QUIC congestion avoidance procedures (for example, the procedures defined in {{?RFC9002}}) will cause the RTP packets to be buffered while QUIC responds to detected packet loss. This happens without RTP senders taking any action, but the RTP sender has no control over this QUIC mechanism. 
 
 Moreover, when a single QUIC connection is used to multiplex both RTP-RTCP and non-RTP packets as described in {{single-path}}, the shared QUIC connection will still be Internet-safe, with no coordination required.
 
@@ -110,8 +110,8 @@ While QUIC's response to congestion ensures that RoQ will be "Internet-safe", fr
 
 Taken as a whole,
 
-* RTP stream-level rate adaptation can give a better user experience than QUIC connection-level congestion control by minimizing packet loss,
-* but QUIC connection-level congestion control can respond more quickly to the end of congestion than RTP "circuit breakers".
+* Timely RTP stream-level rate adaptation will give a better user experience by minimizing endpoint queuing delays and packet loss,
+* but in the presence of packet loss, QUIC connection-level congestion control will respond more quickly to the end of congestion than RTP "circuit breakers".
 
 ### RTP Rate Adaptation Based on QUIC Feedback {#ra-quic-feedback}
 
