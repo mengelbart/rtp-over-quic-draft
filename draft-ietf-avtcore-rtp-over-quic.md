@@ -231,7 +231,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 > "Rate adaptation" more commonly referred to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
 
-> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{nested-CC}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions.
+> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{rate-adaptation-application-layer}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions.
 
 > In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
 
