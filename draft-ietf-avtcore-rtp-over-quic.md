@@ -994,35 +994,35 @@ streams and datagrams.
 The following error codes are defined for use when abruptly terminating streams,
 aborting reading of streams, or immediately closing RoQ connections.
 
-ROQ\_NO\_ERROR (0x????):
+ROQ\_NO\_ERROR (0x00):
 : No error. This is used when the connection or stream needs to be closed, but
 there is no error to signal.
 
-ROQ\_GENERAL\_ERROR (0x????):
+ROQ\_GENERAL\_ERROR (0x01):
 : An error that does not match a more specific error code occured.
 
-ROQ\_INTERNAL\_ERROR (0x????):
+ROQ\_INTERNAL\_ERROR (0x02):
 : An internal error has occured in the RoQ stack.
 
-ROQ\_PACKET\_ERROR (0x????):
+ROQ\_PACKET\_ERROR (0x03):
 : Invalid payload format, e.g., length does not match packet, invalid flow id
 encoding, non-RTP on RTP-flow ID, etc.
 
-ROQ\_STREAM\_CREATION\_ERROR (0x????):
+ROQ\_STREAM\_CREATION\_ERROR (0x04):
 : The endpoint detected that its peer created a stream that violates the ROQ protocol.
 
-ROQ\_FRAME\_CANCELLED (0x????):
+ROQ\_FRAME\_CANCELLED (0x05):
 : A receiving endpoint is using STOP_SENDING on the current stream to request
 new frames be sent on new streams. Similarly, a sender notifies a receiver that
 retransmissions of a frame were stopped using RESET\_STREAM and new frames will
 be sent on new streams.
 
-ROQ\_UNKNOWN\_FLOW\_ID (0x????):
+ROQ\_UNKNOWN\_FLOW\_ID (0x06):
 : An endpoint was unable to handle a flow identifier, e.g., because it was not
 signalled or because the endpoint does not support multiplexing using arbitrary
 flow identifiers.
 
-ROQ\_EXPECTATION\_UNMET (0x????):
+ROQ\_EXPECTATION\_UNMET (0x07):
 : Expectiations of the QUIC transport set by RoQ out-of-band signalling were not
 met by the QUIC connection.
 
@@ -1190,14 +1190,14 @@ The entries in {{tab-error-codes}} are registered by this document.
 
 | Value  | Name                          | Description                            | Specification      |
 | ------ | ----------------------------- | -------------------------------------- | ------------------ |
-| 0x01   | ROQ\_NO\_ERROR                | No Error                               | {{error-handling}} |
-| 0x02   | ROQ\_GENERAL\_ERROR           | General error                          | {{error-handling}} |
-| 0x03   | ROQ\_INTERNAL\_ERROR          | Internal Error                         | {{error-handling}} |
-| 0x04   | ROQ\_PACKET\_ERROR            | Invalid payload format                 | {{error-handling}} |
-| 0x05   | ROQ\_STREAM\_CREATION\_ERROR  | Invalid stream type                    | {{error-handling}} |
-| 0x06   | ROQ\_FRAME\_CANCELLED         | Frame cancelled                        | {{error-handling}} |
-| 0x07   | ROQ\_UNKNOWN\_FLOW\_ID        | Unknown Flow ID                        | {{error-handling}} |
-| 0x08   | ROQ\_EXPECTATION\_UNMET       | Externally signalled requirement unmet | {{error-handling}} |
+| 0x00   | ROQ\_NO\_ERROR                | No Error                               | {{error-handling}} |
+| 0x01   | ROQ\_GENERAL\_ERROR           | General error                          | {{error-handling}} |
+| 0x02   | ROQ\_INTERNAL\_ERROR          | Internal Error                         | {{error-handling}} |
+| 0x03   | ROQ\_PACKET\_ERROR            | Invalid payload format                 | {{error-handling}} |
+| 0x04   | ROQ\_STREAM\_CREATION\_ERROR  | Invalid stream type                    | {{error-handling}} |
+| 0x05   | ROQ\_FRAME\_CANCELLED         | Frame cancelled                        | {{error-handling}} |
+| 0x06   | ROQ\_UNKNOWN\_FLOW\_ID        | Unknown Flow ID                        | {{error-handling}} |
+| 0x07   | ROQ\_EXPECTATION\_UNMET       | Externally signalled requirement unmet | {{error-handling}} |
 {: #tab-error-codes title="Initial RoQ Error Codes"}
 
 --- back
