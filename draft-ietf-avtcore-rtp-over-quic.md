@@ -433,7 +433,7 @@ topology.*
 
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RoQ
 uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
-{{iana-considerations}}.
+{{iana-considerations}}).
 
 Note that the use of a given RTP profile is not reflected in the ALPN token even
 though it could be considered part of the application usage.  This is simply
@@ -502,7 +502,7 @@ session, they MAY do so by following {{?RFC8860}}.
 A single RTP session MAY be associated with one or two flow identifiers. Thus,
 it is possible to send RTP and RTCP packets belonging to the same session using
 different flow identifiers. RTP and RTCP packets of a single RTP session MAY use
-the same flow identifier (following the procedures defined in {{?RFC5761}}, or
+the same flow identifier (following the procedures defined in {{?RFC5761}}), or
 they MAY use different flow identifiers.
 
 The association between flow identifiers and data streams MUST be negotiated
