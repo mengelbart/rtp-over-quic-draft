@@ -266,10 +266,6 @@ Frame:
 Loss-based congestion control algorithm:
 : A congestion control algorithm that uses packet loss, or an Explicit Congestion Notification (ECN) that is interpreted as loss (as in {{?RFC3168}}), as a signal for congestion. Loss-based congestion control algorithms allow senders to send data on a path until packets are dropped by intermediary network elements, which the algorithm treats as a signal of congestion.
 
-Media Encoder:
-: An entity that is used by an application to produce a stream of encoded media, which can be
-packetized in RTP packets to be transmitted over QUIC.
-
 QUIC congestion controller:
 : A software component of an application's QUIC implementation that implements a congestion control algorithm.
 
