@@ -1110,6 +1110,40 @@ to determine if 0-RTT data is permissible.
 > the same connection, replayed media packets would be discarded as duplicates by
 > the receiver.
 
+## Coalescing RTP packets in single QUIC packet
+
+Applications have some control over how the QUIC stack maps application data to
+QUIC frames, but applications cannot control how the QUIC stack maps STREAM and
+DATAGRAM frames to QUIC packets {{Section 13 of ?RFC9000}} and {{Section 5 of
+?RFC9308}}.
+
+* When RTP payloads are carried over QUIC streams, the RTP payload is treated as
+  an ordered byte stream that will be carried in QUIC STREAM frames, with no
+  effort to match application data boundaries.
+* When RTP payloads are carried over QUIC DATAGRAMs, each RTP payload data unit
+  is mapped into a QUIC DATAGRAM frame, but
+* QUIC implementations can include multiple STREAM frames from different streams
+  and one or more DATAGRAM frames into a single QUIC packet, and may include
+  other QUIC frames as well.
+
+QUIC stacks are allowed to wait for a short period of time if the queued QUIC
+packet is shorter than the path MTU, in order to optimize for bandwidth
+utilization instead of latency, while real-time applications usually prefer to
+optimize for latency rather than bandwidth utilization. This waiting interval is
+under the QUIC implementation's control, and might be based on knowledge about
+application sending behavior or heuristics to determine whether and for how long
+to wait.
+
+When there are a lot of small DATAGRAM frames (e.g., an audio stream) and a lot
+of large DATAGRAM (e.g., a video stream), it may be a good idea to make sure the
+audio frames can be included in a QUIC packet that also carries video frames
+(i.e., the video frames don't fill the whole QUIC packet). Otherwise, the QUIC
+stack may have to send additional small packets only carrying single audio
+frames, which would waste some bandwidth.
+
+Application designers are advised to take these considerations into account when
+selecting and configuring a QUIC stack for use with RoQ.
+
 # Security Considerations {#sec-considerations}
 
 RoQ is subject to the security considerations of RTP described in
