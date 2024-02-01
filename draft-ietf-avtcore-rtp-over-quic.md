@@ -231,7 +231,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 > "Rate adaptation" more commonly referred to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
 
-> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{rate-adaptation-application-layer}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions.
+> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{rate-adaptation-application-layer}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions. For example, the two IETF Experimental specifications mentioned in {{cc-quic-layer}} (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}) describe themselves as congestion control algorithms, but are arguably also rate control algorithms.
 
 > In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
 
@@ -255,7 +255,7 @@ differently, the term datagram in this document refers to a QUIC Datagram as def
 {{!RFC9221}}.
 
 Delay-based or Low-latency congestion control algorithm:
-: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of congestion.
+: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of impending congestion, but may also adjust the sending rate to prevent continued increases in one-way delay.
 
 Endpoint:
 : A QUIC server or client that participates in an RoQ session.
@@ -270,8 +270,7 @@ QUIC congestion controller:
 : A software component of an application's QUIC implementation that implements a congestion control algorithm.
 
 Rate Adaptation:
-: A mechanism that adjusts the sending rate of an application in order to
-respond to sending rate limitations imposed by congestion control algorithms.
+: A congestion control algorithm that also adjusts the sending rate of an application in order to respond to changing path conditions. Rate adaption algorithms are often described as delay-based or low-latency congestion control algorithms.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
@@ -308,11 +307,8 @@ An RTP application is responsible for determining what to send in an encoded med
 
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
 
-As of this writing, the IETF has produced two Experimental-track rate adaptation specifications, Network-Assisted Dynamic Adaptation (NADA)
-{{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM)
-{{!RFC8298}}. These rate adaptation algorithms require some feedback about
-the network's performance to calculate target bitrates. Traditionally this
-feedback is generated at the receiver and sent back to the sender via RTCP.
+As of this writing, the IETF has produced two Experimental-track congestion control specifications, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
+These rate adaptation algorithms require some feedback about the network's performance to calculate target bitrates. Traditionally this feedback is generated at the receiver and sent back to the sender via RTCP.
 
 Since QUIC also collects some metrics about the network's performance, these
 metrics can be used to generate the required feedback at the sender-side and
@@ -762,11 +758,12 @@ Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}). These algorithms
 for RTP are specifically tailored for real-time transmissions at low latencies,
 but this section would apply to any rate adaptation algorithm that meets the
 requirements described in "Congestion Control Requirements for Interactive
-Real-Time Media" {{!RFC8836}}. Some of these low latency congestion control
-algorithms depend on detailed arrival time feedback to estimate the current
-one-way delay between sender and receiver, which is unavailable in QUIC. The
+Real-Time Media" {{!RFC8836}}.
+
+Some low latency congestion control algorithms depend on detailed arrival time feedback to estimate the current one-way delay between sender and receiver, which is unavailable in QUIC {{!rfc9000}} without extensions.
+The
 QUIC implementations of the sender and receiver can use an extension to add this
-information to QUICs as described in {{optional-extensions}}. An alternative to
+information to QUIC as described in {{optional-extensions}}. An alternative to
 these dedicated real-time media congestion-control algorithms that QUIC
 implementations could support without the need for a protocol extension is the
 Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service
