@@ -751,16 +751,15 @@ It is RECOMMENDED that the QUIC implementation use a congestion controller that
 seeks to minimize queueing delays. Further recommendations on the transport of
 RTP and RTCP are contained in {{streams-and-datagrams}}.
 
-A wide variety of congestion control algorithms for real-time media have been
-developed (for example, "Google Congestion Controller"
-{{?I-D.draft-ietf-rmcat-gcc}}). The IETF has defined two algorithms in two
-Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}). These algorithms
+A wide variety of congestion control algorithms for real-time media have been developed (for example, "Google Congestion Controller" {{?I-D.draft-ietf-rmcat-gcc}}).
+The IETF has defined two such algorithms in Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
+These algorithms
 for RTP are specifically tailored for real-time transmissions at low latencies,
 but this section would apply to any rate adaptation algorithm that meets the
 requirements described in "Congestion Control Requirements for Interactive
 Real-Time Media" {{!RFC8836}}.
 
-Some low latency congestion control algorithms depend on detailed arrival time feedback to estimate the current one-way delay between sender and receiver, which is unavailable in QUIC {{!rfc9000}} without extensions.
+Some low latency congestion control algorithms depend on detailed arrival time feedback to estimate the current one-way delay between sender and receiver, which is unavailable in QUIC {{!RFC9000}} without extensions.
 The
 QUIC implementations of the sender and receiver can use an extension to add this
 information to QUIC as described in {{optional-extensions}}. An alternative to
