@@ -115,7 +115,7 @@ Taken as a whole,
 
 ### RTP Rate Adaptation Based on QUIC Feedback {#ra-quic-feedback}
 
-RTP makes use of a large number of RTP-specific feedback mechanisms because when RTP is carried directly over UDP, there is no other way to receive feedback. Some of these mechanisms are specific to the type of media RTP is sending, but others can be mapped from underlying QUIC implementations that are using this feedback to perform rate adaptation for any QUIC connection, regardless of the application reflected in the QUIC STREAM {{?RFC9000}} and DATAGRAM {{?RFC9221}} frames. This is described in (much) more detail in {{congestion-control}} on rate adaptation, and in {{rtcp-mapping}} on replacing RTCP and RTP header extensions with QUIC feedback.
+RTP makes use of a large number of RTP-specific feedback mechanisms because when RTP is carried directly over UDP, there is no other way to receive feedback. Some of these mechanisms are specific to the type of media RTP is sending, but others can be mapped from underlying QUIC implementations that are using this feedback to perform congestion control for any QUIC connection, regardless of the application reflected in the QUIC STREAM {{?RFC9000}} and DATAGRAM {{?RFC9221}} frames. This is described in (much) more detail in {{congestion-control}} on rate adaptation, and in {{rtcp-mapping}} on replacing RTCP and RTP header extensions with QUIC feedback.
 
 One word of caution is in order - RTP implementations may rely on at least some minimal periodic RTCP feedback, in order to determine that an RTP flow is still active, and is not causing sustained congestion (as described in {{?RFC8083}}, but since this "periodicity" is measured in seconds, the impact of this "duplicate" feedback on path bandwidth utilization is likely close to zero.
 
@@ -227,11 +227,13 @@ when, and only when, they appear in all capitals, as shown here.
 
 > **Editor's note:** the list of terms below will almost certainly grow in size as the specification matures.
 
-> **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. At that time, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
+> **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
 
-> "Rate adaptation" more commonly referred to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
+> Modern general-purpose "congestion control" algorithms have moved beyond avoiding congestion collapse, and work to avoid "bufferbloat", which causes increasing round-trip delays, as described in {{rate-adaptation-application-layer}}.
 
-> As more and more general-purpose "congestion control" algorithms focused on avoiding "bufferbloat", as described in {{rate-adaptation-application-layer}}, the difference between "congestion control" and "rate adaptation" has blurred in IETF community discussions. For example, the two IETF Experimental specifications mentioned in {{cc-quic-layer}} (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}) describe themselves as congestion control algorithms, but are arguably also rate control algorithms.
+> "Rate adaptation" more commonly refers to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
+
+When RTP runs over QUIC, as described in this specification, QUIC is performing congestion control, and the RTP application is responsible for performing rate adaptation. 
 
 > In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
 
@@ -243,11 +245,11 @@ an estimation can be used for rate adaptation, i.e., adapt the rate at which an
 application transmits data.
 
 Congestion Control:
-: A mechanism to limit the aggregate amount of data that has been sent over a
-path to a receiver, but has not been acknowledged by the receiver. This prevents
-a sender from overwhelming the capacity of a path between a sender and a
-receiver, causing some outstanding data to be discarded before the receiver can
-receive the data and acknowledge it to the sender.
+: A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver, but has not been acknowledged by the receiver.
+This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, causing some outstanding data to be discarded before the receiver can receive the data and acknowledge it to the sender.
+A congestion control mechanism may respond to packet loss (detected by timeouts), or to impending packet loss (signaled by mechanisms such as Explicit Congestion Notification {{?RFC3168}}).
+It may also limit growth in round-trip delays, due to increasing queuing delays (signaled by mechanisms such as Low Latency, Low Loss, and Scalable Throughput (L4S) {{?RFC9330}}).
+Congestion control mechanisms are often implemented at the transport layer of the protocol stack, but can also be implemented at the application layer.
 
 Datagram:
 : Datagrams exist in UDP as well as in QUIC's unreliable datagram extension. If not explicitly noted
@@ -255,7 +257,7 @@ differently, the term datagram in this document refers to a QUIC Datagram as def
 {{!RFC9221}}.
 
 Delay-based or Low-latency congestion control algorithm:
-: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of impending congestion, but may also adjust the sending rate to prevent continued increases in one-way delay.
+: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of impending congestion, and adjust the sending rate to prevent continued increases in one-way delay.
 
 Endpoint:
 : A QUIC server or client that participates in an RoQ session.
@@ -274,7 +276,7 @@ QUIC congestion controller:
 : A software component of an application's QUIC implementation that implements a congestion control algorithm.
 
 Rate Adaptation:
-: A congestion control algorithm that also adjusts the sending rate of an application in order to respond to changing path conditions. Rate adaption algorithms are often described as delay-based or low-latency congestion control algorithms.
+: An application-level mechanism that adjusts the sending rate of an application in order to respond to changing path conditions. For example, an application sending video might respond to indications of congestion by adjusting the resolution of the video it is sending.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
@@ -312,11 +314,11 @@ An RTP application is responsible for determining what to send in an encoded med
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
 
 As of this writing, the IETF has produced two Experimental-track congestion control specifications, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
-These rate adaptation algorithms require some feedback about the network's performance to calculate target bitrates. Traditionally this feedback is generated at the receiver and sent back to the sender via RTCP.
+These congestion control algorithms require some feedback about the network's performance to calculate target bitrates. Traditionally this feedback is generated at the receiver and sent back to the sender via RTCP.
 
 Since QUIC also collects some metrics about the network's performance, these
 metrics can be used to generate the required feedback at the sender-side and
-provide it to the rate adaptation algorithm to avoid the additional overhead of the
+provide it to the congestion control algorithm to avoid the additional overhead of the
 RTCP stream. This is discussed in more detail in {{rtcp-mapping}}.
 
 ## RTP with QUIC Streams, QUIC Datagrams, and a Mixture of Both {#streams-and-datagrams}
@@ -759,7 +761,7 @@ A wide variety of congestion control algorithms for real-time media have been de
 The IETF has defined two such algorithms in Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
 These algorithms
 for RTP are specifically tailored for real-time transmissions at low latencies,
-but this section would apply to any rate adaptation algorithm that meets the
+but this section would apply to any congestion control algorithm that meets the
 requirements described in "Congestion Control Requirements for Interactive
 Real-Time Media" {{!RFC8836}}.
 
@@ -810,7 +812,7 @@ paces its transmission, more heavy-handed congestion control mechanisms (drastic
 reductions in the sending rate when loss is detected, with much slower increases
 when losses are no longer being detected) should rarely come into play. If the
 application chooses RoQ as its transport, sends enough media to saturate the
-path bandwidth, and does not adapt it's sending rate, drastic measures will be
+path bandwidth, and does not adapt its sending rate, drastic measures will be
 required to avoid sustained or oscillating congestion along the path.
 
 Thus, applications are advised to only use the bandwidth estimation without
