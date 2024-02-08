@@ -233,7 +233,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 > "Rate adaptation" more commonly refers to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
 
-When RTP runs over QUIC, as described in this specification, QUIC is performing congestion control, and the RTP application is responsible for performing rate adaptation. 
+When RTP runs over QUIC, as described in this specification, QUIC is performing congestion control, and the RTP application is responsible for performing rate adaptation.
 
 > In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
 
