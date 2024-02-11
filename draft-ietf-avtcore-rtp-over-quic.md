@@ -129,15 +129,21 @@ This is especially useful in certain conferencing topologies, where otherwise se
 
 In order to conserve ports, especially at NATs and Firewalls, this specification defines a flow identifier, so that multiple RTP flows, RTCP flows, and non-RTP flows can be distinguished even if they are carried on the same QUIC connection. This is described in more detail in {{multiplexing}}.
 
-### Exploiting Multiple Connections {#multiple-paths}
+### Exploiting Multiple Paths {#multiple-paths}
 
-Although there is much interest in multiplexing flows on a single QUIC connection as described in {{single-path}}, QUIC also provides the capability of establishing and validating multiple paths for a single QUIC connection {{?RFC9000}}. Once multiple paths have been validated, a sender can migrate from one path to another with no additional signaling, allowing an endpoint to move from one endpoint address to another without interruption, as long as only a single path is in active use at any point in time.
+Although there is much interest in multiplexing flows on a single QUIC connection as described in {{single-path}}, QUIC also provides the capability of establishing and validating multiple paths for a single QUIC connection as described in {{Section 9 of ?RFC9000}}. Once multiple paths have been validated, a sender can migrate from one path to another with no additional signaling, allowing an endpoint to move from one endpoint address to another without interruption, as long as only a single path is in active use at any point in time.
 
-Connection migration may be desireable for a number of reasons, but to give one example, this allows a sender to distinguish between more costly cellular paths and less costly WiFi paths, with no action required from the application.
+Connection migration may be desireable for a number of reasons, but to give one example, this allows a QUIC connection to survive address changes due to a middlebox allocating a new outgoing port, or even a new outgoing IP address.
+
+The Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} would allow the application to actively use two or more paths simultaneously, but in all other respects, this functionality is the same as QUIC connection migration.
+
+A sender can use these capabilities to effectively exploit multiple paths between sender and receiver with no action required from the application, even if these paths have different path characteristics.  Examples of these different path characteristics include handling paths differently if one path has higher available bandwidth and the other has lower one-way latency, or if one is a more costly cellular path and the other is a less costly WiFi path.
+
+Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc.
 
 ### Exploiting New QUIC Capabilities {#new-quic}
 
-In addition to connection migration as described in {{multiple-paths}}, the capability of validating multiple paths for simultaneous active use is under active development in the IETF {{?I-D.draft-ietf-quic-multipath}}. We don't discuss Multipath QUIC further in this document, because the specification hasn't been approved yet, but it's one example of ways that RTP, a mature protocol, can exploit new transport capabilities as they become available.
+The first version of the QUIC protocol described in {{!RFC9000}} has been completed, but extensions to QUIC are still under active development in the IETF. Because of this, using QUIC as a transport for a mature protocol like RTP allows developers to exploit new transport capabilities as they become available.
 
 ## What's in Scope for this Specification {#in-scope}
 
