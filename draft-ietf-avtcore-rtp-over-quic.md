@@ -137,9 +137,9 @@ Connection migration may be desireable for a number of reasons, but to give one 
 
 The Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} would allow the application to actively use two or more paths simultaneously, but in all other respects, this functionality is the same as QUIC connection migration.
 
-A sender can use these capabilities to effectively exploit multiple paths between sender and receiver with no action required from the application, even if these paths have different path characteristics.  Examples of these different path characteristics include handling paths differently if one path has higher available bandwidth and the other has lower one-way latency, or if one is a more costly cellular path and the other is a less costly WiFi path.
+A sender can use these capabilities to more effectively exploit multiple paths between sender and receiver with no action required from the application, even if these paths have different path characteristics.  Examples of these different path characteristics include handling paths differently if one path has higher available bandwidth and the other has lower one-way latency, or if one is a more costly cellular path and the other is a less costly WiFi path.
 
-Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc.
+Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc. Possible RTP implementation strategies for path selection and utilization are not discussed in this specification.
 
 ### Exploiting New QUIC Capabilities {#new-quic}
 
