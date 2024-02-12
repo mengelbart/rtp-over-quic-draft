@@ -835,10 +835,12 @@ other non-real-time data. This can be realized in different ways.
 - Alternatively, all real-time channels are mapped to one QUIC connection, while
   a separate QUIC connection is created for the non-real-time channels.
 
-In both cases, the congestion controllers can be chosen to match the demands of
-the respective channels and the different QUIC connections will compete for the
-same resources in the network. No local prioritization of data across the
-different (types of) channels would be necessary.
+- A third option is to multiplex all channels in a single QUIC connection.
+
+In the first two cases, the congestion controllers can be chosen to match the
+demands of the respective channels and the different QUIC connections will
+compete for the same resources in the network. No local prioritization of data
+across the different (types of) channels would be necessary.
 
 Although it is possible to multiplex (all or a subset of) real-time and
 non-real-time channels onto a single, shared QUIC connection, which can be done
