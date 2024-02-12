@@ -33,7 +33,7 @@ author:
 informative:
 
   3GPP-TS-26.114:
-    target: https://portal.3gpp.org/desktopmodules/Specifications/specificationId=1404
+    target: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1404
     title: "IP Multimedia Subsystem (IMS); Multimedia telephony; Media handling and interaction"
     date: 2023-01-05
 
@@ -1255,10 +1255,10 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | Payload-specific | PSFB | 205 | {{?RFC4585}}  | partly | see {{payload-specific-feedback}} |
 | extended report | XR | 207 | {{?RFC3611}} | partly | see {{extended-reports}} |
 | AVB RTCP packet | AVB | | |
-| Receiver Summary Information | RSI | 209 | {{?RFC5760}} | |
+| Receiver Summary Information | RSI | 209 | {{?RFC5760}} | no | |
 | Port Mapping | TOKEN | 210 | {{?RFC6284}}  | no | |
 | IDMS Settings | IDMS | 211 | {{?RFC7272}}  | no | |
-| Reporting Group Reporting Sources | RGRS | 212 | {{?RFC8861}} | |
+| Reporting Group Reporting Sources | RGRS | 212 | {{?RFC8861}} | no | |
 | Splicing Notification Message | SNM | 213 | {{?RFC8286}} | no | |
 
 ## Extended Reports (XR) {#extended-reports}
@@ -1279,12 +1279,12 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | IDMS Report Block | {{?RFC7272}} | no | |
 | ECN Summary Report | {{?RFC6679}} | partly | see {{ECN-mappings}} |
 | Measurement Information Block | {{?RFC6776}} | no | |
-| Packet Delay Variation Metrics Block | {{?RFC6798}} | no | QUIC timestamps may be used to achieve the same goal? |
+| Packet Delay Variation Metrics Block | {{?RFC6798}} | no | QUIC timestamps may be used to achieve the same goal |
 | Delay Metrics Block | {{?RFC6843}} | no | QUIC has RTT and can provide timestamps for one-way delay, but no way of informing peers about end-to-end statistics when QUIC is only used on one segment of the path. |
-| Burst/Gap Loss Summary Statistics Block | {{?RFC7004}} | | QUIC ACKs? |
+| Burst/Gap Loss Summary Statistics Block | {{?RFC7004}} | no | |
 | Burst/Gap Discard Summary Statistics Block | {{?RFC7004}}  | no | |
 | Frame Impairment Statistics Summary | {{?RFC7004}}   | no | |
-| Burst/Gap Loss Metrics Block | {{?RFC6958}} | | QUIC ACKs? |
+| Burst/Gap Loss Metrics Block | {{?RFC6958}} | | no |
 | Burst/Gap Discard Metrics Block | {{?RFC7003}} | no | |
 | MPEG2 Transport Stream PSI-Independent Decodability Statistics Metrics Block | {{?RFC6990}} | no | |
 | De-Jitter Buffer Metrics Block | {{?RFC7005}} | no | |
@@ -1311,7 +1311,7 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | TMMBN | Temporary Maximum Media Stream Bit Rate Notification | {{?RFC5104}}   | no | |
 | RTCP-SR-REQ | RTCP Rapid Resynchronisation Request | {{?RFC6051}}  | no | |
 | RAMS | Rapid Acquisition of Multicast Sessions | {{?RFC6285}} | no | |
-| TLLEI | Transport-Layer Third-Party Loss Early Indication | {{?RFC6642}}  | no? | no way of telling QUIC peer "don't ask for retransmission", but QUIC would not ask that anyway, only RTCP NACK? |
+| TLLEI | Transport-Layer Third-Party Loss Early Indication | {{?RFC6642}}  | no | There is no way of telling QUIC peer "don't ask for retransmission", but QUIC would not ask that anyway, only RTCP NACK, if used. |
 | RTCP-ECN-FB | RTCP ECN Feedback | {{?RFC6679}} | partly | see {{ECN-mappings}} |
 | PAUSE-RESUME | Media Pause/Resume | {{?RFC7728}} | no | |
 | DBI | Delay Budget Information (DBI) | {{3GPP-TS-26.114}} | |
@@ -1358,7 +1358,7 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 | urn:ietf:params:rtp-hdrext:sdes | Reserved as base URN for RTCP SDES items that are also defined as RTP compact header extensions. | {{?RFC7941}} | no |
 | urn:ietf:params:rtp-hdrext:ntp-64 | Synchronisation metadata: 64-bit timestamp format | {{?RFC6051}} | no |
 | urn:ietf:params:rtp-hdrext:ntp-56 | Synchronisation metadata: 56-bit timestamp format | {{?RFC6051}} | no |
-| urn:ietf:params:rtp-hdrext:encrypt | Encrypted extension header element | {{?RFC6904}} | no, but maybe irrelevant? |
+| urn:ietf:params:rtp-hdrext:encrypt | Encrypted extension header element | {{?RFC6904}} | no |
 | urn:ietf:params:rtp-hdrext:csrc-audio-level | Mixer-to-client audio level indicators | {{?RFC6465}} | no |
 | urn:3gpp:video-orientation:6 | Higher granularity (6-bit) coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}} | probably not(?) |
 | urn:3gpp:video-orientation | Coordination of video orientation (CVO) feature, see clause 6.2.3 | {{3GPP-TS-26.114}} | probably not(?) |
