@@ -231,8 +231,6 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
-> **Editor's note:** the list of terms below will almost certainly grow in size as the specification matures.
-
 > **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
 
 > Modern general-purpose "congestion control" algorithms have moved beyond avoiding congestion collapse, and work to avoid "bufferbloat", which causes increasing round-trip delays, as described in {{rate-adaptation-application-layer}}.
@@ -473,7 +471,7 @@ This section describes the encapsulation of RTP/RTCP packets in QUIC.
 
 QUIC supports two transport methods: streams {{!RFC9000}} and
 datagrams {{!RFC9221}}. This document specifies mappings of RTP to
-both of the transport modes. Senders MAY combine both modes by sending some
+both of the transport modes. Senders can combine both modes by sending some
 RTP/RTCP packets over the same or different QUIC streams and others in QUIC
 datagrams.
 
@@ -497,19 +495,19 @@ identifier which started the datagram or stream.
 
 RTP and RTCP packets of different RTP sessions MUST use distinct flow
 identifiers. If peers wish to send multiple types of media in a single RTP
-session, they MAY do so by following {{?RFC8860}}.
+session, they can do so by following {{?RFC8860}}.
 
-A single RTP session MAY be associated with one or two flow identifiers. Thus,
+A single RTP session can be associated with one or two flow identifiers. Thus,
 it is possible to send RTP and RTCP packets belonging to the same session using
-different flow identifiers. RTP and RTCP packets of a single RTP session MAY use
+different flow identifiers. RTP and RTCP packets of a single RTP session can use
 the same flow identifier (following the procedures defined in {{?RFC5761}}), or
-they MAY use different flow identifiers.
+they can use different flow identifiers.
 
 The association between flow identifiers and data streams MUST be negotiated
-using appropriate signaling. Applications MAY send data using flow identifiers
+using appropriate signaling. Applications can send data using flow identifiers
 not associated with any RTP or RTCP stream. If a receiver cannot associate a
-flow identifier with any RTP/RTCP or non-RTP flow, it MAY drop the data flow. If
-the data flow was sent on a QUIC stream, the receiver SHOULD send a
+flow identifier with any RTP/RTCP or non-RTP flow, it can drop the data flow. If
+the data flow was sent on a QUIC stream, the receiver can send a
 STOP\_SENDING frame with the application error code set to
 ROQ\_UNKNOWN\_FLOW\_ID.
 
@@ -517,7 +515,7 @@ There are different use cases for sharing the same QUIC connection between RTP
 and non-RTP data streams. Peers might use the same connection to exchange
 signaling messages or exchange data while sending and receiving media streams.
 The semantics of non-RTP datagrams or streams are not in the scope of this
-document. Peers MAY use any protocol on top of the encapsulation described in
+document. Peers can use any protocol on top of the encapsulation described in
 this document.
 
 Flow identifiers introduce some overhead in addition to the header overhead of
@@ -532,11 +530,11 @@ To send RTP/RTCP packets over QUIC streams, a sender MUST open at least one new 
 RoQ uses unidirectional streams, because there is no
 synchronous relationship between sent and received RTP/RTCP packets. A peer that
 receives a bidirectional stream with a flow identifier that is associated with
-an RTP or RTCP stream, SHOULD stop reading from the stream and send a
+an RTP or RTCP stream, MUST stop reading from the stream and send a
 STOP\_SENDING frame with the application protocol error code set to
 ROQ\_STREAM\_CREATION\_ERROR.
 
-A RoQ sender MAY open new QUIC streams for different packets using the same flow
+A RoQ sender can open new QUIC streams for different packets using the same flow
 identifier, for example, to avoid head-of-line blocking.
 
 Because a sender can continue sending on a lower stream number after starting packet transmission on a higher stream number, a RoQ receiver MUST be prepared to receive RoQ packets on any number of QUIC streams (subject to its limit on parallel open streams) and MUST not make assumptions about which RTP sequence numbers are carried in which streams.
@@ -592,21 +590,21 @@ QUIC uses RESET\_STREAM and STOP\_SENDING frames to terminate the sending part
 of a stream and to request termination of an incoming stream by the sending
 peer respectively.
 
-A RoQ sender MAY use RESET\_STREAM if it knows that a packet, which was not yet
+A RoQ sender can use RESET\_STREAM if it knows that a packet, which was not yet
 successfully and completely transmitted, is no longer needed.
 
 A RoQ receiver that is no longer interested in reading a certain partition of
-the media stream MAY signal this to the sending peer using a STOP\_SENDING
+the media stream can signal this to the sending peer using a STOP\_SENDING
 frame.
 
 In both cases, the error code of the RESET\_STREAM frame or the STOP\_SENDING
 frame MUST be set to ROQ\_FRAME\_CANCELLED.
 
-STOP\_SENDING is not a request to the sender to stop sending the RTP media
-stream, only an indication that a receiver stopped reading the QUIC stream being
-used. A sender with additional media frames to send SHOULD continue sending them
-on another QUIC stream. Alternatively, new media frames can be sent as QUIC
-datagrams (see {{quic-datagrams}}).
+STOP\_SENDING is not a request to the sender to stop sending RTP media, only an indication that a RoQ receiver stopped reading the QUIC stream being used.
+This can mean that the RoQ receiver is unable to make use of the media frames being received because they are "too old" to be used.
+A sender with additional media frames to send can continue sending them on another QUIC stream.
+Alternatively, new media frames can be sent as QUIC datagrams (see {{quic-datagrams}}).
+In either case, a RoQ sender resuming operation after receiving STOP_SENDING can continue starting with the newest media frames available for sending. This allows a RoQ receiver to "fast forward" to media frames that are "new enough" to be used.
 
 Any media frame that has already been sent on the QUIC stream that received the
 STOP\_SENDING frame, MUST NOT be sent again on the new QUIC stream(s) or
@@ -636,10 +634,11 @@ retransmitted by QUIC.
 
 ### Flow control and MAX\_STREAMS {#quic-flow-cc}
 
-In order to permit QUIC streams to open, a RoQ sender SHOULD configure non-zero minimum values for the number of permitted streams and the initial stream flow-control window, based on the number of parallel, or simultaneously active, RTP/RTCP flows.
+In order to permit QUIC streams to open, a RoQ sender MUST configure non-zero minimum values for the number of permitted streams and the initial stream flow-control window.
+These minimum values control the number of parallel, or simultaneously active, RTP/RTCP flows.
 Endpoints that excessively restrict the number of streams or the flow-control window of these streams will increase the chance that the remote peer reaches the limit early and becomes blocked.
 
-Opening new streams for new packets MAY implicitly limit the number of packets
+Opening new streams for new packets can implicitly limit the number of packets
 concurrently in transit because the QUIC receiver provides an upper bound of
 parallel streams, which it can update using QUIC MAX\_STREAMS frames. The number
 of packets that have to be transmitted concurrently depends on several factors,
@@ -668,14 +667,12 @@ Senders can also transmit RTP packets in QUIC datagrams. QUIC datagrams are an
 extension to QUIC described in {{!RFC9221}}. QUIC datagrams can only be used if
 the use of the datagram extension was successfully negotiated during the QUIC handshake.
 If the QUIC extension was signaled using a signaling protocol, but that
-extension was not negotiated during the QUIC handshake, a peer MAY close the
+extension was not negotiated during the QUIC handshake, a peer can close the
 connection with the ROQ\_EXPECTATION\_UNMET error code.
 
-QUIC datagrams preserve frame boundaries. Thus, a single RTP packet can be
-mapped to a single QUIC datagram without additional framing. Senders SHOULD
-consider the header overhead associated with QUIC datagrams and ensure that the
-RTP/RTCP packets, including their payloads, flow identifier, QUIC, and IP
-headers, will fit into path MTU.
+QUIC datagrams preserve frame boundaries.
+Thus, a single RTP packet can be mapped to a single QUIC datagram without additional framing.
+Because QUIC DATAGRAMs cannot be IP-fragmented ({{Section 5 of !RFC9221}}), senders need to consider the header overhead associated with QUIC datagrams, and ensure that the RTP/RTCP packets, including their payloads, flow identifier, QUIC, and IP headers, will fit into the path MTU.
 
 {{fig-dgram-payload}} shows the encapsulation format for RoQ
 Datagrams.
@@ -720,7 +717,7 @@ flow identifier of the RTP session in which the retransmission happens.
 
 # Connection Shutdown
 
-Either peers MAY close the connection for variety of reasons. If one of the
+Either peer can close the connection for variety of reasons. If one of the
 peers wants to close the RoQ connection, the peer can use a QUIC
 CONNECTION\_CLOSE frame with one of the error codes defined in
 {{error-handling}}.
@@ -755,9 +752,9 @@ free to choose any congestion control algorithm as long as they follow the
 guidelines specified in {{Section 3 of ?RFC8085}}, and QUIC implementors make
 use of this freedom.
 
-It is RECOMMENDED that the QUIC implementation use a congestion controller that
-seeks to minimize queueing delays. Further recommendations on the transport of
-RTP and RTCP are contained in {{streams-and-datagrams}}.
+For real-time traffic, it is best that the QUIC implementation use a congestion controller that
+seeks to minimize queueing delays.
+Further recommendations on the transport of RTP and RTCP are contained in {{streams-and-datagrams}}.
 
 A wide variety of congestion control algorithms for real-time media have been developed (for example, "Google Congestion Controller" {{?I-D.draft-ietf-rmcat-gcc}}).
 The IETF has defined two such algorithms in Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
@@ -848,13 +845,8 @@ demands of the respective channels and the different QUIC connections will
 compete for the same resources in the network. No local prioritization of data
 across the different (types of) channels would be necessary.
 
-Although it is possible to multiplex (all or a subset of) real-time and
-non-real-time channels onto a single, shared QUIC connection, which can be done
-by using the flow identifier described in {{multiplexing}}, the underlying QUIC
-implementation will likely use the same congestion controller for all channels
-in the shared QUIC connection. For this reason, applications multiplexing
-multiple streams in one connection SHOULD implement some form of stream
-prioritization or bandwidth allocation.
+Although it is possible to multiplex (all or a subset of) real-time and non-real-time channels onto a single, shared QUIC connection, which can be done by using the flow identifier described in {{multiplexing}}, the underlying QUIC implementation will likely use the same congestion controller for all channels in the shared QUIC connection.
+For this reason, applications multiplexing multiple streams in one connection will need to implement some form of stream prioritization or bandwidth allocation.
 
 # Replacing RTCP and RTP Header Extensions with QUIC Feedback {#rtcp-mapping}
 
@@ -894,11 +886,8 @@ differences are described in {{roc-d}} and {{roc-s}}.
 > this section, or in an earlier proposed section on motivations for defining
 > and deploying RoQ.
 
-While RoQ places no restrictions on applications sending RTCP, this document
-assumes that the reason an implementor chooses to support RoQ is to obtain
-benefits beyond what's available when RTP uses UDP as its underlying transport
-layer. It is RECOMMENDED to expose relevant information from the QUIC layer to
-the application instead of exchanging additional RTCP packets, where applicable.
+While RoQ places no restrictions on applications sending RTCP, this document assumes that the reason an implementer chooses to support RoQ is to obtain benefits beyond what's available when RTP uses UDP as its underlying transport layer.
+Exposing relevant information from the QUIC layer to the application instead of exchanging additional RTCP packets, where applicable, will reduce the processing and bandwidth requirements for RoQ senders and receivers.
 
 {{transport-layer-feedback}} discusses what information can be exposed from the
 QUIC connection layer to reduce the RTCP overhead.
@@ -950,9 +939,7 @@ reception statistics can be replaced by equivalent statistics that are already
 collected by QUIC. The following list explains how this mapping can be achieved
 for the individual fields of different RTCP packet types.
 
-The list of RTCP packets in this section is not exhaustive, and similar
-considerations SHOULD be taken into account before exchanging any other type of
-RTCP control packets using RoQ.
+The list of RTCP packets in this section is not exhaustive, and similar considerations would apply when exchanging any other type of RTCP control packets using RoQ.
 
 A more thorough analysis of RTCP Control Packet Types (in {{control-packets}}),
 Generic RTP Feedback (RTPFB) (in {{generic-feedback}}), Payload-specific RTP
@@ -971,13 +958,10 @@ numbers contained in QUIC ACK frames ({{Section 6 of !RFC9002}}).
 
 ### ECN Feedback ("ECN") {#ECN-mappings}
 
-*ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}}) packets
-report the count of observed ECN-CE marks. {{!RFC6679}} defines two RTCP
-reports, one packet type (with `PT=205` and `FMT=8`), and a new report block for
-the extended reports, which are listed above. QUIC supports ECN reporting
-through acknowledgments. If the QUIC connection supports ECN, the reporting of
-ECN counts SHOULD be done using QUIC acknowledgments rather than RTCP ECN
-feedback reports.
+*ECN Feedback* (`PT=205`, `FMT=8`, `Name=RTCP-ECN-FB`, {{!RFC6679}}) packets report the count of observed ECN-CE marks.
+{{!RFC6679}} defines two RTCP reports, one packet type (with `PT=205` and `FMT=8`), and a new report block for the extended reports, which are listed above.
+QUIC supports ECN reporting through acknowledgments.
+If the QUIC connection supports ECN, using QUIC acknowledgments to report ECN counts, rather than RTCP ECN feedback reports, reduces bandwidth and processing demands on the RTCP implementation.
 
 ### Goodbye Packets ("BYE") {#BYE-mapping}
 
@@ -1215,7 +1199,7 @@ Name:
 : A name for the error code.
 
 Description:
-: A brief description of the error code semantics, which MAY be a summary if a
+: A brief description of the error code semantics, which can be a summary if a
 specification reference is provided.
 
 The initial allocations in this registry are all assigned permanent status and
@@ -1424,12 +1408,8 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`,
 `Name=RR`, {{!RFC3550}}) are:
 
-* *Fraction lost*: When RTP packets are carried in QUIC datagrams, the
-  fraction of lost packets can be directly inferred from QUIC's
-  acknowledgments. The calculation SHOULD include all packets up to the
-  acknowledged RTP packet with the highest RTP sequence number. Later packets
-  SHOULD be ignored since they may still be in flight unless other QUIC
-  packets that were sent after the RTP packet were already acknowledged.
+* *Fraction lost*: When RTP packets are carried in QUIC datagrams, the fraction of lost packets can be directly inferred from QUIC's acknowledgments.
+The calculation includes all packets up to the acknowledged RTP packet with the highest RTP sequence number.
 * *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
   loss can be inferred from QUIC's acknowledgments, including all packets up
   to the latest acknowledged packet.
@@ -1482,10 +1462,7 @@ protocol itself.
   synchronize streams. QUIC cannot provide similar control information since it
   does not know about RTP timestamps. A QUIC receiver cannot calculate the
   packet or octet counts since it does not know about lost datagrams. Thus,
-  sender reports are required in RoQ to synchronize streams at the receiver. The
-  sender reports SHOULD not contain any receiver report blocks if the
-  information can be inferred from the QUIC transport as explained in
-  {{RR-mappings}}.
+  sender reports are required in RoQ to synchronize streams at the receiver.
 
 In addition to carrying transmission statistics, RTCP packets can contain
 application layer control information that cannot directly be mapped to QUIC.
