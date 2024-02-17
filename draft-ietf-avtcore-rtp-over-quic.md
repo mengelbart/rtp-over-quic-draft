@@ -521,12 +521,8 @@ of flows.
 ## QUIC Streams {#quic-streams}
 
 To send RTP/RTCP packets over QUIC streams, a sender MUST open at least one new unidirectional QUIC stream.
-RoQ uses unidirectional streams, because there is no
-synchronous relationship between sent and received RTP/RTCP packets. A peer that
-receives a bidirectional stream with a flow identifier that is associated with
-an RTP or RTCP stream, MUST stop reading from the stream and send a
-STOP\_SENDING frame with the application protocol error code set to
-ROQ\_STREAM\_CREATION\_ERROR.
+RoQ uses unidirectional streams, because there is no synchronous relationship between sent and received RTP/RTCP packets.
+A peer that receives a bidirectional stream with a flow identifier that is associated with an RTP or RTCP stream, MUST stop reading from the stream and send a CONNECTION_CLOSE frame with the frame type set to APPLICATION_ERROR and the error code set to ROQ_STREAM_CREATION_ERROR.
 
 A RoQ sender can open new QUIC streams for different packets using the same flow
 identifier, for example, to avoid head-of-line blocking.
