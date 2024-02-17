@@ -253,9 +253,6 @@ application transmits data.
 Congestion Control:
 : A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver, but has not been acknowledged by the receiver.
 This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, causing some outstanding data to be discarded before the receiver can receive the data and acknowledge it to the sender.
-A congestion control mechanism may respond to packet loss (detected by timeouts), or to impending packet loss (signaled by mechanisms such as Explicit Congestion Notification {{?RFC3168}}).
-It may also limit growth in round-trip delays, due to increasing queuing delays (signaled by mechanisms such as Low Latency, Low Loss, and Scalable Throughput (L4S) {{?RFC9330}}).
-Congestion control mechanisms are often implemented at the transport layer of the protocol stack, but can also be implemented at the application layer.
 
 Datagram:
 : Datagrams exist in UDP as well as in QUIC's unreliable datagram extension. If not explicitly noted
@@ -755,6 +752,10 @@ free to choose any congestion control algorithm as long as they follow the
 guidelines specified in {{Section 3 of ?RFC8085}}, and QUIC implementors make
 use of this freedom.
 
+Congestion control mechanisms are often implemented at the transport layer of the protocol stack, but can also be implemented at the application layer.
+
+A congestion control mechanism could respond to actual packet loss (detected by timeouts), or to impending packet loss (signaled by mechanisms such as Explicit Congestion Notification {{?RFC3168}}).
+
 It is RECOMMENDED that the QUIC implementation use a congestion controller that
 seeks to minimize queueing delays. Further recommendations on the transport of
 RTP and RTCP are contained in {{streams-and-datagrams}}.
@@ -768,13 +769,8 @@ requirements described in "Congestion Control Requirements for Interactive
 Real-Time Media" {{!RFC8836}}.
 
 Some low latency congestion control algorithms depend on detailed arrival time feedback to estimate the current one-way delay between sender and receiver, which is unavailable in QUIC {{!RFC9000}} without extensions.
-The
-QUIC implementations of the sender and receiver can use an extension to add this
-information to QUIC as described in {{optional-extensions}}. An alternative to
-these dedicated real-time media congestion-control algorithms that QUIC
-implementations could support without the need for a protocol extension is the
-Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service
-{{?RFC9330}}.
+The QUIC implementations of the sender and receiver can use an extension to add this information to QUIC as described in {{optional-extensions}}.
+An alternative to these dedicated real-time media congestion-control algorithms that QUIC implementations could support without the need for a protocol extension is the Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service {{?RFC9330}}, which can be used to limit growth in round-trip delays, due to increasing queuing delays.
 
 The application needs a mechanism to query the available bandwidth to adapt
 media codec configurations. If the employed congestion controller of the QUIC
