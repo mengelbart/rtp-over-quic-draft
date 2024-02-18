@@ -37,6 +37,30 @@ informative:
     title: "IP Multimedia Subsystem (IMS); Multimedia telephony; Media handling and interaction"
     date: 2023-01-05
 
+  IANA-RTCP-PT:
+    target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-4
+    title: "RTCP Control Packet Types (PT)"
+
+  IANA-RTCP-XR-BT:
+    target: https://www.iana.org/assignments/rtcp-xr-block-types/rtcp-xr-block-types.xhtml#rtcp-xr-block-types-1
+    title: "RTCP XR Block Type"
+
+  IANA-RTCP-FMT-RTPFB-PT:
+    target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-8
+    title: "FMT Values for RTPFB Payload Types"
+
+  IANA-RTCP-FMT-PSFB-PT:
+    target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-9
+    title: "FMT Values for PSFB Payload Types"
+
+  IANA-RTP-CHE:
+    target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-10
+    title: "RTP Compact Header Extensions"
+
+  IANA-RTP-SDES-CHE:
+    target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#sdes-compact-header-extensions
+    title: "RTP SDES Compact Header Extensions"
+
   VJMK88:
     target: https://ee.lbl.gov/papers/congavoid.pdf
     title: "Congestion Avoidance and Control"
@@ -1272,6 +1296,8 @@ RoQ, but are not required by RoQ.
 This section lists all the RTCP packet types and RTP header extensions that were
 considered in the analysis described in {{rtcp-mapping}}.
 
+Each subsection in {{rtcp-analysis}} corresponds to an IANA registry, and includes a reference pointing to that registry.
+
 Several but not all of these control packets and their attributes can be mapped
 from QUIC, as described in {{transport-layer-feedback}}. *Mappable from QUIC*
 has one of four values: *yes*, *partly*, *QUIC extension needed*, and *no*.
@@ -1283,6 +1309,8 @@ Examples of how certain packet types could be mapped with the help of QUIC
 extensions follow in {{rtcp-quic-ext-examples}}.
 
 ## RTCP Control Packet Types {#control-packets}
+
+The IANA registry for this section is {{IANA-RTCP-PT}}.
 
 | Name | Shortcut | PT | Defining Document | Mappable from QUIC | Comments |
 | ---- | -------- | -- | ----------------- | ---------------- | -------- |
@@ -1303,7 +1331,9 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | Reporting Group Reporting Sources | RGRS | 212 | {{?RFC8861}} | no | |
 | Splicing Notification Message | SNM | 213 | {{?RFC8286}} | no | |
 
-## Extended Reports (XR) {#extended-reports}
+## RTCP XR Block Type {#extended-reports}
+
+The IANA registry for this section is {{IANA-RTCP-XR-BT}}.
 
 | Name | Document | Mappable from QUIC  | Comments |
 | ---- | -------- | ---------------- | -------- |
@@ -1344,7 +1374,9 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | Independent Burst/Gap Discard Metrics Block | {{?RFC8015}}  | no | |
 {: #tab-xr-blocks title="Extended Report Blocks"}
 
-## Generic RTP Feedback (RTPFB) {#generic-feedback}
+## FMT Values for RTP Feedback (RTPFB) Payload Types {#generic-feedback}
+
+The IANA registry for this section is {{IANA-RTCP-FMT-RTPFB-PT}}.
 
 | Name     | Long Name | Document | Mappable from QUIC  | Comments |
 | -------- | --------- | -------- | ---------------- | -------- |
@@ -1359,7 +1391,9 @@ extensions follow in {{rtcp-quic-ext-examples}}.
 | DBI | Delay Budget Information (DBI) | {{3GPP-TS-26.114}} | |
 | CCFB | RTP Congestion Control Feedback | {{?RFC8888}} | QUIC extension needed | see {{CCFB-mappings}} |
 
-## Payload-specific RTP Feedback (PSFB) {#payload-specific-feedback}
+## FMT Values for Payload-Specific Feedback (PSFB) Payload Types {#payload-specific-feedback}
+
+The IANA registry for this section is {{IANA-RTCP-FMT-PSFB-PT}}.
 
 Because QUIC is a generic transport protocol, QUIC feedback cannot replace the
 following Payload-specific RTP Feedback (PSFB) feedback.
@@ -1389,7 +1423,9 @@ restrictions on sending any RTP header extensions. However, some extensions,
 such as Transmission Time offsets {{?RFC5450}} are used to improve network
 jitter calculation, which can be done in QUIC if a timestamp extension is used.
 
-### Compact Header Extensions
+### RTP Compact Header Extensions
+
+The IANA registry for this section is {{IANA-RTP-CHE}}.
 
 | Extension URI | Description | Reference | Mappable from QUIC |
 | ------------- | ----------- | --------- | ---- |
@@ -1407,7 +1443,9 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.
 | urn:3gpp:roi-sent | Signalling of the arbitrary region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}} | probably not(?) |
 | urn:3gpp:predefined-roi-sent | Signalling of the predefined region-of-interest (ROI) information for the sent video, see clause 6.2.3.4 | {{3GPP-TS-26.114}} | probably not(?) |
 
-### SDES Compact Header Extensions
+### RTP SDES Compact Header Extensions
+
+The IANA registry for this section is {{IANA-RTP-SDES-CHE}}.
 
 | Extension URI | Description | Reference | Mappable from QUIC |
 | ------------- | ----------- | --------- | ---- |
