@@ -151,7 +151,13 @@ This is especially useful in certain conferencing topologies, where otherwise se
 
 ### Multiplexing RTP, RTCP, and Non-RTP Flows on a Single QUIC Connection {#single-path}
 
-In order to conserve ports, especially at NATs and Firewalls, this specification defines a flow identifier, so that multiple RTP flows, RTCP flows, and non-RTP flows can be distinguished even if they are carried on the same QUIC connection. This is described in more detail in {{multiplexing}}.
+This specification defines a flow identifier for multiplexing multiple RTP and
+RTCP ports on the same QUIC connection to conserve ports, especially at NATs and
+Firewalls. {{multiplexing}} describes the multiplexing in more detail. Future
+extensions could further build on the flow identifier to multiplex RTP/RTCP with
+other protocols on the same connection, as long as these protocols can co-exist
+with RTP/RTCP without interfering with the ability of this connection to carry
+real-time media.
 
 ### Exploiting Multiple Paths {#multiple-paths}
 
@@ -176,7 +182,7 @@ amount of RTCP traffic by leveraging state information readily available within
 a QUIC endpoint. This document also describes different options for implementing
 congestion control and rate adaptation for RoQ.
 
-This specification focuses on providing a secure encapsulation of RTP packets
+This specification focuses on providing a secure encapsulation of RTP and RTCP packets
 for transmission over QUIC. The expected usage is wherever RTP is used to carry
 media packets, allowing QUIC in place of other transport protocols such as TCP,
 UDP, SCTP, DTLS, etc. That is, we expect RoQ to be used in contexts in
@@ -451,7 +457,7 @@ topology.*
 # Connection Establishment and ALPN {#alpn}
 
 QUIC requires the use of ALPN {{!RFC7301}} tokens during connection setup. RoQ
-uses "rtp-mux-quic" as ALPN token in the TLS handshake (see also
+uses "roq" as ALPN token in the TLS handshake (see also
 {{iana-considerations}}).
 
 Note that the use of a given RTP profile is not reflected in the ALPN token even
@@ -459,29 +465,20 @@ though it could be considered part of the application usage.  This is simply
 because different RTP sessions, which may use different RTP profiles, may be
 carried within the same QUIC connection.
 
-> **Editor's note:** "rtp-mux-quic" indicates that RTP and other protocols may
-> be multiplexed on the same QUIC connection using a flow identifier as
-> described in {{encapsulation}}. Applications are responsible for negotiation
-> of protocols in use by appropriate use of a signaling protocol such as SDP.
-
-> **Editor's note:** This implies that applications cannot use RoQ as
-> specified in this document over WebTransport.
-
 ## Draft version identification
 
 > **RFC Editor's note:** Please remove this section prior to publication of a
 > final version of this document.
 
-RoQ uses the token "rtp-mux-quic" to identify itself in ALPN.
+RoQ uses the token "roq" to identify itself in ALPN.
 
 Only implementations of the final, published RFC can identify themselves as
-"rtp-mux-quic". Until such an RFC exists, implementations MUST NOT identify
-themselves using this string.
+"roq". Until such an RFC exists, implementations MUST NOT identify themselves
+using this string.
 
 Implementations of draft versions of the protocol MUST add the string "-" and
 the corresponding draft number to the identifier.  For example,
-draft-ietf-avtcore-rtp-over-quic-04 is identified using the string
-"rtp-mux-quic-04".
+draft-ietf-avtcore-rtp-over-quic-09 is identified using the string "roq-09".
 
 Non-compatible experiments that are based on these draft versions MUST append
 the string "-" and an experiment name to the identifier.
@@ -497,17 +494,15 @@ RTP/RTCP packets over the same or different QUIC streams and others in QUIC
 datagrams.
 
 {{multiplexing}} introduces a multiplexing mechanism that supports multiplexing
-RTP, RTCP, and, with some constraints, other non-RTP protocols. {{quic-streams}}
-and {{quic-datagrams}} explain the specifics of mapping RTP to QUIC streams and
-QUIC datagrams, respectively.
+multiple RTP sessions and RTCP. {{quic-streams}} and {{quic-datagrams}} explain
+the specifics of mapping RTP to QUIC streams and QUIC datagrams, respectively.
 
 ## Multiplexing {#multiplexing}
 
-RoQ uses flow identifiers to multiplex different RTP, RTCP, and
-non-RTP data streams on a single QUIC connection. A flow identifier is a QUIC
-variable-length integer as described in {{Section 16 of !RFC9000}}. Each flow
-identifier is associated with a stream of RTP packets, RTCP packets, or a data
-stream of a non-RTP protocol.
+RoQ uses flow identifiers to multiplex different RTP and RTCP streams on a
+single QUIC connection. A flow identifier is a QUIC variable-length integer as
+described in {{Section 16 of !RFC9000}}. Each flow identifier is associated with
+a stream of RTP or RTCP packets.
 
 In a QUIC connection using the ALPN token defined in {{alpn}}, every QUIC
 datagram and every QUIC stream MUST start with a flow identifier. A peer MUST
@@ -524,20 +519,10 @@ different flow identifiers. RTP and RTCP packets of a single RTP session can use
 the same flow identifier (following the procedures defined in {{?RFC5761}}), or
 they can use different flow identifiers.
 
-The association between flow identifiers and data streams MUST be negotiated
-using appropriate signaling. Applications can send data using flow identifiers
-not associated with any RTP or RTCP stream. If a receiver cannot associate a
-flow identifier with any RTP/RTCP or non-RTP flow, it can drop the data flow. If
-the data flow was sent on a QUIC stream, the receiver can send a
-STOP\_SENDING frame with the application error code set to
-ROQ\_UNKNOWN\_FLOW\_ID.
-
-There are different use cases for sharing the same QUIC connection between RTP
-and non-RTP data streams. Peers might use the same connection to exchange
-signaling messages or exchange data while sending and receiving media streams.
-The semantics of non-RTP datagrams or streams are not in the scope of this
-document. Peers can use any protocol on top of the encapsulation described in
-this document.
+The association between flow identifiers and RTP/RTCP streams MUST be negotiated
+using appropriate signaling. If a receiver cannot associate a flow identifier
+with any RTP/RTCP stream, it MUST close the connection with the application
+error code ROQ_UNKNOWN_FLOW_ID.
 
 Flow identifiers introduce some overhead in addition to the header overhead of
 RTP/RTCP and QUIC. QUIC variable-length integers require between one and eight
@@ -672,11 +657,10 @@ will open 1520 new QUIC streams per second. A receiver must provide at least
 that many credits for opening new unidirectional streams to the server every
 second.
 
-In addition, the receiver should also consider the requirements of
-protocols into account that are multiplexed with RTP, including RTCP and data
-streams. These considerations may also be relevant when implementing signaling
-since it may be necessary to inform the receiver about how fast and how many
-stream credits it will have to provide to the media-sending peer.
+In addition, the receiver should also consider the requirements of RTCP streams.
+These considerations may also be relevant when implementing signaling since it
+may be necessary to inform the receiver about how fast and how many stream
+credits it will have to provide to the media-sending peer.
 
 ## QUIC Datagrams {#quic-datagrams}
 
@@ -757,8 +741,8 @@ This document also gives guidance about avoiding problems with *nested*
 congestion controllers in {{rate-adaptation-application-layer}}.
 
 This document also discusses congestion control implications of using shared or
-multiple separate QUIC connections to send and receive multiple independent data
-streams in {{shared-connections}}.
+multiple separate QUIC connections to send and receive multiple independent
+RTP/RTCP streams in {{shared-connections}}.
 
 ## Congestion Control at the Transport Layer {#cc-quic-layer}
 
@@ -853,15 +837,20 @@ other non-real-time data. This can be realized in different ways.
 - Alternatively, all real-time channels are mapped to one QUIC connection, while
   a separate QUIC connection is created for the non-real-time channels.
 
-- A third option is to multiplex all channels in a single QUIC connection.
+- A third option is to multiplex all channels in a single QUIC connection via an
+  extension to RoQ.
 
 In the first two cases, the congestion controllers can be chosen to match the
 demands of the respective channels and the different QUIC connections will
 compete for the same resources in the network. No local prioritization of data
 across the different (types of) channels would be necessary.
 
-Although it is possible to multiplex (all or a subset of) real-time and non-real-time channels onto a single, shared QUIC connection, which can be done by using the flow identifier described in {{multiplexing}}, the underlying QUIC implementation will likely use the same congestion controller for all channels in the shared QUIC connection.
-For this reason, applications multiplexing multiple streams in one connection will need to implement some form of stream prioritization or bandwidth allocation.
+Although it is possible to multiplex (all or a subset of) real-time and
+non-real-time channels onto a single, shared QUIC connection, by extending RoQ,
+the underlying QUIC implementation will likely use the same congestion
+controller for all channels in the shared QUIC connection. For this reason,
+applications multiplexing multiple streams in one connection will need to
+implement some form of stream prioritization or bandwidth allocation.
 
 # Guidance on Choosing QUIC Streams, QUIC DATAGRAMs, or a Mixture {#s-d-m-guidance}
 
@@ -1191,13 +1180,13 @@ This document creates a new registration for the identification of RoQ
 in the "TLS Application-Layer Protocol Negotiation (ALPN) Protocol IDs" registry
 {{?RFC7301}}.
 
-The "rtp-mux-quic" string identifies RoQ:
+The "roq" string identifies RoQ:
 
   Protocol:
   : RTP over QUIC (RoQ)
 
   Identification Sequence:
-  : 0x72 0x74 0x70 0x2D 0x6F 0x76 0x65 0x72 0x2D 0x71 0x75 0x69 0x63 ("rtp-mux-quic")
+  : 0x72 0x6F 0x71 ("roq")
 
   Specification:
   : This document
