@@ -281,29 +281,17 @@ Datagram:
 differently, the term datagram in this document refers to a QUIC Datagram as defined in
 {{!RFC9221}}.
 
-Delay-based or Low-latency congestion control algorithm:
-: A congestion control algorithm that aims at keeping queues, and thus the latency, at intermediary network elements as short as possible. Delay-based congestion control algorithms use, for example, an increasing one-way delay as a signal of impending congestion, and adjust the sending rate to prevent continued increases in one-way delay.
-
 Endpoint:
 : A QUIC server or client that participates in an RoQ session.
 
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
 
-Loss-based congestion control algorithm:
-: A congestion control algorithm that uses packet loss, or an Explicit Congestion Notification (ECN) that is interpreted as loss (as in {{?RFC3168}}), as a signal for congestion. Loss-based congestion control algorithms allow senders to send data on a path until packets are dropped by intermediary network elements, which the algorithm treats as a signal of congestion.
-
-QUIC congestion controller:
-: A software component of an application's QUIC implementation that implements a congestion control algorithm.
-
 Rate Adaptation:
 : An application-level mechanism that adjusts the sending rate of an application in order to respond to changing path conditions. For example, an application sending video might respond to indications of congestion by adjusting the resolution of the video it is sending.
 
 Receiver:
 : An endpoint that receives media in RTP packets and may send or receive RTCP packets.
-
-RTP congestion controller:
-: A software component of an application's RTP implementation that implements a congestion control algorithm.
 
 Sender:
 : An endpoint that sends media in RTP packets and may send or receive RTCP packets.
@@ -773,8 +761,12 @@ Congestion control mechanisms are often implemented at the transport layer of th
 
 A congestion control mechanism could respond to actual packet loss (detected by timeouts), or to impending packet loss (signaled by mechanisms such as Explicit Congestion Notification {{?RFC3168}}).
 
-For real-time traffic, it is best that the QUIC implementation use a congestion controller that
-seeks to minimize queueing delays.
+For real-time traffic, it is best that the QUIC implementation use a congestion
+controller that aims at keeping queues, and thus the latency, at intermediary
+network elements as short as possible. Delay-based congestion control algorithms
+might use, for example, an increasing one-way delay as a signal of impending
+congestion, and adjust the sending rate to prevent continued increases in
+one-way delay.
 
 A wide variety of congestion control algorithms for real-time media have been developed (for example, "Google Congestion Controller" {{?I-D.draft-ietf-rmcat-gcc}}).
 The IETF has defined two such algorithms in Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
