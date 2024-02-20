@@ -774,7 +774,6 @@ use of this freedom.
 
 For real-time traffic, it is best that the QUIC implementation use a congestion controller that
 seeks to minimize queueing delays.
-Further recommendations on the transport of RTP and RTCP are contained in {{streams-and-datagrams}}.
 
 A wide variety of congestion control algorithms for real-time media have been developed (for example, "Google Congestion Controller" {{?I-D.draft-ietf-rmcat-gcc}}).
 The IETF has defined two such algorithms in Experimental RFCs (SCReAM {{?RFC8298}} and NADA {{?RFC8698}}).
