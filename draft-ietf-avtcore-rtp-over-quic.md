@@ -965,7 +965,8 @@ A more thorough analysis of RTCP Control Packet Types (in {{control-packets}}),
 Generic RTP Feedback (RTPFB) (in {{generic-feedback}}), Payload-specific RTP
 Feedback (PSFB) (in {{payload-specific-feedback}}), Extended Reports (in
 {{extended-reports}}), and RTP Header Extensions (in {{rtp-header-extensions}}),
-including the information that cannot be mapped from QUIC.
+including the information that cannot be mapped from QUIC, can be found in
+{{rtcp-analysis}}.
 
 ### Negative Acknowledgments ("NACK") {#NACK-mappings}
 
