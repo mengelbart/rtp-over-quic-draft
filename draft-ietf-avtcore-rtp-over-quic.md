@@ -742,7 +742,8 @@ Real-Time Media" {{!RFC8836}}.
 
 Some low latency congestion control algorithms depend on detailed arrival time feedback to estimate the current one-way delay between sender and receiver, which is unavailable in QUIC {{!RFC9000}} without extensions.
 The QUIC implementations of the sender and receiver can use an extension to add this information to QUIC as described in {{optional-extensions}}.
-An alternative to these dedicated real-time media congestion-control algorithms that QUIC implementations could support without the need for a protocol extension is the Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service {{?RFC9330}}, which can be used to limit growth in round-trip delays, due to increasing queuing delays.
+An alternative to these dedicated real-time media congestion-control algorithms that QUIC implementations could support is the Low Latency, Low Loss, and Scalable Throughput (L4S) Internet Service {{?RFC9330}}, which can be used to limit growth in round-trip delays, due to increasing queuing delays.
+While L4S does not rely on a QUIC protocol extension, L4S does rely on support from network devices along the path from sender to receiver.
 
 The application needs a mechanism to query the available bandwidth to adapt
 media codec configurations. If the employed congestion controller of the QUIC
