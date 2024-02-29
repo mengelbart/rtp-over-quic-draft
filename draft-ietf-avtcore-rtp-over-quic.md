@@ -172,12 +172,8 @@ in multicast setups once QUIC supports multicast.
 RoQ does not define congestion control and rate adaptation algorithms
 for use with media. However, {{congestion-control}} discusses options for how
 congestion control and rate adaptation could be performed at the QUIC and/or at
-the RTP layer, and how information available at the QUIC layer could be exposed
+the RTP layer, and {{api-considerations}} describes the information available at the QUIC layer that could be exposed
 via an API for the benefit of RTP layer implementation.
-
-> **Editor's note:** Need to check whether {{congestion-control}} will also
-> describe the QUIC interface that's being exposed, or if that ends up somewhere
-> else in the document.
 
 RoQ does not define prioritization mechanisms when handling different
 media as those would be dependent on the media themselves and their
@@ -599,11 +595,6 @@ the following frame on the same stream. In that case, STOP\_SENDING and the
 following RESET\_STREAM would also drop the following media frame and thus lead
 to unintentionally skipping one or more frames.
 
-> **Editor's note:** A receiver cannot cancel a certain frame but still receive
-> retransmissions for a frame the was following on the same stream using
-> STOP\_SENDING, because STOP\_SENDING does not include an offset which would
-> allow signaling where retransmissions should continue.
-
 A translator that translates between two endpoints, both connected via QUIC,
 MUST forward RESET\_STREAM frames received from one end to the other unless it
 forwards the RTP packets on encapsulated in DATAGRAMs.
@@ -878,10 +869,6 @@ Most statements about "QUIC" in {{rtcp-mapping}} are applicable to both RTP
 encapsulated in QUIC STREAM frames and RTP encapsulated in DATAGRAMs. The
 differences are described in {{roc-d}} and {{roc-s}}.
 
-> **Editor's Note:** Additional discussion of bandwidth minimization could go in
-> this section, or in an earlier proposed section on motivations for defining
-> and deploying RoQ.
-
 While RoQ places no restrictions on applications sending RTCP, this document assumes that the reason an implementer chooses to support RoQ is to obtain benefits beyond what's available when RTP uses UDP as its underlying transport layer.
 Exposing relevant information from the QUIC layer to the application instead of exchanging additional RTCP packets, where applicable, will reduce the processing and bandwidth requirements for RoQ senders and receivers.
 
@@ -1009,10 +996,10 @@ ROQ\_EXPECTATION\_UNMET (0x07):
 : Expectiations of the QUIC transport set by RoQ out-of-band signalling were not
 met by the QUIC connection.
 
-# API Considerations {#api-considerations}
+# RoQ-QUIC and RoQ-RTP API Considerations {#api-considerations}
 
-The mapping described in the previous sections poses some interface requirements
-for the QUIC implementation. Although RoQ works without these requirements, some
+The mapping described in the previous sections relies on the QUIC implementation passing some information to the RoQ implementation.
+Although RoQ will function without this information, some
 optimizations regarding rate adaptation and RTCP mapping require certain
 functionalities to be exposed to the application.
 
@@ -1049,6 +1036,8 @@ functionality exposed by the QUIC implementation.
 * *ECN*: If ECN marks are available, they can support the bandwidth estimation
   of the application if necessary.
 
+One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ. One exception is that it may be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.
+
 # Discussion
 
 ## Impact of Connection Migration
@@ -1059,10 +1048,7 @@ transmission until reachability of the peer under the new address is validated.
 This may lead to short breaks in media delivery in the order of RTT and, if
 RTCP is used for RTT measurements, may cause spikes in observed delays.
 Application layer congestion control mechanisms (and also packet repair schemes
-such as retransmissions) need to be prepared to cope with such spikes.
-
-> **Editor's Note:** It may be desirable that the API provides an indication
-> of connection migration event for either case.
+such as retransmissions) need to be prepared to cope with such spikes. As noted in {{api-considerations}}, it may be desirable that the RoQ implementation provides an indication of connection migration to the RTP application, to assist in coping.
 
 ## 0-RTT considerations
 
