@@ -125,8 +125,8 @@ media packets, allowing QUIC in place of other transport protocols such as TCP,
 UDP, SCTP, DTLS, etc. That is, we expect RoQ to be used in contexts in
 which a signaling protocol is used to announce or negotiate a media
 encapsulation and the associated transport parameters (such as IP address, port
-number). RoQ is not intended as a stand-alone media transport,
-although QUIC transport parameters could be statically configured.
+number). RoQ is not intended as a stand-alone media transport, although media
+transport parameters could be statically configured.
 
 The above implies that RoQ is targeted at peer-to-peer operation; but
 it may also be used in client-server-style settings, e.g., when talking to a
