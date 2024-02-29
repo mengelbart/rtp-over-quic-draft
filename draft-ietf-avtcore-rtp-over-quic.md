@@ -1061,14 +1061,6 @@ RTCP is used for RTT measurements, may cause spikes in observed delays.
 Application layer congestion control mechanisms (and also packet repair schemes
 such as retransmissions) need to be prepared to cope with such spikes.
 
-If a QUIC connection is established via a signaling channel, this signaling
-may have involved Interactive Connectivity Establishment (ICE) exchanges to
-determine and choose suitable (IP address, port number) pairs for the QUIC
-connection.  Subsequent address change events may be noticed by QUIC via its
-connection migration handling and/or at the ICE or other application layer,
-e.g., by noticing changing IP addresses at the network interface.  This may
-imply that the two signaling and data "layers" get (temporarily) out of sync.
-
 > **Editor's Note:** It may be desirable that the API provides an indication
 > of connection migration event for either case.
 
