@@ -1,7 +1,7 @@
 ---
 title: "RTP over QUIC (RoQ)"
 docname: draft-ietf-avtcore-rtp-over-quic-latest
-category: std
+category: exp
 date: {DATE}
 
 ipr: trust200902
@@ -36,6 +36,11 @@ informative:
     target: https://portal.3gpp.org/desktopmodules/Specifications/SpecificationDetails.aspx?specificationId=1404
     title: "IP Multimedia Subsystem (IMS); Multimedia telephony; Media handling and interaction"
     date: 2023-01-05
+
+  Copa:
+    target: https://web.mit.edu/copa/
+    title: "Copa: Practical Delay-Based Congestion Control for the Internet"
+    date: 2018
 
   IANA-RTCP-PT:
     target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-4
@@ -1121,6 +1126,32 @@ frames, which would waste some bandwidth.
 
 Application designers are advised to take these considerations into account when
 selecting and configuring a QUIC stack for use with RoQ.
+
+# Directions for Future work {#futures}
+
+This specification represents considerable work and discussion within the IETF, and describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work. Possible directions would include
+
+* Better guidance on transport for RTCP (for example, when to use QUIC streams vs. QUIC datagrams).
+
+* Better guidance on the use of realtime-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
+
+* Better guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
+
+* Possible guidance for connection sharing between RoQ and non-RoQ flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
+
+For these reasons, publication of this specification as a stable reference for implementers to test with, and report results, seems useful.
+
+In addition, as noted in {{new-quic}}, one of the motivations for using QUIC as a transport for RTP is to exploit new QUIC extensions as they become available. We noted several proposed QUIC extensions in {{optional-extensions}}, but these proposals are all solving relevant problems, and those problems are worthy of attention, no matter how they are solved for the QUIC protocol.
+
+* Guidance for using RoQ with QUIC connection migration and over multiple paths. We note that the Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} has been adopted and is relatively mature.
+
+* Guidance for using RoQ with QUIC NAT traversal solutions. This could use Interactive Connectivity Establishment (ICE) {{?RFC8445}} or other NAT traversal solutions.
+
+* Guidance for improved jitter calculations to use with congestion control and rate adaptation.
+
+* Guidance for other aspects of QUIC performance optimization relying on extensions.
+
+Other QUIC extensions, not yet proposed, may also be useful with RoQ.
 
 # Security Considerations {#sec-considerations}
 
