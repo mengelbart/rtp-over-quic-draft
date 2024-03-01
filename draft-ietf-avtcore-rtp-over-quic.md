@@ -1064,26 +1064,30 @@ such as retransmissions) need to be prepared to cope with such spikes.
 > **Editor's Note:** It may be desirable that the API provides an indication
 > of connection migration event for either case.
 
-## 0-RTT considerations
+## 0-RTT and Early Data considerations
 
 For repeated connections between peers, the initiator of a QUIC connection can
-use 0-RTT data for both QUIC STREAM frames and DATAGRAMs. As such packets are subject to
-replay attacks, applications shall carefully specify which data types and operations
-are allowed.  0-RTT data may be beneficial for use with RoQ to reduce the
-risk of media clipping, e.g., at the beginning of a conversation.
+use 0-RTT initial packets to establish a connection that will be used for QUIC STREAM frames, DATAGRAMs, or both.
+As such packets are subject to replay attacks, RoQ applications MUST carefully specify which data types and operations
+are allowed.
 
-This specification defines carrying RTP on top of QUIC and thus does not finally
-define what the actual application data are going to be.  RTP typically carries
-ephemeral media contents that is rendered and possibly recorded but otherwise
-causes no side effects. Moreover, the amount of data that can be carried as 0-RTT
-data is rather limited.  But it is the responsibility of the respective application
-to determine if 0-RTT data is permissible.
+{{Section 9.2 of !RFC9001}} says
 
-> **Editor's Note:** Since the QUIC connection will often be created in the context
-> of an existing signaling relationship (e.g., using WebRTC or SIP), specific 0-RTT
-> keying material could be exchanged to prevent replays across sessions.  Within
-> the same connection, replayed media packets would be discarded as duplicates by
-> the receiver.
+> Application protocols MUST either prohibit the use of extensions that carry application semantics in 0-RTT or provide replay mitigation strategies.
+
+While including "early data" in the packet payload in any QUIC 0-RTT Initial packet may reduce the risk of media clipping, e.g., at the beginning of a conversation, this option also exposes the application to an additional risk, of accepting "early data" from a 0-RTT packet that has been replayed.
+It is the responsibility of the RoQ application to determine if 0-RTT data is permissible.
+
+A risk-averse RoQ implementer can simply ignore any RTP packets carried in the 0-RTT Initial packet payload in their RoQ implementation, reasoning that RTP applications are resilient to RTP packet loss.
+
+A risk-taking RoQ implementer can simply accept any RTP packets carried in the 0-RTT Initial packet payload in their RoQ implementation,
+reasoning that
+
+- RTP typically carries ephemeral media contents that is rendered and possibly recorded but otherwise causes no side effects,
+
+- the amount of data that can be carried as packet payload in an 0-RTT Initial packet is rather limited, and
+
+- RTP implementations are likely to discard any replayed media packets as duplicates.
 
 ## Coalescing RTP packets in single QUIC packet
 
