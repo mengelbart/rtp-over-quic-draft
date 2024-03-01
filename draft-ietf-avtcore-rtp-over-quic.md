@@ -1068,7 +1068,7 @@ A risk-averse RoQ implementer can simply ignore any RTP packets carried in the 0
 
 Since the QUIC connection will often be created in the context
 of an existing signaling relationship (e.g., using WebRTC or SIP), a careful RoQ implementer can exchange specific 0-RTT
-keying material to prevent replays across sessions. 
+keying material to prevent replays across sessions.
 
 A risk-taking RoQ implementer can simply accept any RTP packets carried in the 0-RTT Initial packet payload in their RoQ implementation,
 reasoning that
