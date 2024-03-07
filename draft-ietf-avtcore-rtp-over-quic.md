@@ -225,6 +225,9 @@ Datagram:
 Endpoint:
 : A QUIC server or client that participates in an RoQ session.
 
+Early data:
+: Application data carried in a 0-RTT packet payload, as defined in {{!RFC9000}}. In this specification, the early data would be an RTP packet.
+
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
 
@@ -354,7 +357,9 @@ Because DATAGRAMs are an extension to QUIC, they inherit a great deal of functio
 * DATAGRAM frames cannot be fragmented. They are limited in size by the max_datagram_frame_size transport parameter, and further limited by the max_udp_payload_size transport parameter and the Maximum Transmission Unit (MTU) of the path between endpoints.
 * DATAGRAM frames belong to a QUIC connection as a whole. There is no QUIC-level way to multiplex/demultiplex DATAGRAM frames within a single QUIC connection. Any multiplexing identifiers must be added, interpreted, and removed by an application, and they will be sent as part of the payload of the DATAGRAM frame itself.
 
-Because DATAGRAMs are an extension to QUIC, a RoQ endpoint cannot count on a RoQ peer supporting that extension. The RoQ endpoint may discover that its peer does not support DATAGRAMs while using signaling to set up QUIC connections, but may also discover that its peer has not negotiated the use of this extension during the QUIC handshake. When this happens, the RoQ endpoint needs to make a decision about what to do next.
+Because DATAGRAMs are an extension to QUIC, a RoQ endpoint cannot count on a RoQ peer supporting that extension.
+The RoQ endpoint may discover that its peer does not support DATAGRAMs while using signaling to set up QUIC connections, but may also discover that its peer has not negotiated the use of this extension during the QUIC handshake.
+When this happens, the RoQ endpoint needs to make a decision about what to do next.
 
 * If the use of DATAGRAMs was critical for the application, the endpoint can simply close the QUIC connection, allowing someone or something to correct this mismatch, so that DATAGRAMs can be used.
 * If the use of DATAGRAMs was not critical for the application, the endpoint can negotiate the use of QUIC STREAM frames instead.
@@ -1022,6 +1027,9 @@ are available. Thus, RoQ does not depend on the availability of all of the
 listed features but can apply different optimizations depending on the
 functionality exposed by the QUIC implementation.
 
+* *initial_max_data transport*: if the QUIC receiver has indicated a willingness to accept
+  0-RTT packets with early data, this is the maximum size that the QUIC sender can use,
+  as described in {{ed-considerations}}.
 * *Maximum Datagram Size*: The maximum DATAGRAM size that the QUIC connection
   can transmit on the network path to the QUIC receiver. If a RoQ sender using
   DATAGRAMs does not know the maximum DATAGRAM size for the path to the RoQ
@@ -1064,10 +1072,10 @@ such as retransmissions) need to be prepared to cope with such spikes.
 > **Editor's Note:** It may be desirable that the API provides an indication
 > of connection migration event for either case.
 
-## 0-RTT and Early Data considerations
+## 0-RTT and Early Data considerations {#ed-considerations}
 
 For repeated connections between peers, the initiator of a QUIC connection can
-use 0-RTT initial packets to establish a connection that will be used for QUIC STREAM frames, DATAGRAMs, or both.
+use 0-RTT packets to establish a connection that will be used for QUIC STREAM frames, DATAGRAMs, or both.
 As such packets are subject to replay attacks, RoQ applications MUST carefully specify which data types and operations
 are allowed.
 
@@ -1075,23 +1083,40 @@ are allowed.
 
 > Application protocols MUST either prohibit the use of extensions that carry application semantics in 0-RTT or provide replay mitigation strategies.
 
-While including "early data" in the packet payload in any QUIC 0-RTT Initial packet may reduce the risk of media clipping, e.g., at the beginning of a conversation, this option also exposes the application to an additional risk, of accepting "early data" from a 0-RTT packet that has been replayed.
-It is the responsibility of the RoQ application to determine if 0-RTT data is permissible.
+For the purposes of this discussion, RoQ is an application protocol that allows the use of 0-RTT. RoQ applications, like any other RTP applications, are likely to use 0-RTT with "early data" in the 0-RTT packet payload, in order to establish a media path quickly and reduce clipping at the beginning of a conversation.
 
-A risk-averse RoQ implementer can simply ignore any RTP packets carried in the 0-RTT Initial packet payload in their RoQ implementation, reasoning that RTP applications are resilient to RTP packet loss.
+While RTP implementations are robust in the presence of media loss and duplication, media delay and jitter are more serious concerns.
+
+RoQ application developers ought to take the considerations described in {{rej-ed}} and {{replay-ed}} into account when deciding whether to use 0-RTT with early data for an application.
+
+### Effect of 0-RTT Rejection for RoQ using Early Data {#rej-ed}
+
+If the goal for using early data is to reduce clipping, a QUIC endpoint is relying on the other QUIC endpoint to accept the 0-RTT packet carrying early data containing media.
+
+A QUIC endpoint indicates its willingness to accept a 0-RTT packet containing early data by sending the TLS early_data extension in the NewSessionTicket message eith the max_early_data_size parameter set to the sentinel value 0xffffffff.
+The amount of data that the client can send in QUIC 0-RTT is controlled by the initial_max_data transport parameter supplied by the server.
+This is described in more detail in {{Section 4.6.1 of !RFC9001}}.
+
+If a QUIC endpoint is not prepared to accept a 0-RTT packet containing early data, but receives one anyway, the QUIC endpoint rejects the 0-RTT packet by sending EncryptedExtensions without an early_data extension. This is described in more detail, in {{Section 4.6.2 of !RFC9001}}.
+This necessarily means that a QUIC endpoint attempting to convey RoQ media is now subject to at least one additional RTT delay, as it must send a QUIC Initial packet and perform a full QUIC handshake before it can send RoQ media.
+
+### Effect of 0-RTT Replay Attacks for RoQ using Early Data {#replay-ed}
+
+Including "early data" in the packet payload in any QUIC 0-RTT packet also exposes the application to an additional risk, of accepting "early data" from a 0-RTT packet that has been replayed.
+
+While it is true that
+
+- RTP typically carries ephemeral media contents that is rendered and possibly recorded but otherwise causes no side effects,
+
+- the amount of data that can be carried as packet payload in a 0-RTT packet is rather limited, and
+
+- RTP implementations are likely to discard any replayed media packets as duplicates,
+
+it is still the responsibility of the RoQ application to determine whether the benefits of using 0-RTT with early data outweigh the risks.
 
 Since the QUIC connection will often be created in the context
 of an existing signaling relationship (e.g., using WebRTC or SIP), a careful RoQ implementer can exchange specific 0-RTT
 keying material to prevent replays across sessions.
-
-A risk-taking RoQ implementer can simply accept any RTP packets carried in the 0-RTT Initial packet payload in their RoQ implementation,
-reasoning that
-
-- RTP typically carries ephemeral media contents that is rendered and possibly recorded but otherwise causes no side effects,
-
-- the amount of data that can be carried as packet payload in an 0-RTT Initial packet is rather limited, and
-
-- RTP implementations are likely to discard any replayed media packets as duplicates.
 
 ## Coalescing RTP packets in single QUIC packet
 
