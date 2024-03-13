@@ -260,7 +260,7 @@ An RTP application is responsible for determining what to send in an encoded med
 
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
 
-As of this writing, the IETF has produced two Experimental-track congestion control specifications, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
+As of this writing, the IETF has produced two Experimental-track congestion control specifications for real-time media, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
 These congestion control algorithms require some feedback about the network's performance to calculate target bitrates. Traditionally this feedback is generated at the receiver and sent back to the sender via RTCP.
 
 Since QUIC also collects some metrics about the network's performance, these
