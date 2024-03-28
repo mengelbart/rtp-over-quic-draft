@@ -1138,9 +1138,13 @@ frames, which would waste some bandwidth.
 Application designers are advised to take these considerations into account when
 selecting and configuring a QUIC stack for use with RoQ.
 
-# Directions for Future work {#futures}
+# Directions for Future Work {#futures}
 
-This specification represents considerable work and discussion within the IETF, and describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work. Possible directions would include
+This specification represents considerable work and discussion within the IETF, and describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work.
+
+## Future Work Resulting from Implementation and Deployment Experience {#futures-impl-deploy}
+
+Possible directions would include
 
 * Better guidance on transport for RTCP (for example, when to use QUIC streams vs. QUIC datagrams).
 
@@ -1152,9 +1156,11 @@ This specification represents considerable work and discussion within the IETF, 
 
 For these reasons, publication of this specification as a stable reference for implementers to test with, and report results, seems useful.
 
-In addition, as noted in {{new-quic}}, one of the motivations for using QUIC as a transport for RTP is to exploit new QUIC extensions as they become available. We noted several proposed QUIC extensions in {{optional-extensions}}, but these proposals are all solving relevant problems, and those problems are worthy of attention, no matter how they are solved for the QUIC protocol.
+## Future Work Resulting from New QUIC Extensions {#futures-new-ext}
 
-* Guidance for using RoQ with QUIC connection migration and over multiple paths. We note that the Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} has been adopted and is relatively mature.
+In addition, as noted in {{new-quic}}, one of the motivations for using QUIC as a transport for RTP is to exploit new QUIC extensions as they become available. We noted several specific proposed QUIC extensions in {{optional-extensions}}, but these proposals are all solving relevant problems, and those problems are worthy of attention, no matter how they are solved for the QUIC protocol.
+
+* Guidance for using RoQ with QUIC connection migration and over multiple paths. QUIC connection migration was already defined in {{!RFC9000}}, and the Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} has been adopted and is relatively mature, so this is likely to be the first new QUIC extension we address.
 
 * Guidance for using RoQ with QUIC NAT traversal solutions. This could use Interactive Connectivity Establishment (ICE) {{?RFC8445}} or other NAT traversal solutions.
 
