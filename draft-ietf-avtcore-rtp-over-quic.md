@@ -76,10 +76,11 @@ informative:
 This document specifies a minimal mapping for encapsulating Real-time Transport
 Protocol (RTP) and RTP Control Protocol (RTCP) packets within the QUIC protocol.
 This mapping is called RTP over QUIC (RoQ).
-It also discusses how to leverage state from the QUIC implementation in the
-endpoints, in order to reduce the need to exchange RTCP packets and how to
-implement congestion control and rate adaptation without relying on RTCP
-feedback.
+
+This document also discusses how to leverage state that is already available
+from the QUIC implementation in the endpoints, in order to reduce the need to
+exchange RTCP packets, and describes different options for implementing congestion control and rate
+adaptation for RTP without relying on RTCP feedback.
 
 --- middle
 
@@ -89,10 +90,11 @@ This document specifies a minimal mapping for encapsulating Real-time Transport
 Protocol (RTP) {{!RFC3550}} and RTP Control Protocol (RTCP) {{!RFC3550}} packets
 within the QUIC protocol ({{!RFC9000}}).
 This mapping is called RTP over QUIC (RoQ).
-It also discusses how to leverage state
+
+This document also discusses how to leverage state that is already available
 from the QUIC implementation in the endpoints, in order to reduce the need to
-exchange RTCP packets, and how to implement congestion control and rate
-adaptation without relying on RTCP feedback.
+exchange RTCP packets, and describes different options for implementing congestion control and rate
+adaptation for RTP without relying on RTCP feedback.
 
 ## Background {#background}
 
@@ -103,8 +105,8 @@ packet losses, the default underlying transport protocol has been UDP, recently
 with DTLS on top to secure the media exchange and occasionally TCP (and possibly
 TLS) as a fallback.
 
-This specification describes an application usage of QUIC ({{?RFC9308}}).
-As a baseline, the specification does not expect more than a standard QUIC implementation
+This document describes an application usage of QUIC ({{?RFC9308}}).
+As a baseline, the document does not expect more than a standard QUIC implementation
 as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}},
 providing a secure end-to-end transport that is also expected to work well through NATs and firewalls.
 Beyond this baseline, real-time applications can benefit from QUIC extensions such as unreliable DATAGRAMs
@@ -112,14 +114,9 @@ Beyond this baseline, real-time applications can benefit from QUIC extensions su
 real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
 blocking).
 
-## What's in Scope for this Specification {#in-scope}
+## What's in Scope for this document {#in-scope}
 
-This document defines a mapping for RTP and RTCP over QUIC, called RoQ, and describes ways to reduce the
-amount of RTCP traffic by leveraging state information readily available within
-a QUIC endpoint. This document also describes different options for implementing
-congestion control and rate adaptation for RoQ.
-
-This specification focuses on providing a secure encapsulation of RTP and RTCP packets
+This document focuses on providing a secure encapsulation of RTP and RTCP packets
 for transmission over QUIC. The expected usage is wherever RTP is used to carry
 media packets, allowing QUIC in place of other transport protocols such as TCP,
 UDP, SCTP, DTLS, etc. That is, we expect RoQ to be used in contexts in
@@ -158,7 +155,7 @@ destination port number, source IP address, source port number, protocol)
 5-tuple., e.g. to carry different media channels. These connections would be
 logically independent of one another.
 
-## What's Out of Scope for this Specification {#out-of-scope}
+## What's Out of Scope for this Document {#out-of-scope}
 
 This document does not attempt to enhance QUIC for real-time media or define a
 replacement for, or evolution of, RTP. Work to map other media transport
@@ -166,7 +163,7 @@ protocols to QUIC is under way elsewhere in the IETF.
 
 RoQ is designed for use with point-to-point connections, because QUIC
 itself is not defined for multicast operation. The scope of this document is
-limited to unicast RTP/RTCP, even though nothing would or should prevent its use
+limited to unicast RTP, even though nothing would or should prevent its use
 in multicast setups once QUIC supports multicast.
 
 RoQ does not define congestion control and rate adaptation algorithms
@@ -194,13 +191,15 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
+> **Note to the Reader:** {{!RFC3550}} actually describes two closely-related protocols - the RTP Data Transfer Protocol {{Section 5 of !RFC3550}}, and the RTP Control Protocol {{Section 6 of !RFC3550}}. In this document, the term "RTP" refers to the combination of RTP Data Transfer Protocol and RTP Control Protocol, because the distinction isn't relevant for encapsulation, and the term "RTCP" always refers to the RTP Control Protocol.
+
 > **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
 
 > Modern general-purpose "congestion control" algorithms have moved beyond avoiding congestion collapse, and work to avoid "bufferbloat", which causes increasing round-trip delays, as described in {{rate-adaptation-application-layer}}.
 
 > "Rate adaptation" more commonly refers to strategies intended to guide senders on when to send "the next packet", so that one-way delays along the network path remain minimal.
 
-> When RTP runs over QUIC, as described in this specification, QUIC is performing congestion control, and the RTP application is responsible for performing rate adaptation.
+> When RTP runs over QUIC, as described in this document, QUIC is performing congestion control, and the RTP application is responsible for performing rate adaptation.
 
 > In this document, these terms are used with the meanings listed below, with the recognition that not all the references in this document use these terms in the same way.
 
@@ -222,7 +221,7 @@ Endpoint:
 : A QUIC server or client that participates in an RoQ session.
 
 Early data:
-: Application data carried in a 0-RTT packet payload, as defined in {{!RFC9000}}. In this specification, the early data would be an RTP packet.
+: Application data carried in a 0-RTT packet payload, as defined in {{!RFC9000}}. In this document, the early data would be an RTP packet.
 
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
@@ -260,7 +259,7 @@ An RTP application is responsible for determining what to send in an encoded med
 
 This document does not mandate how an application determines what to send in an encoded media stream, because decisions about what to send within a targeted bitrate, and how to adapt to changes in the targeted bitrate, can be application and codec-specific. For example, adjusting quantization in response to changing network conditions may work well in many cases, but if what's being shared is video that includes text, maintaining readability is important.
 
-As of this writing, the IETF has produced two Experimental-track congestion control specifications for real-time media, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
+As of this writing, the IETF has produced two Experimental-track congestion control documents for real-time media, Network-Assisted Dynamic Adaptation (NADA) {{!RFC8698}} and Self-Clocked Rate Adaptation for Multimedia (SCReAM) {{!RFC8298}}.
 These congestion control algorithms require some feedback about the network's performance to calculate target bitrates. Traditionally this feedback is generated at the receiver and sent back to the sender via RTCP.
 
 Since QUIC also collects some metrics about the network's performance, these
@@ -276,7 +275,7 @@ The motivations in this section are in no particular order, and this reflects th
 
 ### "Always-On" Transport-level Authentication and Encryption {#alwas-on}
 
-Although application-level mechanisms to encrypt RTP and RTCP payloads have existed since the introduction of Secure Real-time Transport Protocol (SRTP) {{?RFC3711}}, encryption of RTP and RTCP header fields and contributing sources has only been defined recently (in Cryptex {{?RFC9335}}, and both SRTP and Cryptex are optional capabilities for RTP.
+Although application-level mechanisms to encrypt RTP payloads have existed since the introduction of Secure Real-time Transport Protocol (SRTP) {{?RFC3711}}, encryption of RTP header fields and contributing sources has only been defined recently (in Cryptex {{?RFC9335}}, and both SRTP and Cryptex are optional capabilities for RTP.
 
 This is in sharp contrast to "always-on" transport-level encryption in the QUIC protocol, using Transport Layer Security (TLS 1.3) as described in {{?RFC9001}}. QUIC implementations always authenticate the entirety of each packet, and encrypt as much of each packet as is practical, even switching from "long headers", which expose more QUIC header fields needed to establish a connection, to "short headers", which only expose the absolute minimum QUIC header fields needed to identify the connection to the receiver, so that the QUIC payload is presented to the right QUIC application {{?RFC8999}}.
 
@@ -312,7 +311,7 @@ This is especially useful in certain conferencing topologies, where otherwise se
 
 ### Multiplexing RTP, RTCP, and Non-RTP Flows on a Single QUIC Connection {#single-path}
 
-This specification defines a flow identifier for multiplexing multiple RTP and
+This document defines a flow identifier for multiplexing multiple RTP and
 RTCP ports on the same QUIC connection to conserve ports, especially at NATs and
 Firewalls. {{multiplexing}} describes the multiplexing in more detail. Future
 extensions could further build on the flow identifier to multiplex RTP/RTCP with
@@ -330,7 +329,7 @@ The Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} would allow 
 
 A sender can use these capabilities to more effectively exploit multiple paths between sender and receiver with no action required from the application, even if these paths have different path characteristics.  Examples of these different path characteristics include handling paths differently if one path has higher available bandwidth and the other has lower one-way latency, or if one is a more costly cellular path and the other is a less costly WiFi path.
 
-Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc. Possible RTP implementation strategies for path selection and utilization are not discussed in this specification.
+Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc. Possible RTP implementation strategies for path selection and utilization are not discussed in this document.
 
 ### Exploiting New QUIC Capabilities {#new-quic}
 
@@ -485,7 +484,7 @@ the specifics of mapping RTP to QUIC STREAM frames and DATAGRAMs, respectively.
 
 ## Multiplexing {#multiplexing}
 
-RoQ uses flow identifiers to multiplex different RTP and RTCP streams on a
+RoQ uses flow identifiers to multiplex different RTP streams on a
 single QUIC connection. A flow identifier is a QUIC variable-length integer as
 described in {{Section 16 of !RFC9000}}. Each flow identifier is associated with
 a stream of RTP or RTCP packets.
@@ -494,7 +493,7 @@ In a QUIC connection using the ALPN token defined in {{alpn}}, every DATAGRAM an
 A peer MUST NOT send any data in a DATAGRAM or STREAM frame that is not associated with the flow
 identifier which started the DATAGRAM or stream.
 
-RTP and RTCP packets of different RTP sessions MUST use distinct flow
+RTP packets of different RTP sessions MUST use distinct flow
 identifiers. If peers wish to send multiple types of media in a single RTP
 session, they can do so by following {{?RFC8860}}.
 
@@ -828,7 +827,7 @@ implement some form of stream prioritization or bandwidth allocation.
 
 # Guidance on Choosing QUIC Streams, QUIC DATAGRAMs, or a Mixture {#s-d-m-guidance}
 
-As noted in {{streams-and-datagrams}}, this specification does not take a position on using QUIC streams, QUIC DATAGRAMs, or some mixture of both, for any particular RoQ use case or application. It does seem useful to include observations that might guide implementers who will need to make choices about that.
+As noted in {{streams-and-datagrams}}, this document does not take a position on using QUIC streams, QUIC DATAGRAMs, or some mixture of both, for any particular RoQ use case or application. It does seem useful to include observations that might guide implementers who will need to make choices about that.
 
 One implementation goal might be to minimize processing overhead, for applications that are migrating from RTP over UDP to RoQ. These applications don't rely on any transport protocol behaviors beyond UDP, which can be described as "nothing beyond IP, except multiplexing". They might be motivated by one or more of the advantages of encapsulating RTP in QUIC that are described in {{motivations}}, but they do not need any of the advantages that would apply when encapsulating RTP in QUIC streams. For these applications, simply placing each RTP packet in a QUIC DATAGRAM frame when it becomes available would be sufficient, with no QUIC streams at all.
 
@@ -1140,7 +1139,7 @@ selecting and configuring a QUIC stack for use with RoQ.
 
 # Directions for Future Work {#futures}
 
-This specification represents considerable work and discussion within the IETF, and describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work.
+This document represents considerable work and discussion within the IETF, and describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work. Possible directions would include
 
 ## Future Work Resulting from Implementation and Deployment Experience {#futures-impl-deploy}
 
@@ -1154,7 +1153,7 @@ Possible directions would include
 
 * Possible guidance for connection sharing between RoQ and non-RoQ flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
 
-For these reasons, publication of this specification as a stable reference for implementers to test with, and report results, seems useful.
+For these reasons, publication of this document as a stable reference for implementers to test with, and report results, seems useful.
 
 ## Future Work Resulting from New QUIC Extensions {#futures-new-ext}
 
