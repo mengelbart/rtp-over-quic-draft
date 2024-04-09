@@ -1,5 +1,5 @@
 ---
-title: "RTP and RTCP over QUIC (RoQ)"
+title: "RTP over QUIC (RoQ)"
 docname: draft-ietf-avtcore-rtp-over-quic-latest
 category: exp
 date: {DATE}
@@ -106,7 +106,7 @@ with DTLS on top to secure the media exchange and occasionally TCP (and possibly
 TLS) as a fallback.
 
 This document describes an application usage of QUIC ({{?RFC9308}}).
-As a baseline, the Document does not expect more than a standard QUIC implementation
+As a baseline, the document does not expect more than a standard QUIC implementation
 as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}},
 providing a secure end-to-end transport that is also expected to work well through NATs and firewalls.
 Beyond this baseline, real-time applications can benefit from QUIC extensions such as unreliable DATAGRAMs
@@ -191,7 +191,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 document are to be interpreted as described in BCP 14 {{!RFC2119}} {{!RFC8174}}
 when, and only when, they appear in all capitals, as shown here.
 
-> **Note to the Reader:** {{!RFC3550}} actually describes two closely-related protocols - the RTP Data Transfer Protocol {{Section 5 of !RFC3550}}, and the RTP Control Protocol {{Section 6 of !RFC3550}}. In this document, the term "RTP" refers to the combination of RTP Data Transfer Protocol and RTP Control Protocol, because the distinction isn't relevant for encapsulation. The term "RTCP" always refers to the RTP Control Protocol.
+> **Note to the Reader:** {{!RFC3550}} actually describes two closely-related protocols - the RTP Data Transfer Protocol {{Section 5 of !RFC3550}}, and the RTP Control Protocol {{Section 6 of !RFC3550}}. In this document, the term "RTP" refers to the combination of RTP Data Transfer Protocol and RTP Control Protocol, because the distinction isn't relevant for encapsulation, and the term "RTCP" always refers to the RTP Control Protocol.
 
 > **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
 
