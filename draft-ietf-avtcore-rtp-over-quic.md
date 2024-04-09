@@ -114,7 +114,7 @@ Beyond this baseline, real-time applications can benefit from QUIC extensions su
 real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
 blocking).
 
-## What's in Scope for this document {#in-scope}
+## What's in Scope for this Document {#in-scope}
 
 This document focuses on providing a secure encapsulation of RTP and RTCP packets
 for transmission over QUIC. The expected usage is wherever RTP is used to carry
