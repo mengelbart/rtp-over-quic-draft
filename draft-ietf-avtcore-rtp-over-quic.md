@@ -1151,7 +1151,7 @@ Possible directions would include
 
 * Better guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
 
-* Possible guidance for connection sharing between RoQ and non-RoQ flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
+* Possible guidance for connection sharing between real-time and non-real-time flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
 
 For these reasons, publication of this document as a stable reference for implementers to test with, and report results, seems useful.
 
