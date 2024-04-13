@@ -757,8 +757,8 @@ It is assumed that the congestion controller in use provides a pacing mechanism
 to determine when a packet can be sent to avoid bursts and minimize variation in
 inter-packet arrival times. The currently proposed congestion control algorithms
 for real-time communications (e.g., SCReAM and NADA) provide such pacing
-mechanisms, and QUIC recommends pacing for senders based on the congestion
-control algorithm.
+mechanisms, and the QUIC exemplary congestion control algorithm ({{Section 7.7
+of !RFC9002}}) recommends pacing for senders.
 
 ## Rate Adaptation at the Application Layer {#rate-adaptation-application-layer}
 
