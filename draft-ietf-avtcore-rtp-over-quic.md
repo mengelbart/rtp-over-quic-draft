@@ -445,7 +445,7 @@ Note-Warn:
 # Connection Establishment and Application-Layer Protocol Negotiation {#alpn}
 
 QUIC requires the use of Application-Layer Protocol Negotiation (ALPN) {{!RFC7301}} tokens during connection setup. RoQ
-uses "roq" as the ALPN token, included as part of the TLS ClientHello message (see also
+uses "roq" as the ALPN token, included as part of the TLS handshake (see also
 {{iana-considerations}}).
 
 Note that the "roq" ALPN token is not tied to a specific RTP profile, even
@@ -577,7 +577,7 @@ A RoQ receiver that is no longer interested in reading a certain partition of
 the media stream can signal this to the sending peer using a STOP\_SENDING
 frame.
 
-If a RoQ sender discovers that a packet is no longer needed and knows that the packet that has not yet been successfully and completely transmitted, it can use RESET\_STREAM to tell the RoQ receiver that the RoQ sender is discarding the packet.
+If a RoQ sender discovers that a packet is no longer needed and knows that the packet has not yet been successfully and completely transmitted, it can use RESET\_STREAM to tell the RoQ receiver that the RoQ sender is discarding the packet.
 
 In both cases, the error code of the RESET\_STREAM frame or the STOP\_SENDING
 frame MUST be set to ROQ\_FRAME\_CANCELLED.
