@@ -109,7 +109,7 @@ have been used as fallbacks, when UDP is blocked for some reason.
 This document describes an application usage of QUIC ({{?RFC9308}}).
 As a baseline, the document does not expect more than a standard QUIC implementation
 as defined in {{!RFC8999}}, {{!RFC9000}}, {{!RFC9001}}, and {{!RFC9002}},
-providing a secure end-to-end transport that is also expected to work well through NATs and firewalls.
+providing a secure end-to-end transport.
 Beyond this baseline, real-time applications can benefit from QUIC extensions such as unreliable DATAGRAMs
 {{!RFC9221}}, which provides additional desirable properties for
 real-time traffic (e.g., no unnecessary retransmissions, avoiding head-of-line
