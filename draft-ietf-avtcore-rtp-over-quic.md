@@ -125,8 +125,11 @@ encapsulation for RTP and the associated transport parameters (such as IP addres
 number). RoQ does not provide a stand-alone media transport capability, because at a minimum, media
 transport parameters would need to be statically configured.
 
-The above implies that RoQ is targeted at peer-to-peer RTP operation; but
-it can also be used in RTP client-server-style settings, e.g., when talking to a
+
+RoQ can be used in many of the point-to-point and multi-endpoint RTP topologies described in {{!RFC7667}}, and can be used with both decentralized and centralized control topologies.
+When RoQ is used in a decentralized topology, RTP is exchanged directly between ultimate RTP endpoints.
+When RoQ is used in a centralized topology, RTP transits one or more middleboxes which might function as mixers or translators between ultimate RTP endpoints.
+RoQ can also be used in RTP client-server-style settings, e.g., when talking to a
 conference server as described in RFC 7667 ({{!RFC7667}}), or, if RoQ
 is used to replace RTSP ({{?RFC7826}}), to a media server.
 
