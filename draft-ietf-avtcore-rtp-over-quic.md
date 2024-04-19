@@ -219,10 +219,10 @@ Datagram:
 : The term "datagram" is ambiguous. Without a qualifier, "datagram" could refer to a UDP packet, or a QUIC DATAGRAM frame, as defined in QUIC's unreliable DATAGRAM extension {{!RFC9221}}, or an RTP packet encapsulated in UDP, or an RTP packet capsulated in QUIC DATAGRAM frame. If not explicitly qualified, the term "datagram" in this document refers to an RTP packet, and the uppercase "DATAGRAM" refers to a QUIC DATAGRAM frame. This document also uses the term "RoQ datagram" as a short form of "RTP packet encapsulated in a QUIC DATAGRAM frame".
 
 Endpoint:
-: A QUIC server or client that participates in an RoQ session. This could be thought of as "a RoQ endpoint".
+: A QUIC client or QUIC server that participates in an RoQ session. "A RoQ endpoint" is used in this document where that seems clearer than "an endpoint" without qualification.
 
 Early data:
-: Application data carried in a 0-RTT packet payload, as defined in {{!RFC9000}}. In this document, the early data would be an RTP packet.
+: Application data carried in a QUIC 0-RTT packet payload, as defined in {{!RFC9000}}. In this document, the early data would be an RTP packet.
 
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
@@ -528,6 +528,9 @@ To send RTP packets over QUIC streams, a sender MUST open at least one new unidi
 RoQ uses unidirectional streams, because there is no synchronous relationship between sent and received RTP packets.
 An endpoint that receives a bidirectional stream with a flow identifier that is associated with an RTP stream, MUST stop reading from the stream and send a CONNECTION_CLOSE frame with the frame type set to APPLICATION_ERROR and the error code set to ROQ_STREAM_CREATION_ERROR.
 
+The underlying QUIC implementation might be acting as either a QUIC client or QUIC server, so the unidirectional QUIC stream can be either client-initiated or server-initiated, as described in {{Section 2.1 of !RFC9000}}, depending on the role.
+The QUIC implementation's role is not controlled by RoQ, and can be negotiated using a separate signaling protocol.
+
 A RoQ sender can open new QUIC streams for different packets using the same flow identifier. This allows RoQ senders to use QUIC streams while avoiding head-of-line blocking.
 
 Because a sender can continue sending on a lower stream number after starting packet transmission on a higher stream number, a RoQ receiver MUST be prepared to receive RoQ packets on any number of QUIC streams (subject to its limit on parallel open streams) and MUST not make assumptions about which RTP sequence numbers are carried in any particular stream.
@@ -634,10 +637,10 @@ streams for new packets at any time.
 
 As an example, consider a conference scenario
 with 20 participants. Each participant receives audio and video streams of every
-other participant from a central server. If the sender opens a new QUIC stream
+other participant from a central RTP middlebox. If the sender opens a new QUIC stream
 for every frame at 30 frames per second video and 50 frames per second audio, it
 will open 1520 new QUIC streams per second. A receiver must provide at least
-that many credits for opening new unidirectional streams to the server every
+that many credits for opening new unidirectional streams to the RTP middlebox every
 second.
 
 In addition, the receiver ought to also consider the requirements of RTCP streams.
@@ -650,7 +653,7 @@ credits it will have to provide to the sending peer, and how rapidly it must pro
 Senders can also transmit RTP packets in QUIC DATAGRAMs, using
 a QUIC extension described in {{!RFC9221}}.
 DATAGRAMs can only be used if the use of the DATAGRAM extension was successfully negotiated during the QUIC handshake.
-If the QUIC extension was signaled using a signaling protocol, but that extension was not negotiated during the QUIC handshake, an endpoint can close the connection with the ROQ\_EXPECTATION\_UNMET error code.
+If the QUIC extension was negotiated using a signaling protocol, but that extension was not negotiated during the resulting QUIC handshake, an endpoint can close the connection with the ROQ\_EXPECTATION\_UNMET error code.
 
 DATAGRAMs preserve application frame boundaries.
 Thus, a single RTP packet can be mapped to a single DATAGRAM without additional framing.
@@ -1088,7 +1091,7 @@ RoQ application developers ought to take the considerations described in {{rej-e
 If the goal for using early data is to reduce clipping, a QUIC endpoint is relying on the other QUIC endpoint to accept the 0-RTT packet carrying early data containing media.
 
 A QUIC endpoint indicates its willingness to accept a 0-RTT packet containing early data by sending the TLS early_data extension in the NewSessionTicket message with the max_early_data_size parameter set to the sentinel value 0xffffffff.
-The amount of data that the client can send in QUIC 0-RTT is controlled by the initial_max_data transport parameter supplied by the server.
+The amount of data that a QUIC client can send in QUIC 0-RTT is controlled by the initial_max_data transport parameter supplied by the QUIC server.
 This is described in more detail in {{Section 4.6.1 of !RFC9001}}.
 
 If a QUIC endpoint is not willing to accept a 0-RTT packet containing early data, but receives one anyway, the QUIC endpoint rejects the 0-RTT packet by sending EncryptedExtensions without an early_data extension. This is described in more detail, in {{Section 4.6.2 of !RFC9001}}.
