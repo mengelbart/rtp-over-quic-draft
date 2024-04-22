@@ -101,10 +101,13 @@ adaptation for RTP without relying on RTCP feedback.
 The Real-time Transport Protocol (RTP) {{!RFC3550}} is generally used to carry
 real-time media for conversational media sessions, such as video conferences,
 across the Internet.  Since RTP requires real-time delivery and is tolerant to
-packet losses, the default underlying transport protocol has historically been UDP {{?RFC0768}}. More recently,
-DTLS {{?RFC9147}} has been used as an underlying transport in order to secure the media exchange,
-and other transport protocols such as TCP {{?RFC9293}} and TLS {{?RFC8446}}
-have been used as fallbacks, when UDP is blocked for some reason.
+packet losses, the default underlying transport protocol has historically been
+UDP {{?RFC0768}}, but a large variety of other underlying transport protocols
+have been defined for various reasons (e.g., securing media exchange, or
+providing a fallback when UDP is blocked along a network path). This document
+describes RTP over QUIC, providing one more underlying transport protocol. The
+reasons for using QUIC as an underlying transport protocol are given in
+{{motivations}}}.
 
 This document describes an application usage of QUIC ({{?RFC9308}}).
 As a baseline, the document does not expect more than a standard QUIC implementation
