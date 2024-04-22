@@ -152,9 +152,7 @@ RoQ supports multiplexing multiple
 RTP-based media streams within a single QUIC connection and thus using a single
 (destination IP address, destination port number, source IP address, source port
 number, protocol) 5-tuple. We note that multiple independent QUIC connections
-can be established in parallel using the same destination IP address,
-destination port number, source IP address, source port number, protocol)
-5-tuple., e.g. to carry different media channels. These connections would be
+can be established in parallel using the same 5-tuple., e.g. to carry different media channels. These connections would be
 logically independent of one another.
 
 ## What's Out of Scope for this Document {#out-of-scope}
