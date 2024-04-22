@@ -781,7 +781,7 @@ If an application cannot access a bandwidth estimation from the QUIC layer, the
 application can alternatively implement a bandwidth estimation algorithm at the
 application layer. Congestion control algorithms for real-time media such as GCC
 {{?I-D.draft-ietf-rmcat-gcc}}, NADA {{?RFC8698}}, and SCReAM {{?RFC8298}} expose
-a `target_bitrate` to dynamically reconfigure media codecs to produce media at
+a target bitrate to dynamically reconfigure media codecs to produce media at
 the rate of the observed available bandwidth. Applications can use the same
 bandwidth estimation to adapt their rate when using QUIC. However, running an
 additional congestion control algorithm at the application layer can have
