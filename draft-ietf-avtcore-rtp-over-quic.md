@@ -1151,7 +1151,7 @@ selecting and configuring a QUIC stack for use with RoQ.
 
 # Directions for Future Work {#futures}
 
-This document describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work. Possible directions would include
+This document describes RoQ in sufficient detail that an implementer can build a RoQ application, but we recognize that additional work is likely, after we have sufficient experience with RoQ to guide that work ({{futures-impl-deploy}}) and and as new QUIC extensions become available ({{futures-new-ext}}).
 
 ## Future Work Resulting from Implementation and Deployment Experience {#futures-impl-deploy}
 
