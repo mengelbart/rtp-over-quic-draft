@@ -66,6 +66,10 @@ informative:
     target: https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#sdes-compact-header-extensions
     title: "RTP SDES Compact Header Extensions"
 
+  IEEE-1733-2011:
+    target: https://standards.ieee.org/ieee/1733/4748/
+    title: "IEEE 1733-2011 Standard for Layer 3 Transport Protocol for Time-Sensitive Applications in Local Area Networks"
+
   VJMK88:
     target: https://ee.lbl.gov/papers/congavoid.pdf
     title: "Congestion Avoidance and Control"
@@ -1332,9 +1336,9 @@ The IANA registry for this section is {{IANA-RTCP-PT}}.
 | Goodbye | BYE | 203 | {{?RFC3550}}  | partly | see {{BYE-mapping}} |
 | Application-defined | APP | 204 | {{?RFC3550}}  | no | |
 | Generic RTP Feedback | RTPFB | 205 | {{?RFC4585}} | partly | see {{generic-feedback}} |
-| Payload-specific | PSFB | 205 | {{?RFC4585}}  | partly | see {{payload-specific-feedback}} |
+| Payload-specific | PSFB | 206 | {{?RFC4585}}  | partly | see {{payload-specific-feedback}} |
 | extended report | XR | 207 | {{?RFC3611}} | partly | see {{extended-reports}} |
-| AVB RTCP packet | AVB | | |
+| AVB RTCP packet | AVB | 208 | {{IEEE-1733-2011}} | no | |
 | Receiver Summary Information | RSI | 209 | {{?RFC5760}} | no | |
 | Port Mapping | TOKEN | 210 | {{?RFC6284}}  | no | |
 | IDMS Settings | IDMS | 211 | {{?RFC7272}}  | no | |
