@@ -517,7 +517,20 @@ the same flow identifier (following the procedures defined in {{?RFC5761}}), or
 they can use different flow identifiers.
 
 The association between flow identifiers and RTP streams MUST be negotiated
-using appropriate signaling. If a receiver cannot associate a flow identifier
+using appropriate signaling. The signaling happens out of band and thus a stream
+or DATAGRAM with a given flow identifer can arrive before the signaling
+finished. In that case, an endpoint cannot associate the stream or DATAGRAM with
+the corresponding RTP stream. The endpoint can buffer streams and DATAGRAMs
+using an unknown flow identifier until they can be associated with the
+corresponding RTP stream. To avoid resource exhaustion, the buffering endpoint
+MUST limit the number of streams and DATAGRAMs to buffer. If the number of
+buffered streams exceeds the limit on buffered streams, the endpoint MUST send a
+STOP_SENDING with the error code ROQ_UNKNOWN_FLOW_ID. It is an implementation's
+choice on which stream to send STOP_SENDING. If the number of buffered DATAGRAMs
+exceeds the limit on buffered DATAGRAMs, the endpoint MUST drop a DATAGRAMs. It
+is an implementation's choice which DATAGRAMs to drop.
+
+If a receiver cannot associate a flow identifier
 with any known RTP stream, it MUST close the connection with the application
 error code ROQ_UNKNOWN_FLOW_ID.
 
