@@ -1159,11 +1159,11 @@ This document describes RoQ in sufficient detail that an implementer can build a
 
 Possible directions would include
 
-* More guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs).
+* More Guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs).
 
-* More guidance on the use of real-time-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
+* More Guidance on the use of real-time-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
 
-* More guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
+* More Guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
 
 * Possible guidance for connection sharing between real-time and non-real-time flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
 
