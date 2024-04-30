@@ -705,6 +705,42 @@ endpoints wants to close the RoQ connection, the endpoint can use a QUIC
 CONNECTION\_CLOSE frame with one of the error codes defined in
 {{error-handling}}.
 
+# Error Handling {#error-handling}
+
+The following error codes are defined for use when abruptly terminating RoQ streams,
+aborting reading of RoQ streams, or immediately closing RoQ connections.
+
+ROQ\_NO\_ERROR (0x00):
+: No error. This is used when the connection or stream needs to be closed, but
+there is no error to signal.
+
+ROQ\_GENERAL\_ERROR (0x01):
+: An error that does not match a more specific error code occurred.
+
+ROQ\_INTERNAL\_ERROR (0x02):
+: An internal error has occurred in the RoQ stack.
+
+ROQ\_PACKET\_ERROR (0x03):
+: Invalid payload format, e.g., length does not match packet, invalid flow id
+encoding, non-RTP on RTP-flow ID, etc.
+
+ROQ\_STREAM\_CREATION\_ERROR (0x04):
+: The endpoint detected that its peer created a stream that violates the ROQ protocol, e.g., a bidirectional stream, for sending RTP packets.
+
+ROQ\_FRAME\_CANCELLED (0x05):
+: A receiving endpoint is using STOP_SENDING on the current stream to request
+new frames be sent on new streams. Similarly, a sender notifies a receiver that
+retransmissions of a frame were stopped using RESET\_STREAM and new frames will
+be sent on new streams.
+
+ROQ\_UNKNOWN\_FLOW\_ID (0x06):
+: An endpoint was unable to handle a flow identifier, e.g., because it was not
+signaled or because the endpoint does not support multiplexing using arbitrary
+flow identifiers.
+
+ROQ\_EXPECTATION\_UNMET (0x07):
+: RoQ out-of-band signaling set expectations for QUIC transport, but the resulting QUIC connection would not meet those expectations.
+
 # Congestion Control and Rate Adaptation {#congestion-control}
 
 Like any other application on the Internet, RoQ applications need a mechanism to
@@ -976,42 +1012,6 @@ participant wishes to use this QUIC connection for any other multiplexed
 traffic, the participant has to use the BYE packet because the QUIC
 CONNECTION_CLOSE would close the entire QUIC connection for all other QUIC
 streams and DATAGRAMs.
-
-# Error Handling {#error-handling}
-
-The following error codes are defined for use when abruptly terminating RoQ streams,
-aborting reading of RoQ streams, or immediately closing RoQ connections.
-
-ROQ\_NO\_ERROR (0x00):
-: No error. This is used when the connection or stream needs to be closed, but
-there is no error to signal.
-
-ROQ\_GENERAL\_ERROR (0x01):
-: An error that does not match a more specific error code occurred.
-
-ROQ\_INTERNAL\_ERROR (0x02):
-: An internal error has occurred in the RoQ stack.
-
-ROQ\_PACKET\_ERROR (0x03):
-: Invalid payload format, e.g., length does not match packet, invalid flow id
-encoding, non-RTP on RTP-flow ID, etc.
-
-ROQ\_STREAM\_CREATION\_ERROR (0x04):
-: The endpoint detected that its peer created a stream that violates the ROQ protocol, e.g., a bidirectional stream, for sending RTP packets.
-
-ROQ\_FRAME\_CANCELLED (0x05):
-: A receiving endpoint is using STOP_SENDING on the current stream to request
-new frames be sent on new streams. Similarly, a sender notifies a receiver that
-retransmissions of a frame were stopped using RESET\_STREAM and new frames will
-be sent on new streams.
-
-ROQ\_UNKNOWN\_FLOW\_ID (0x06):
-: An endpoint was unable to handle a flow identifier, e.g., because it was not
-signaled or because the endpoint does not support multiplexing using arbitrary
-flow identifiers.
-
-ROQ\_EXPECTATION\_UNMET (0x07):
-: RoQ out-of-band signaling set expectations for QUIC transport, but the resulting QUIC connection would not meet those expectations.
 
 # RoQ-QUIC and RoQ-RTP API Considerations {#api-considerations}
 
