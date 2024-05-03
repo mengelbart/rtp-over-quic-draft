@@ -530,10 +530,6 @@ choice on which stream to send STOP_SENDING. If the number of buffered DATAGRAMs
 exceeds the limit on buffered DATAGRAMs, the endpoint MUST drop a DATAGRAMs. It
 is an implementation's choice which DATAGRAMs to drop.
 
-If a receiver cannot associate a flow identifier
-with any known RTP stream, it MUST close the connection with the application
-error code ROQ_UNKNOWN_FLOW_ID.
-
 Flow identifiers introduce some overhead in addition to the header overhead of
 RTP and QUIC. QUIC variable-length integers require between one and eight
 bytes depending on the number expressed. Thus, using low
