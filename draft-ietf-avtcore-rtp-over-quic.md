@@ -666,7 +666,7 @@ credits it will have to provide to the sending peer, and how rapidly it must pro
 Senders can also transmit RTP packets in QUIC DATAGRAMs, using
 a QUIC extension described in {{!RFC9221}}.
 DATAGRAMs can only be used if the use of the DATAGRAM extension was successfully negotiated during the QUIC handshake.
-If the QUIC extension was negotiated using a signaling protocol, but that extension was not negotiated during the resulting QUIC handshake, an endpoint MAY close the connection with the ROQ\_EXPECTATION\_UNMET error code.
+If the DATAGRAM extension was negotiated using a signaling protocol, but was not also negotiated during the resulting QUIC handshake, an endpoint can close the connection with the ROQ\_EXPECTATION\_UNMET error code.
 
 DATAGRAMs preserve application frame boundaries.
 Thus, a single RTP packet can be mapped to a single DATAGRAM without additional framing.
