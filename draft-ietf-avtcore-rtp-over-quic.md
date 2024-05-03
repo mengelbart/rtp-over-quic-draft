@@ -195,7 +195,7 @@ when, and only when, they appear in all capitals, as shown here.
 
 > **Note to the Reader:** {{!RFC3550}} actually describes two closely-related protocols - the RTP Data Transfer Protocol {{Section 5 of !RFC3550}}, and the RTP Control Protocol {{Section 6 of !RFC3550}}. In this document, the term "RTP" refers to the combination of RTP Data Transfer Protocol and RTP Control Protocol, because the distinction isn't relevant for encapsulation, and the term "RTCP" always refers to the RTP Control Protocol.
 
-> **Note to the Reader:** the meaning of the terms "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
+> **Note to the Reader:** the meaning of the terms "congestion avoidance", "congestion control" and "rate adaptation" in the IETF community have evolved over the decades since "slow start" and "congestion avoidance" were added as mandatory to implement in TCP, in {{Section 4.2.2.15 of ?RFC1122}}. Historically, "congestion control" usually referred to "achieving network stability" ({{VJMK88}}), by protecting the network from senders who continue to transmit packets that exceed the ability of the network to carry them, even after packet loss occurs (called "congestion collapse").
 
 > Modern general-purpose "congestion control" algorithms have moved beyond avoiding congestion collapse, and work to avoid "bufferbloat", which causes increasing round-trip delays, as described in {{rate-adaptation-application-layer}}.
 
@@ -214,7 +214,7 @@ application transmits data.
 
 Congestion Control:
 : A mechanism to limit the aggregate amount of data that has been sent over a path to a receiver but has not been acknowledged by the receiver.
-This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, which might cause intermediaries on the path to drop packets, before they arrive at the receiver.
+This prevents a sender from overwhelming the capacity of a path between a sender and a receiver, which might cause intermediaries on the path to drop packets before they arrive at the receiver.
 
 Datagram:
 : The term "datagram" is ambiguous. Without a qualifier, "datagram" could refer to a UDP packet, or a QUIC DATAGRAM frame, as defined in QUIC's unreliable DATAGRAM extension {{!RFC9221}}, or an RTP packet encapsulated in UDP, or an RTP packet capsulated in QUIC DATAGRAM frame. This document uses the uppercase "DATAGRAM" to refer to a QUIC DATAGRAM frame and the term RoQ datagram as a short form of "RTP packet encapsulated in a QUIC DATAGRAM frame".
@@ -339,7 +339,7 @@ The Multipath Extension for QUIC {{?I-D.draft-ietf-quic-multipath}} would allow 
 
 A sender can use these capabilities to more effectively exploit multiple paths between sender and receiver with no action required from the application, even if these paths have different path characteristics.  Examples of these different path characteristics include senders handling paths differently if one path has higher available bandwidth and the other has lower one-way latency, or if one is a more costly cellular path and the other is a less costly WiFi path.
 
-Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc. Possible RTP implementation strategies for path selection and utilization are not discussed in this document. Path scheduling mechanisms APIs to let applications control these mechanisms are a topic for future research and might need further specification in future documents.
+Some of these differences can be detected by QUIC itself, while other differences must be described to QUIC based on policy, etc. Possible RTP implementation strategies for path selection and utilization are not discussed in this document. Path scheduling APIs to let applications control these mechanisms are a topic for future research and might need further specification in future documents.
 
 ### Exploiting New QUIC Capabilities {#new-quic}
 
@@ -353,7 +353,7 @@ QUIC {{!RFC9000}} was initially designed to carry HTTP {{?RFC9114}} in QUIC stre
 
 QUIC DATAGRAMs {{!RFC9221}} were developed as a QUIC extension, intended to support applications that do not need reliable delivery of application data. This extension defines two DATAGRAM frame types (one including a length field, the other not including a length field), and these DATAGRAM frames can co-exist with QUIC streams within a single QUIC connection, sharing the connection's cryptographic and authentication context, and congestion controller context.
 
-There is no default relative priority between DATAGRAM frames with respect to each other, and there is no default priority between DATAGRAM frames and QUIC STREAM frames. QUIC implementations may present an API to allow applications to assign relative priorities, but this is not mandated by the standard and might not be present in all implementations.
+There is no default relative priority between DATAGRAM frames with respect to each other, and there is no default priority between DATAGRAM frames and QUIC STREAM frames. QUIC implementations can present an API to allow applications to assign relative priorities within a QUIC connection, but this is not mandated by the standard and might not be present in all implementations.
 
 Because DATAGRAMs are an extension to QUIC, they inherit a great deal of functionality from QUIC (much of which is described in {{motivations}}); so much so that it is easier to explain what DATAGRAMs do NOT inherit.
 
@@ -619,7 +619,7 @@ forwards the RTP packets encapsulated in DATAGRAMs.
 
 QUIC implementations will fragment large RTP packets into smaller QUIC STREAM
 frames. The data carried in these QUIC STREAM frames is transmitted reliably and
-in order such that a receiving application can read a complete RTP packet from
+is delivered to the receiving application in order, so that a receiving application can read a complete RTP packet from
 the stream as long as the stream is not closed with a RESET\_STREAM frame. No
 retransmission has to be implemented by the application since data that was
 carried in QUIC frames that were lost in transit is retransmitted by QUIC.
@@ -939,7 +939,7 @@ packet was acknowledged.
 ## RoQ Streams {#roc-s}
 
 For RTP packets that are sent over QUIC streams, an RTP packet is considered
-acknowledged after all frames that carried parts of the RTP packet were
+acknowledged after all STREAM frames that carried parts of the RTP packet were
 acknowledged.
 
 When QUIC streams are used, the implementer needs to be aware that the direct
@@ -1160,11 +1160,11 @@ This document describes RoQ in sufficient detail that an implementer can build a
 
 Possible directions would include
 
-* More Guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs).
+* More guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs).
 
-* More Guidance on the use of real-time-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
+* More guidance on the use of real-time-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
 
-* More Guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
+* More guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
 
 * Possible guidance for connection sharing between real-time and non-real-time flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
 
