@@ -75,6 +75,26 @@ informative:
     title: "Congestion Avoidance and Control"
     date: November 1988
 
+  RTP-over-QUIC:
+    target: https://github.com/mengelbart/rtp-over-quic
+    title: RTP over QUIC
+
+  RoQ-Mininet:
+    target: https://github.com/mengelbart/rtp-over-quic-mininet
+    title: Congestion Control for RTP over QUIC Simulations
+
+  roq:
+    target: https://github.com/mengelbart/roq
+    title: RTP over QUIC (RoQ)
+
+  gst-roq:
+    target: https://github.com/bbc/gst-roq
+    title: RTP-over-QUIC elements for GStreamer
+
+  quic-go:
+    target: https://github.com/quic-go/quic-go
+    title: A QUIC implementation in pure Go
+
 --- abstract
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
@@ -1553,19 +1573,41 @@ QUIC feedback cannot be mapped into these RTCP packet types. If the RTP
 application needs this information, the RTCP packet types are used in the same
 way as they would be used over any other transport protocol.
 
-# Experimental Results
+# Implementation Experience and Experimental Results
 
-An experimental implementation of the mapping described in this document can be
-found on [Github](https://github.com/mengelbart/rtp-over-quic). The application
-implements the RoQ Datagrams mapping and implements SCReAM congestion
-control at the application layer. It can optionally disable the builtin QUIC
-congestion control (NewReno). The endpoints only use RTCP for congestion control
-feedback, which can optionally be disabled and replaced by the QUIC connection
-statistics as described in {{transport-layer-feedback}}.
+At the time of writing, there are two open-source implementations known to the
+authors ({{roq}}, {{gst-roq}}).
 
-Experimental results of the implementation can be found on
-[Github](https://github.com/mengelbart/rtp-over-quic-mininet), too.
+{{roq}} offers a library implementing the basic encapsulation described in
+{{encapsulation}}. The library uses the Go programming language and supports the
+{{quic-go}} QUIC implementation. It supports sending and receiving RTP and RTCP
+packets using QUIC streams and QUIC DATAGRAMs and multiplexing using flow
+identifiers. Applications using the library are responsible for appropriate
+signaling, setting up QUIC connections, and managing RTP sessions. Applications
+have to choose whether to send RTP and RTCP packets over streams or DATAGRAMs,
+and applications also have control over the QUIC and RTP congestion controllers
+in use since they control the QUIC connection setup and can thus configure the
+QUIC stack they use to their preferences.
 
+{{gst-roq}} provides a set of GStreamer plugins implementing RoQ.
+
+Additionally, an experimental implementation of the mapping described in an
+earlier version of this document is available in {{RTP-over-QUIC}}. The
+application implements the RoQ Datagrams mapping and implements SCReAM
+congestion control at the application layer. It can optionally disable the
+built-in QUIC congestion control (NewReno). The endpoints only use RTCP for
+congestion control feedback, which can optionally be disabled and replaced by
+the QUIC connection statistics as described in {{transport-layer-feedback}}.
+Experimental results of the implementation can be found in {{RoQ-Mininet}}. At
+the time of writing, the authors have no experience with the following:
+
+* Using the Multipath Extension for QUIC in combination with RoQ.
+* Influence of default priorities of QUIC implementations between streams and
+  DATAGRAMs on the performance of RTCP.
+* DATAGRAMs that are queued (and thus delayed) or dropped on expiration before
+  being transmitted due to congestion.
+* Translating between RoQ and RTP over UDP.
+* Performance impacts of multiplexing many sessions on a single QUIC connection.
 
 # Acknowledgments
 {:numbered="false"}
