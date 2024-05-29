@@ -1243,7 +1243,7 @@ Ogranization:
 Implementation:
 : {{roq}}
 
-Descritption:
+Description:
 : *roq* is a library implementing the basic encapsulation described in
 {{encapsulation}}. The library uses the Go programming language and supports the
 {{quic-go}} QUIC implementation.
@@ -1251,15 +1251,14 @@ Descritption:
 Level of Maturity:
 : prototype
 
-Coverage:
-: The library supports sending and receiving RTP and RTCP packets using QUIC
-streams and QUIC DATAGRAMs and multiplexing using flow identifiers. Applications
-using the library are responsible for appropriate signaling, setting up QUIC
-connections, and managing RTP sessions. Applications have to choose whether to
-send RTP and RTCP packets over streams or DATAGRAMs, and applications also have
-control over the QUIC and RTP congestion controllers in use since they control
-the QUIC connection setup and can thus configure the QUIC stack they use to
-their preferences.
+Coverage: : The library supports sending and receiving RTP and RTCP packets
+using QUIC streams and QUIC DATAGRAMs, and supports multiplexing using flow
+identifiers. Applications using the library are responsible for appropriate
+signaling, setting up QUIC connections, and managing RTP sessions. Applications
+choose whether to send RTP and RTCP packets over streams or DATAGRAMs, and
+applications also have control over the QUIC and RTP congestion controllers in
+use since they control the QUIC connection setup and can thus configure the QUIC
+stack they use to their preferences.
 
 Version Compatibility:
 : The library implements {{?I-D.draft-ietf-avtcore-rtp-over-quic-10}}.
@@ -1268,15 +1267,24 @@ Licensing:
 : MIT License
 
 Implementation Experience:
-: The authors have no experience with the following:
+: The implementer reports they have no experience with the following:
 
-* Using the Multipath Extension for QUIC in combination with RoQ.
+* Using RoQ with QUIC connections during path changes, whether due to QUIC
+  connection migration or use of the Multipath Extension for QUIC. As described
+  in {{futures-new-ext}}, we expect future work on this topic.
 * Influence of default priorities of QUIC implementations between streams and
-  DATAGRAMs on the performance of RTCP.
+  DATAGRAMs on the performance of RTCP. As described in {{futures-impl-deploy}},
+  we expect future work on this topic.
 * DATAGRAMs that are queued (and thus delayed) or dropped on expiration before
-  being transmitted due to congestion.
-* Translating between RoQ and RTP over UDP.
-* Performance impacts of multiplexing many sessions on a single QUIC connection.
+  being transmitted due to congestion. As described in {{futures-impl-deploy}},
+  we expect future work on this topic.
+* Translating between RoQ and RTP over UDP. As described in {{topologies}}, RoQ
+  can be used to connect to some RTP middleboxes using some topologies, and
+  these middleboxes might be connecting RoQ endpoints and non-RoQ endpoints, so
+  will need to translate between RoQ and RTP over UDP.
+* Performance impacts of multiplexing many RTP sessions on a single QUIC
+  connection. As described in {{futures-impl-deploy}}, we expect future work on
+  this topic.
 
 Contact Information:
 : Mathis Engelbart (mathis.engelbart@gmail.com)
