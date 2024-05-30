@@ -1189,13 +1189,17 @@ This document describes RoQ in sufficient detail that an implementer can build a
 
 Possible directions would include
 
-* More guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs).
+* More guidance on transport for RTCP (for example, when to use QUIC streams vs. DATAGRAMs) including guidance on prioritization between streams and DATAGRAMs for the performance of RTCP.
 
 * More guidance on the use of real-time-friendly congestion control algorithms (for example, Copa {{Copa}}, L4S {{?RFC9330}}, etc.).
 
 * More guidance for congestion control and rate adaptation for multiple RoQ flows (whether streams or datagrams).
 
 * Possible guidance for connection sharing between real-time and non-real-time flows, including considerations for congestion control and rate adaptation, scheduling, prioritization, and which ALPNs to use.
+
+* Investigation of the effects of delaying or dropping DATAGRAMs due to congestion before they can be transmitted by the QUIC stack.
+
+* Implementation of translating middleboxes for translating between RoQ and RTP over UDP. As described in {{topologies}}, RoQ can be used to connect to some RTP middleboxes using some topologies, and these middleboxes might be connecting RoQ endpoints and non-RoQ endpoints, so will need to translate between RoQ and RTP over UDP.
 
 For these reasons, publication of this document as a stable reference for implementers to test with, and report results, seems useful.
 
@@ -1267,24 +1271,8 @@ Licensing:
 : MIT License
 
 Implementation Experience:
-: The implementer reports they have no experience with the following:
-
-* Using RoQ with QUIC connections during path changes, whether due to QUIC
-  connection migration or use of the Multipath Extension for QUIC. As described
-  in {{futures-new-ext}}, we expect future work on this topic.
-* Influence of default priorities of QUIC implementations between streams and
-  DATAGRAMs on the performance of RTCP. As described in {{futures-impl-deploy}},
-  we expect future work on this topic.
-* DATAGRAMs that are queued (and thus delayed) or dropped on expiration before
-  being transmitted due to congestion. As described in {{futures-impl-deploy}},
-  we expect future work on this topic.
-* Translating between RoQ and RTP over UDP. As described in {{topologies}}, RoQ
-  can be used to connect to some RTP middleboxes using some topologies, and
-  these middleboxes might be connecting RoQ endpoints and non-RoQ endpoints, so
-  will need to translate between RoQ and RTP over UDP.
-* Performance impacts of multiplexing many RTP sessions on a single QUIC
-  connection. As described in {{futures-impl-deploy}}, we expect future work on
-  this topic.
+: The implementer reports they have no experience with the topics discussed in
+{{futures}}.
 
 Contact Information:
 : Mathis Engelbart (mathis.engelbart@gmail.com)
