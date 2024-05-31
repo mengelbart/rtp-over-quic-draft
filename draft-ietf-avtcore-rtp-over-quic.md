@@ -1272,7 +1272,10 @@ Licensing:
 
 Implementation Experience:
 : The implementer reports they have no experience with the topics discussed in
-{{futures}}.
+{{futures}}. RoQ relies on out-of-band signaling for connection establishment,
+and since there is currently no specification for SDP for RoQ, applications
+using the library have to statically configure connection information to allow
+testing
 
 Contact Information:
 : Mathis Engelbart (mathis.engelbart@gmail.com)
@@ -1288,7 +1291,7 @@ Ogranization:
 Implementation:
 : RTP-over-QUIC elements for GStreamer {{gst-roq}}
 
-Descritption:
+Description:
 : *gst-roq* provides a set of GStreamer plugins implementing RoQ.
 
 Level of Maturity:
@@ -1320,7 +1323,7 @@ Ogranization:
 Implementation:
 : RTP over QUIC {{RTP-over-QUIC}}
 
-Descritption:
+Description:
 : *RTP over QUIC* is a experimental implementation of the mapping described in
 an earlier version of this document.
 
