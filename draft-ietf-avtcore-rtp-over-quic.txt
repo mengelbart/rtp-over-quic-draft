@@ -1907,26 +1907,41 @@ Table of Contents
 
 14.2.  bbc/gst-roq
 
-   Ogranization:  BBC
+   Ogranization:  BBC Research and Development
 
    Implementation:  RTP-over-QUIC elements for GStreamer [gst-roq]
 
-   Description:  _gst-roq_ provides a set of GStreamer plugins
-      implementing RoQ.
+   Description:  _gst-quic-transport_ provides a set of GStreamer
+      plugins implementing QUIC transport. _gst-roq_ provides a set of
+      GStreamer plugins implementing RoQ.
 
-   Level of Maturity:  TODO
+   Level of Maturity:  research
 
-   Coverage:  TODO
+   Coverage:  The plugins support sending and receiving RTP and RTCP
+      packets using QUIC streams and QUIC DATAGRAMs, and supports
+      multiplexing using flow identifiers.  GStreamer pipelines that use
+      the RoQ plugins found in the _gst-roq_ repository can make use of
+      the plugins found in the _gst-quic-transport_ repository to set up
+      QUIC connections.  RTP sessions can be managed by existing
+      GStreamer plugins available in the standard GStreamer release.
+      GStreamer pipeline applications choose whether to send RTP and
+      RTCP packets over streams or DATAGRAMs.
 
-   Version Compatibility:  TODO
+   Version Compatibility:  The library implements
+      [I-D.draft-ietf-avtcore-rtp-over-quic-05].
 
    Licensing:  GNU Lesser General Public License v2.1
 
-   Implementation Experience:  TODO
+   Implementation Experience:  The implementer reports they have no
+      experience with the topics discussed in Section 13.  Both in-band
+      and out-of-band signalling for RoQ media sessions is in active
+      development via an implementation of
+      [I-D.draft-hurst-sip-quic-00], which re-uses the GStreamer plugins
+      described above.
 
-   Contact Information:  TODO
+   Contact Information:  Sam Hurst (sam.hurst@bbc.co.uk)
 
-   Last Updated:  25 May 2024
+   Last Updated:  05 June 2024
 
 14.3.  mengelbart/rtp-over-quic
 
@@ -2201,6 +2216,13 @@ Table of Contents
               January 2021, <https://datatracker.ietf.org/doc/html/
               draft-hurst-quic-rtp-tunnelling-01>.
 
+   [I-D.draft-hurst-sip-quic-00]
+              Hurst, S., "SIP-over-QUIC: Session Initiation Protocol
+              over QUIC Transport", Work in Progress, Internet-Draft,
+              draft-hurst-sip-quic-00, 6 November 2022,
+              <https://datatracker.ietf.org/doc/html/draft-hurst-sip-
+              quic-00>.
+
    [I-D.draft-ietf-avtcore-rtcp-green-metadata]
               He, Y., Herglotz, C., and E. Francois, "RTP Control
               Protocol (RTCP) Messages for Temporal-Spatial Resolution",
@@ -2215,6 +2237,13 @@ Table of Contents
               quic-00, 26 July 2022,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
               rtp-over-quic-00>.
+
+   [I-D.draft-ietf-avtcore-rtp-over-quic-05]
+              Ott, J., Engelbart, M., and S. Dawkins, "RTP over QUIC
+              (RoQ)", Work in Progress, Internet-Draft, draft-ietf-
+              avtcore-rtp-over-quic-05, 26 July 2023,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
+              rtp-over-quic-05>.
 
    [I-D.draft-ietf-avtcore-rtp-over-quic-10]
               Ott, J., Engelbart, M., and S. Dawkins, "RTP over QUIC

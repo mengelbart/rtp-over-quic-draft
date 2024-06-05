@@ -3042,7 +3042,7 @@ testing<a href="#section-14.1-3.6.1" class="pilcrow">¶</a></p>
 <span class="break"></span><dl class="dlParallel" id="section-14.2-1">
           <dt id="section-14.2-1.1">Ogranization:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.2">
-            <p id="section-14.2-1.2.1">BBC<a href="#section-14.2-1.2.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.2.1">BBC Research and Development<a href="#section-14.2-1.2.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.3">Implementation:</dt>
@@ -3052,22 +3052,29 @@ testing<a href="#section-14.1-3.6.1" class="pilcrow">¶</a></p>
           <dd class="break"></dd>
 <dt id="section-14.2-1.5">Description:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.6">
-            <p id="section-14.2-1.6.1"><em>gst-roq</em> provides a set of GStreamer plugins implementing RoQ.<a href="#section-14.2-1.6.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.6.1"><em>gst-quic-transport</em> provides a set of GStreamer plugins implementing QUIC
+transport. <em>gst-roq</em> provides a set of GStreamer plugins implementing RoQ.<a href="#section-14.2-1.6.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.7">Level of Maturity:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.8">
-            <p id="section-14.2-1.8.1">TODO<a href="#section-14.2-1.8.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.8.1">research<a href="#section-14.2-1.8.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.9">Coverage:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.10">
-            <p id="section-14.2-1.10.1">TODO<a href="#section-14.2-1.10.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.10.1">The plugins support sending and receiving RTP and RTCP packets using QUIC
+streams and QUIC DATAGRAMs, and supports multiplexing using flow identifiers.
+GStreamer pipelines that use the RoQ plugins found in the <em>gst-roq</em> repository
+can make use of the plugins found in the <em>gst-quic-transport</em> repository to set
+up QUIC connections. RTP sessions can be managed by existing GStreamer plugins
+available in the standard GStreamer release. GStreamer pipeline applications
+choose whether to send RTP and RTCP packets over streams or DATAGRAMs.<a href="#section-14.2-1.10.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.11">Version Compatibility:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.12">
-            <p id="section-14.2-1.12.1">TODO<a href="#section-14.2-1.12.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.12.1">The library implements <span>[<a href="#I-D.draft-ietf-avtcore-rtp-over-quic-05" class="cite xref">I-D.draft-ietf-avtcore-rtp-over-quic-05</a>]</span>.<a href="#section-14.2-1.12.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.13">Licensing:</dt>
@@ -3077,17 +3084,20 @@ testing<a href="#section-14.1-3.6.1" class="pilcrow">¶</a></p>
           <dd class="break"></dd>
 <dt id="section-14.2-1.15">Implementation Experience:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.16">
-            <p id="section-14.2-1.16.1">TODO<a href="#section-14.2-1.16.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.16.1">The implementer reports they have no experience with the topics discussed in
+<a href="#futures" class="auto internal xref">Section 13</a>. Both in-band and out-of-band signalling for RoQ media sessions is
+in active development via an implementation of <span>[<a href="#I-D.draft-hurst-sip-quic-00" class="cite xref">I-D.draft-hurst-sip-quic-00</a>]</span>,
+which re-uses the GStreamer plugins described above.<a href="#section-14.2-1.16.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.17">Contact Information:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.18">
-            <p id="section-14.2-1.18.1">TODO<a href="#section-14.2-1.18.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.18.1">Sam Hurst (sam.hurst@bbc.co.uk)<a href="#section-14.2-1.18.1" class="pilcrow">¶</a></p>
 </dd>
           <dd class="break"></dd>
 <dt id="section-14.2-1.19">Last Updated:</dt>
           <dd style="margin-left: 1.5em" id="section-14.2-1.20">
-            <p id="section-14.2-1.20.1">25 May 2024<a href="#section-14.2-1.20.1" class="pilcrow">¶</a></p>
+            <p id="section-14.2-1.20.1">05 June 2024<a href="#section-14.2-1.20.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -3462,6 +3472,10 @@ list a change controller of the IETF and a contact of the AVTCORE working group
         <dd>
 <span class="refAuthor">Hurst, S.</span>, <span class="refTitle">"QRT: QUIC RTP Tunnelling"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-hurst-quic-rtp-tunnelling-01</span>, <time datetime="2021-01-28" class="refDate">28 January 2021</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-hurst-quic-rtp-tunnelling-01">https://datatracker.ietf.org/doc/html/draft-hurst-quic-rtp-tunnelling-01</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="I-D.draft-hurst-sip-quic-00">[I-D.draft-hurst-sip-quic-00]</dt>
+        <dd>
+<span class="refAuthor">Hurst, S.</span>, <span class="refTitle">"SIP-over-QUIC: Session Initiation Protocol over QUIC Transport"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-hurst-sip-quic-00</span>, <time datetime="2022-11-06" class="refDate">6 November 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-hurst-sip-quic-00">https://datatracker.ietf.org/doc/html/draft-hurst-sip-quic-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtcp-green-metadata">[I-D.draft-ietf-avtcore-rtcp-green-metadata]</dt>
         <dd>
 <span class="refAuthor">He, Y.</span>, <span class="refAuthor">Herglotz, C.</span>, and <span class="refAuthor">E. Francois</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Messages for Temporal-Spatial Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtcp-green-metadata-03</span>, <time datetime="2024-04-08" class="refDate">8 April 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-03">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-03</a>&gt;</span>. </dd>
@@ -3469,6 +3483,10 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dt id="I-D.draft-ietf-avtcore-rtp-over-quic-00">[I-D.draft-ietf-avtcore-rtp-over-quic-00]</dt>
         <dd>
 <span class="refAuthor">Ott, J.</span> and <span class="refAuthor">M. Engelbart</span>, <span class="refTitle">"RTP over QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtp-over-quic-00</span>, <time datetime="2022-07-26" class="refDate">26 July 2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtp-over-quic-00">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtp-over-quic-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ietf-avtcore-rtp-over-quic-05">[I-D.draft-ietf-avtcore-rtp-over-quic-05]</dt>
+        <dd>
+<span class="refAuthor">Ott, J.</span>, <span class="refAuthor">Engelbart, M.</span>, and <span class="refAuthor">S. Dawkins</span>, <span class="refTitle">"RTP over QUIC (RoQ)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtp-over-quic-05</span>, <time datetime="2023-07-26" class="refDate">26 July 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtp-over-quic-05">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtp-over-quic-05</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtp-over-quic-10">[I-D.draft-ietf-avtcore-rtp-over-quic-10]</dt>
         <dd>
