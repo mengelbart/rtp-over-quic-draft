@@ -1286,34 +1286,44 @@ Last Updated:
 ## bbc/gst-roq
 
 Ogranization:
-: BBC
+: BBC Research and Development
 
 Implementation:
 : RTP-over-QUIC elements for GStreamer {{gst-roq}}
 
 Description:
-: *gst-roq* provides a set of GStreamer plugins implementing RoQ.
+: *gst-quic-transport* provides a set of GStreamer plugins implementing QUIC
+transport. *gst-roq* provides a set of GStreamer plugins implementing RoQ.
 
 Level of Maturity:
-: TODO
+: research
 
 Coverage:
-: TODO
+: The plugins support sending and receiving RTP and RTCP packets using QUIC
+streams and QUIC DATAGRAMs, and supports multiplexing using flow identifiers.
+GStreamer pipelines that use the RoQ plugins found in the *gst-roq* repository
+can make use of the plugins found in the *gst-quic-transport* repository to set
+up QUIC connections. RTP sessions can be managed by existing GStreamer plugins
+available in the standard GStreamer release. GStreamer pipeline applications
+choose whether to send RTP and RTCP packets over streams or DATAGRAMs.
 
 Version Compatibility:
-: TODO
+: The library implements {{?I-D.draft-ietf-avtcore-rtp-over-quic-05}}.
 
 Licensing:
 : GNU Lesser General Public License v2.1
 
 Implementation Experience:
-: TODO
+: The implementer reports they have no experience with the topics discussed in
+{{futures}}. Both in-band and out-of-band signalling for RoQ media sessions is
+in active development via an implementation of {{?I-D.draft-hurst-sip-quic-00}},
+which re-uses the GStreamer plugins described above.
 
 Contact Information:
-: TODO
+: Sam Hurst (sam.hurst@bbc.co.uk)
 
 Last Updated:
-: 25 May 2024
+: 05 June 2024
 
 ## mengelbart/rtp-over-quic
 
