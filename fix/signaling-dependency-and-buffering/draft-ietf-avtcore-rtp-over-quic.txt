@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                            J. Ott
 Internet-Draft                                              M. Engelbart
 Intended status: Experimental                Technical University Munich
-Expires: 8 December 2024                                      S. Dawkins
+Expires: 23 December 2024                                     S. Dawkins
                                                      Tencent America LLC
-                                                             6 June 2024
+                                                            21 June 2024
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 8 December 2024.
+   This Internet-Draft will expire on 23 December 2024.
 
 Copyright Notice
 
@@ -957,7 +957,7 @@ Table of Contents
    with the error code ROQ_UNKNOWN_FLOW_ID.  It is an implementation's
    choice on which stream to send STOP_SENDING.  If the number of
    buffered DATAGRAMs exceeds the limit on buffered DATAGRAMs, the
-   endpoint MUST drop a DATAGRAMs.  It is an implementation's choice
+   endpoint MUST drop a DATAGRAM.  It is an implementation's choice
    which DATAGRAMs to drop.
 
    Flow identifiers introduce some overhead in addition to the header
