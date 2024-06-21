@@ -22,17 +22,17 @@ adaptation for RTP without relying on RTCP feedback.
 <meta content="draft-ietf-avtcore-rtp-over-quic-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.21.0
-    Python 3.11.9
+    Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
     intervaltree 3.1.0
-    Jinja2 3.1.2
-    lxml 4.9.3
-    platformdirs 4.2.1
+    Jinja2 3.1.4
+    lxml 4.9.4
+    platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.31.0
-    setuptools 68.2.2
+    setuptools 69.5.1
     six 1.16.0
     wcwidth 0.2.13
 -->
@@ -1037,7 +1037,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Ott, et al.</td>
-<td class="center">Expires 7 December 2024</td>
+<td class="center">Expires 23 December 2024</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1050,12 +1050,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-06-05" class="published">5 June 2024</time>
+<time datetime="2024-06-21" class="published">21 June 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-12-07">7 December 2024</time></dd>
+<dd class="expires"><time datetime="2024-12-23">23 December 2024</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1114,7 +1114,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 7 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2098,23 +2098,35 @@ it is possible to send RTP and RTCP packets belonging to the same session using
 different flow identifiers. RTP and RTCP packets of a single RTP session can use
 the same flow identifier (following the procedures defined in <span>[<a href="#RFC5761" class="cite xref">RFC5761</a>]</span>), or
 they can use different flow identifiers.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
-<p id="section-5.1-5">The association between flow identifiers and RTP streams MUST be negotiated
-using appropriate signaling. The signaling happens out of band and thus a stream
-or DATAGRAM with a given flow identifer can arrive before the signaling
-finished. In that case, an endpoint cannot associate the stream or DATAGRAM with
-the corresponding RTP stream. The endpoint can buffer streams and DATAGRAMs
-using an unknown flow identifier until they can be associated with the
-corresponding RTP stream. To avoid resource exhaustion, the buffering endpoint
-MUST limit the number of streams and DATAGRAMs to buffer. If the number of
-buffered streams exceeds the limit on buffered streams, the endpoint MUST send a
-STOP_SENDING with the error code ROQ_UNKNOWN_FLOW_ID. It is an implementation's
-choice on which stream to send STOP_SENDING. If the number of buffered DATAGRAMs
-exceeds the limit on buffered DATAGRAMs, the endpoint MUST drop a DATAGRAMs. It
-is an implementation's choice which DATAGRAMs to drop.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
-<p id="section-5.1-6">Flow identifiers introduce some overhead in addition to the header overhead of
+<p id="section-5.1-5">Endpoints need to associate flow identifiers with RTP streams. Depending on the
+context of the application, the association can be statically configured,
+signaled using an out-of-band signaling mechanism (e.g., SDP), or applications
+might be able to identify the stream based on the RTP packets sent on the stream
+(e.g., by inspecting the payload type).<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6">If an endpoint receives a flow identifier that it cannot associate with an RTP
+stream, the endpoint MAY close the connection using the ROQ_UNKNOWN_FLOW_ID
+error code. Closing the connection can be a valid response if it is not expected
+that out of band signaling is still ongoing and the application cannot handle
+unknown flow identifiers.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-7">If the association of flow identifiers with RTP streams depends on out-of-band
+signaling, the signaling mechanism SHOULD be completed before the exchange of
+RTP packets using the new flow identifiers starts.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8">In cases where it cannot be guaranteed that signaling is completed before RTP
+packets are transmitted, streams or DATAGRAMs with a given flow identifer can
+arrive before the signaling finished. In that case, an endpoint cannot associate
+the stream or DATAGRAM with the corresponding RTP stream. The endpoint can
+buffer streams and DATAGRAMs using an unknown flow identifier until they can be
+associated with the corresponding RTP stream. To avoid resource exhaustion, the
+buffering endpoint MUST limit the number of streams and DATAGRAMs to buffer. If
+the number of buffered streams exceeds the limit on buffered streams, the
+endpoint MUST send a STOP_SENDING with the error code ROQ_UNKNOWN_FLOW_ID. It is
+an implementation's choice on which stream to send STOP_SENDING. If the number
+of buffered DATAGRAMs exceeds the limit on buffered DATAGRAMs, the endpoint MUST
+drop a DATAGRAM. It is an implementation's choice which DATAGRAMs to drop.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9">Flow identifiers introduce some overhead in addition to the header overhead of
 RTP and QUIC. QUIC variable-length integers require between one and eight
 bytes depending on the number expressed. Thus, using low
-numbers as session identifiers first will minimize this additional overhead.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+numbers as session identifiers first will minimize this additional overhead.<a href="#section-5.1-9" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="quic-streams">
