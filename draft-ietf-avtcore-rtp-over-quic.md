@@ -15,15 +15,15 @@ submissiontype: IETF
 
 author:
  -
-    ins: J. Ott
-    name: Jörg Ott
-    organization: Technical University Munich
-    email: ott@in.tum.de
- -
     ins: M. Engelbart
     name: Mathis Engelbart
-    organization: Technical University Munich
+    organization: Technical University of Munich
     email: mathis.engelbart@gmail.com
+ -
+    ins: J. Ott
+    name: Jörg Ott
+    organization: Technical University of Munich
+    email: ott@in.tum.de
  -
     ins: S. Dawkins
     name: Spencer Dawkins
