@@ -5,8 +5,8 @@
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
 <title>RTP over QUIC (RoQ)</title>
-<meta content="Jörg Ott" name="author">
 <meta content="Mathis Engelbart" name="author">
+<meta content="Jörg Ott" name="author">
 <meta content="Spencer Dawkins" name="author">
 <meta content="
        This document specifies a minimal mapping for encapsulating Real-time Transport
@@ -17,11 +17,11 @@ from the QUIC implementation in the endpoints, in order to reduce the need to
 exchange RTCP packets, and describes different options for implementing congestion control and rate
 adaptation for RTP without relying on RTCP feedback. 
     " name="description">
-<meta content="xml2rfc 3.21.0" name="generator">
+<meta content="xml2rfc 3.22.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-avtcore-rtp-over-quic-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.21.0
+  xml2rfc 3.22.0
     Python 3.12.3
     ConfigArgParse 1.7
     google-i18n-address 3.1.0
@@ -31,9 +31,8 @@ adaptation for RTP without relying on RTCP feedback.
     platformdirs 4.2.2
     pycountry 22.3.5
     PyYAML 6.0.1
-    requests 2.31.0
+    requests 2.32.3
     setuptools 69.5.1
-    six 1.16.0
     wcwidth 0.2.13
 -->
 <link href="draft-ietf-avtcore-rtp-over-quic.xml" rel="alternate" type="application/rfc+xml">
@@ -1033,11 +1032,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RTP over QUIC (RoQ)</td>
-<td class="right">June 2024</td>
+<td class="right">July 2024</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Ott, et al.</td>
-<td class="center">Expires 23 December 2024</td>
+<td class="left">Engelbart, et al.</td>
+<td class="center">Expires 6 January 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1050,21 +1049,21 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-06-21" class="published">21 June 2024</time>
+<time datetime="2024-07-05" class="published">5 July 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2024-12-23">23 December 2024</time></dd>
+<dd class="expires"><time datetime="2025-01-06">6 January 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
-      <div class="author-name">J. Ott</div>
-<div class="org">Technical University Munich</div>
+      <div class="author-name">M. Engelbart</div>
+<div class="org">Technical University of Munich</div>
 </div>
 <div class="author">
-      <div class="author-name">M. Engelbart</div>
-<div class="org">Technical University Munich</div>
+      <div class="author-name">J. Ott</div>
+<div class="org">Technical University of Munich</div>
 </div>
 <div class="author">
       <div class="author-name">S. Dawkins</div>
@@ -1114,7 +1113,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 23 December 2024.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 6 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3518,7 +3517,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-multipath">[I-D.draft-ietf-quic-multipath]</dt>
         <dd>
-<span class="refAuthor">Liu, Y.</span>, <span class="refAuthor">Ma, Y.</span>, <span class="refAuthor">De Coninck, Q.</span>, <span class="refAuthor">Bonaventure, O.</span>, <span class="refAuthor">Huitema, C.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"Multipath Extension for QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-multipath-08</span>, <time datetime="2024-05-29" class="refDate">29 May 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-08">https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-08</a>&gt;</span>. </dd>
+<span class="refAuthor">Liu, Y.</span>, <span class="refAuthor">Ma, Y.</span>, <span class="refAuthor">De Coninck, Q.</span>, <span class="refAuthor">Bonaventure, O.</span>, <span class="refAuthor">Huitema, C.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"Multipath Extension for QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-multipath-09</span>, <time datetime="2024-06-21" class="refDate">21 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-09">https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-09</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-reliable-stream-reset">[I-D.draft-ietf-quic-reliable-stream-reset]</dt>
         <dd>
@@ -4962,19 +4961,19 @@ could be used to carry RTP.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
 <a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
       </h2>
 <address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">Jörg Ott</span></div>
-<div dir="auto" class="left"><span class="org">Technical University Munich</span></div>
-<div class="email">
-<span>Email:</span>
-<a href="mailto:ott@in.tum.de" class="email">ott@in.tum.de</a>
-</div>
-</address>
-<address class="vcard">
         <div dir="auto" class="left"><span class="fn nameRole">Mathis Engelbart</span></div>
-<div dir="auto" class="left"><span class="org">Technical University Munich</span></div>
+<div dir="auto" class="left"><span class="org">Technical University of Munich</span></div>
 <div class="email">
 <span>Email:</span>
 <a href="mailto:mathis.engelbart@gmail.com" class="email">mathis.engelbart@gmail.com</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Jörg Ott</span></div>
+<div dir="auto" class="left"><span class="org">Technical University of Munich</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ott@in.tum.de" class="email">ott@in.tum.de</a>
 </div>
 </address>
 <address class="vcard">
