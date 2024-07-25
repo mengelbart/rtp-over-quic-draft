@@ -921,6 +921,8 @@ the different channels.
 
 As noted in {{streams-and-datagrams}}, this document does not take a position on using QUIC streams, QUIC DATAGRAMs, or a mixture of both, for any particular RoQ use case or application. It does seem useful to include observations that might guide implementers who will need to make choices about that.
 
+## RTP Considerations
+
 One implementation goal might be to minimize processing overhead, for applications that are migrating from RTP over UDP to RoQ. These applications don't rely on any transport protocol behaviors beyond UDP, which can be described as "IP plus multiplexing". The implementers might be motivated by one or more of the advantages of encapsulating RTP in QUIC that are described in {{motivations}}, but they do not need any of the advantages that would apply when encapsulating RTP in QUIC streams. For these applications, simply placing each RTP packet in a QUIC DATAGRAM frame when it becomes available would be sufficient, using no QUIC streams at all.
 
 Another implementation goal might be to prioritize specific types of video frames over other types. For these applications, placing each type of video frame in a separate QUIC stream would allow the RoQ receiver to focus on the most important video frames more easily. This also allows the implementer to rely on QUIC's "byte stream" abstraction, freeing the application from dealing with MTU size restrictions, in contrast to the need to fit RTP packets into QUIC DATAGRAMs. The application might use QUIC streams for all of the RTP packets carried over this specific QUIC connection, with no QUIC DATAGRAMs at all.
@@ -930,6 +932,73 @@ Some applications might have implementation goals that don't fit neatly into "QU
 As noted in {{multiplexing}}, all RoQ streams and RoQ datagrams begin with a flow identifier. This allows a RoQ sender to begin by encapsulating related RTP packets in QUIC streams and then switch to carrying them in QUIC DATAGRAMs, or vice versa. RoQ receivers need to be prepared to accept any valid RTP packet with a given flow identifier, whether it started by being encapsulated in QUIC streams or in QUIC DATAGRAMs, and RoQ receivers need to be prepared to accept RTP flows that switch from QUIC stream encapsulation to QUIC DATAGRAMs, or vice versa.
 
 Because QUIC provides a capability to migrate connections for various reasons, including recovering from a path failure ({{Section 9 of !RFC9000}}), when a QUIC connection migrates, a RoQ sender has the opportunity to revisit decisions about which RTP packets are encapsulated in QUIC streams, and which RTP packets are encapsulated in QUIC DATAGRAMs. Again, RoQ receivers need to be prepared for this eventuality.
+
+## RTCP Considerations
+
+RTCP was originally defined to be used with UDP, which implies (1) that
+transmission timing is largely under the control of the application (limited
+buffering inside the stack) and (2) that the overhead, *avg_rtcp_size*, used to
+compute the RTCP transmission interval could be deterministically computed by
+adding the IP asnd UDP headers. Both change when carrying RTCP over QUIC and
+they change in different ways when using QUIC streams vs. QUIC datagrams.
+
+### RTCP over QUIC datagrams {#rtcp-over-datagrams}
+
+When sending RTCP packets in QUIC datagrams this implies that a packet may not
+be immediately transmitted as it is subject to queuing and multiplexing with RTP
+packets and subject to congestion control. This means that a sending timestamp
+added to an RTCP packet, e.g., in an SR packet, may differ in unforeseeable ways
+from the actual time when the packet gets sent into the network while these are
+usually fairly close to each other for RTP-over-UDP. Effectively, we have a
+application sending timestamp *t_a* and the network transmission timestamp
+*t_n*. Applications just have to be aware that RTCP does not measure the network
+level RTT but rather the application layer RTT.
+
+Moreover, the true overhead per RTCP packet cannot easily be determined: this is
+because, in addition to adding the IP and UDP headers, the QUIC (short) header
+and the QUIC datagram frame header are to be considered but their sizes vary and
+it is unknown which other frames may be sent along in the same UDP packet. Any
+lower bound that can be determined could be affected by the version of QUIC
+being used.
+
+It is thus suggested that applications do _not_ attempt to include lower layer
+headers but only work with the net data rate of the codec including the RTP
+headers and of the RTCP packets, both excluding QUIC, UDP, and IP header
+overhead.
+
+> **Editor’s Note:** For compatibility with the computation of RTP-over-UDP
+> implementations, one could consider adding just the UDP and IP headers.
+
+### RTCP over QUIC streams
+
+The above considerations from {{rtcp-over-datagrams}} get even more complex when
+transmitting RTCP reliably over QUIC streams: it is unknown if (and how many)
+retransmissions occurred.
+
+For RTT computations, again, this means that the application must consider that
+it observes the application layer RTT including retransmissions, where
+retransmissions also contribute to the observed jitter.
+
+For overhead computation, retransmissions are not explicitly considered nor is
+the multiplexing with other streams.
+
+To keep the complexity under control, it is again recommended to _not_ attempt
+to include the unknown lower layer overhead and only use the data rates and
+packet sizes visible at the application (=RTP/RTCP) layer.
+
+> **Editor’s note:** previous note also applies here but, due to
+> retransmissions, overhead is even less predictable.
+
+### Mixed operations
+
+Applications may, in principle, mix sending RTP and RTCP via streams and as
+datagrams. Doing so has unforeseeable implications on timing and reordering and
+overhead.
+
+Therefore, applications SHOULD use the same QUIC primitives for both RTP and
+RTCP. If an application uses both streams and datagrams to selectively obtain
+reliable transmission for some RTP packets but not for others, it SHOULD also
+knowingly choose which RTT observations it is interested in.
 
 # Replacing RTCP and RTP Header Extensions with QUIC Feedback {#rtcp-mapping}
 
