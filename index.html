@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>mengelbart/rtp-over-quic-draft main preview</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <style type="text/css">/*<![CDATA[*/
+      body { font-family: "Helvetica Neue","Open Sans", Helvetica, Calibri,sans-serif; }
+      h1, h2, td { font-family: "Helvetica Neue", "Roboto Condensed", "Open Sans", Helvetica, Calibri, sans-serif; }
+      h1 { font-size: 20px; } h2 { font-size: 16px; }
+      table { margin: 5px 10px; border-collapse: collapse; }
+      th, td { font-weight: normal; text-align: left; padding: 2px 5px; }
+      a:link { color: #000; } a:visited { color: #00a; }
+    /*]]>*/</style>
+  </head>
+  <body>
+    <h1>Editor's drafts for main branch of <a href="https://github.com/mengelbart/rtp-over-quic-draft">mengelbart/rtp-over-quic-draft</a></h1>
+    <p>View <a href="issues.html">saved issues</a>, or the latest GitHub <a href="https://github.com/mengelbart/rtp-over-quic-draft/issues">issues</a> and <a href="https://github.com/mengelbart/rtp-over-quic-draft/pulls">pull requests</a> in the <a href="https://github.com/mengelbart/rtp-over-quic-draft">repo</a>.</p>
+    <table id="branch-main">
+      <tr>
+        <td><a href="./draft-ietf-avtcore-rtp-over-quic.html" class="html draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (HTML)">RTP over QUIC (RoQ)</a></td>
+        <td><a href="./draft-ietf-avtcore-rtp-over-quic.txt" class="txt draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (Text)">plain text</a></td>
+        <td><a href="https://datatracker.ietf.org/doc/draft-ietf-avtcore-rtp-over-quic" class="dt draft-ietf-avtcore-rtp-over-quic" title="Datatracker for draft-ietf-avtcore-rtp-over-quic">datatracker</a></td>
+        <td><a href="https://author-tools.ietf.org/api/iddiff?doc_1=draft-ietf-avtcore-rtp-over-quic&amp;url_2=https://mengelbart.github.io/rtp-over-quic-draft/draft-ietf-avtcore-rtp-over-quic.txt" class="diff draft-ietf-avtcore-rtp-over-quic">diff with last submission</a></td>
+        <td></td>
+      </tr>
+    </table>
+    <h2>Preview for branch <a href="feat">feat</a></h2>
+    <h2>Preview for branch <a href="feat/rtcp-overhead-considerations">feat/rtcp-overhead-considerations</a></h2>
+    <table id="branch-feat/rtcp-overhead-considerations">
+      <tr>
+        <td><a href="feat/rtcp-overhead-considerations/draft-ietf-avtcore-rtp-over-quic.html" class="html draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (HTML)">RTP over QUIC (RoQ)</a></td>
+        <td><a href="feat/rtcp-overhead-considerations/draft-ietf-avtcore-rtp-over-quic.txt" class="txt draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (Text)">plain text</a></td>
+        <td><a href="https://author-tools.ietf.org/api/iddiff?url_1=https://mengelbart.github.io/rtp-over-quic-draft/draft-ietf-avtcore-rtp-over-quic.txt&amp;url_2=https://mengelbart.github.io/rtp-over-quic-draft/feat/rtcp-overhead-considerations/draft-ietf-avtcore-rtp-over-quic.txt" class="diff draft-ietf-avtcore-rtp-over-quic">diff with main</a></td>
+      </tr>
+    </table>
+    <h2>Preview for branch <a href="draft-ietf-avtcore-rtp-over-quic-11">draft-ietf-avtcore-rtp-over-quic-11</a></h2>
+    <table id="branch-draft-ietf-avtcore-rtp-over-quic-11">
+      <tr>
+        <td><a href="draft-ietf-avtcore-rtp-over-quic-11/draft-ietf-avtcore-rtp-over-quic.html" class="html draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (HTML)">RTP over QUIC (RoQ)</a></td>
+        <td><a href="draft-ietf-avtcore-rtp-over-quic-11/draft-ietf-avtcore-rtp-over-quic.txt" class="txt draft-ietf-avtcore-rtp-over-quic" title="RTP over QUIC (RoQ) (Text)">plain text</a></td>
+        <td>same as main</td>
+      </tr>
+    </table>
+    <script>
+window.onload = function() {
+  var referrer_branch = 'main';
+  // e.g., "https://github.com/user/repo/tree/main"
+  var chunks = document.referrer.split("/");
+  if (chunks[2] === 'github.com' && chunks[5] === 'tree') {
+    referrer_branch = chunks[6];
+  }
+  let branch = document.querySelector('#branch-' + referrer_branch);
+  let h = document.location.hash.substring(1);
+  if (h === 'show') {
+    document.location.hash = '#' + branch.id;
+  } else if (branch && h.startsWith('go')) {
+    let e = branch.querySelector(h.substring(2));
+    if (e && e.href) {
+      document.location = e.href;
+    }
+  }
+};
+    </script>
+  </body>
+</html>
