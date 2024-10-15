@@ -933,7 +933,7 @@ As noted in {{multiplexing}}, all RoQ streams and RoQ datagrams begin with a flo
 
 Because QUIC provides a capability to migrate connections for various reasons, including recovering from a path failure ({{Section 9 of !RFC9000}}), when a QUIC connection migrates, a RoQ sender has the opportunity to revisit decisions about which RTP packets are encapsulated in QUIC streams, and which RTP packets are encapsulated in QUIC DATAGRAMs. Again, RoQ receivers need to be prepared for this eventuality.
 
-## RTCP Considerations
+## RTCP Considerations {#RTCP-considerations}
 
 RTCP was originally defined to be used with UDP, which implies (1) that
 transmission timing is largely under the control of the application (limited
@@ -969,7 +969,7 @@ overhead.
 > **Editor’s Note:** For compatibility with the computation of RTP-over-UDP
 > implementations, one could consider adding just the UDP and IP headers.
 
-### RTCP over QUIC streams
+### RTCP over QUIC streams {#rtcp-over-streams}
 
 The above considerations from {{rtcp-over-datagrams}} get even more complex when
 transmitting RTCP reliably over QUIC streams: it is unknown if (and how many)
