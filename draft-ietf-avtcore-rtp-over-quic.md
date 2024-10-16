@@ -935,9 +935,8 @@ Because QUIC provides a capability to migrate connections for various reasons, i
 
 ## RTCP Considerations {#RTCP-considerations}
 
-RTCP was originally defined to be used with UDP, which implies (1) that
-transmission timing is largely under the control of the application (limited
-buffering inside the stack) and (2) that the overhead, *avg_rtcp_size*, used to
+RTCP was originally defined to be used with UDP, which implies (1) 
+the only buffering present would be at the IP interface level, so that transmission timing is largely under the control of the application, and (2) that the overhead, *avg_rtcp_size*, used to
 compute the RTCP transmission interval could be deterministically computed by
 adding the IP asnd UDP headers. Both change when carrying RTCP over QUIC and
 they change in different ways when using QUIC streams vs. QUIC datagrams.
@@ -946,7 +945,7 @@ they change in different ways when using QUIC streams vs. QUIC datagrams.
 
 When sending RTCP packets in QUIC datagrams this implies that a packet may not
 be immediately transmitted as it is subject to queuing and multiplexing with RTP
-packets and subject to congestion control. This means that a sending timestamp
+packets and subject to QUIC congestion control. This means that a sending timestamp
 added to an RTCP packet, e.g., in an SR packet, may differ in unforeseeable ways
 from the actual time when the packet gets sent into the network while these are
 usually fairly close to each other for RTP-over-UDP. Effectively, we have a
@@ -961,14 +960,10 @@ it is unknown which other frames may be sent along in the same UDP packet. Any
 lower bound that can be determined could be affected by the version of QUIC
 being used.
 
-It is thus suggested that applications do _not_ attempt to include lower layer
-headers but only work with the net data rate of the codec including the RTP
-headers and of the RTCP packets, both excluding QUIC, UDP, and IP header
-overhead.
+It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in {{!RFC3550}}, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.  
 
 > **Editor’s Note:** For compatibility with the computation of RTP-over-UDP
 > implementations, one could consider adding just the UDP and IP headers.
-
 ### RTCP over QUIC streams {#rtcp-over-streams}
 
 The above considerations from {{rtcp-over-datagrams}} get even more complex when
@@ -982,12 +977,7 @@ retransmissions also contribute to the observed jitter.
 For overhead computation, retransmissions are not explicitly considered nor is
 the multiplexing with other streams.
 
-To keep the complexity under control, it is again recommended to _not_ attempt
-to include the unknown lower layer overhead and only use the data rates and
-packet sizes visible at the application (=RTP/RTCP) layer.
-
-> **Editor’s note:** previous note also applies here but, due to
-> retransmissions, overhead is even less predictable.
+To keep the complexity under control, it is again suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and these estimates should include plausible values for IP, UDP, QUIC, and QUIC STREAM frame header sizes. While this value may not be precisely accurate, it follows the example of RoQ over DATAGRAMs in {{rtcp-over-datagrams}}}, and again avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.  
 
 ### Mixed operations
 
@@ -995,10 +985,10 @@ Applications may, in principle, mix sending RTP and RTCP via streams and as
 datagrams. Doing so has unforeseeable implications on timing and reordering and
 overhead.
 
-Therefore, applications SHOULD use the same QUIC primitives for both RTP and
-RTCP. If an application uses both streams and datagrams to selectively obtain
-reliable transmission for some RTP packets but not for others, it SHOULD also
-knowingly choose which RTT observations it is interested in.
+Using the same QUIC primitives for both RTP and
+RTCP will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
+reliable transmission for some RTP media payloads but not for others, it is strongly suggested that the application developer
+knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in {{RTCP-considerations}}
 
 # Replacing RTCP and RTP Header Extensions with QUIC Feedback {#rtcp-mapping}
 
