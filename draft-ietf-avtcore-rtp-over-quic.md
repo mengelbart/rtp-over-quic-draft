@@ -935,10 +935,10 @@ Because QUIC provides a capability to migrate connections for various reasons, i
 
 ## RTCP Considerations {#RTCP-considerations}
 
-RTCP was originally defined to be used with UDP, which implies (1) 
+RTCP was originally defined to be used with UDP, which implies (1)
 the only buffering present would be at the IP interface level, so that transmission timing is largely under the control of the application, and (2) that the overhead, *avg_rtcp_size*, used to
 compute the RTCP transmission interval could be deterministically computed by
-adding the IP asnd UDP headers. Both change when carrying RTCP over QUIC and
+adding the IP and UDP headers. Both change when carrying RTCP over QUIC and
 they change in different ways when using QUIC streams vs. QUIC datagrams.
 
 ### RTCP over QUIC datagrams {#rtcp-over-datagrams}
@@ -960,10 +960,8 @@ it is unknown which other frames may be sent along in the same UDP packet. Any
 lower bound that can be determined could be affected by the version of QUIC
 being used.
 
-It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in {{!RFC3550}}, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.  
+It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in {{!RFC3550}}, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.
 
-> **Editor’s Note:** For compatibility with the computation of RTP-over-UDP
-> implementations, one could consider adding just the UDP and IP headers.
 ### RTCP over QUIC streams {#rtcp-over-streams}
 
 The above considerations from {{rtcp-over-datagrams}} get even more complex when
@@ -977,7 +975,7 @@ retransmissions also contribute to the observed jitter.
 For overhead computation, retransmissions are not explicitly considered nor is
 the multiplexing with other streams.
 
-To keep the complexity under control, it is again suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and these estimates should include plausible values for IP, UDP, QUIC, and QUIC STREAM frame header sizes. While this value may not be precisely accurate, it follows the example of RoQ over DATAGRAMs in {{rtcp-over-datagrams}}}, and again avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.  
+To keep the complexity under control, it is again suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and these estimates should include plausible values for IP, UDP, QUIC, and QUIC STREAM frame header sizes. While this value may not be precisely accurate, it follows the example of RoQ over DATAGRAMs in {{rtcp-over-datagrams}}}, and again avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.
 
 ### Mixed operations
 
