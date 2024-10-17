@@ -979,14 +979,15 @@ To keep the complexity under control, it is again suggested that application dev
 
 ### Mixed operations
 
-Applications may, in principle, mix sending RTP and RTCP via streams and as
-datagrams. Doing so has unforeseeable implications on timing and reordering and
+As noted in {{s-d-m-guidance}}, applications may use QUIC streams, QUIC DATAGRAMs, or a mixture, and this extends to choices for RTP and RTCP. While applications may, in principle, mix sending RTP and RTCP via QUIC streams and via QUIC DATAGRAMs, doing so has unforeseeable implications on timing and reordering and
 overhead.
 
 Using the same QUIC primitives for both RTP and
-RTCP will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
+RTCP when transporting a single media stream will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
 reliable transmission for some RTP media payloads but not for others, it is strongly suggested that the application developer
-knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in {{RTCP-considerations}}
+knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in {{RTCP-considerations}}.
+
+Even this awareness may not be "safe enough" - for example, {{RFC9221}} allows QUIC DATAGRAM frames to be coalesced with other QUIC frames, and recommends, but does not require, QUIC DATAGRAMs to be sent as soon as possible, or to be delivered to a receiving application immediately. {{RFC9221}} also recommends, but does not require, a QUIC implementation to provide an API for prioritization between QUIC streams and QUIC DATAGRAMs.
 
 # Replacing RTCP and RTP Header Extensions with QUIC Feedback {#rtcp-mapping}
 
@@ -1159,6 +1160,8 @@ functionality exposed by the QUIC implementation.
 * *RTT*: The RTT estimations as described in {{Section 5 of !RFC9002}}.
 
 One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ, but some information will be valuable. For example, it could be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.
+
+Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send packets without this delay.
 
 # Discussion
 
