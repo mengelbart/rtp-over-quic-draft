@@ -17,22 +17,22 @@ from the QUIC implementation in the endpoints, in order to reduce the need to
 exchange RTCP packets, and describes different options for implementing congestion control and rate
 adaptation for RTP without relying on RTCP feedback. 
     " name="description">
-<meta content="xml2rfc 3.22.0" name="generator">
+<meta content="xml2rfc 3.23.2" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-avtcore-rtp-over-quic-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.22.0
-    Python 3.12.3
+  xml2rfc 3.23.2
+    Python 3.12.7
     ConfigArgParse 1.7
-    google-i18n-address 3.1.0
+    google-i18n-address 3.1.1
     intervaltree 3.1.0
     Jinja2 3.1.4
     lxml 4.9.4
-    platformdirs 4.2.2
+    platformdirs 4.3.6
     pycountry 22.3.5
     PyYAML 6.0.1
     requests 2.32.3
-    setuptools 69.5.1
+    setuptools 70.3.0
     wcwidth 0.2.13
 -->
 <link href="draft-ietf-avtcore-rtp-over-quic.xml" rel="alternate" type="application/rfc+xml">
@@ -1032,11 +1032,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">RTP over QUIC (RoQ)</td>
-<td class="right">July 2024</td>
+<td class="right">October 2024</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Engelbart, et al.</td>
-<td class="center">Expires 6 January 2025</td>
+<td class="center">Expires 20 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1049,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-07-05" class="published">5 July 2024</time>
+<time datetime="2024-10-17" class="published">17 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-01-06">6 January 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-20">20 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1113,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 6 January 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3360,6 +3360,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 </div>
 </section>
 </div>
+<div id="sec-combined-references">
 <section id="section-17">
       <h2 id="name-references">
 <a href="#section-17" class="section-number selfRef">17. </a><a href="#name-references" class="section-name selfRef">References</a>
@@ -3489,7 +3490,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtcp-green-metadata">[I-D.draft-ietf-avtcore-rtcp-green-metadata]</dt>
         <dd>
-<span class="refAuthor">He, Y.</span>, <span class="refAuthor">Herglotz, C.</span>, and <span class="refAuthor">E. Francois</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Messages for Temporal-Spatial Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtcp-green-metadata-03</span>, <time datetime="2024-04-08" class="refDate">8 April 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-03">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-03</a>&gt;</span>. </dd>
+<span class="refAuthor">He, Y.</span>, <span class="refAuthor">Herglotz, C.</span>, and <span class="refAuthor">E. Francois</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Messages for Temporal-Spatial Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtcp-green-metadata-04</span>, <time datetime="2024-10-07" class="refDate">7 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-04">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-04</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtp-over-quic-00">[I-D.draft-ietf-avtcore-rtp-over-quic-00]</dt>
         <dd>
@@ -3513,11 +3514,11 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-ack-frequency">[I-D.draft-ietf-quic-ack-frequency]</dt>
         <dd>
-<span class="refAuthor">Iyengar, J.</span>, <span class="refAuthor">Swett, I.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"QUIC Acknowledgment Frequency"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-ack-frequency-09</span>, <time datetime="2024-04-30" class="refDate">30 April 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-09">https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-09</a>&gt;</span>. </dd>
+<span class="refAuthor">Iyengar, J.</span>, <span class="refAuthor">Swett, I.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"QUIC Acknowledgment Frequency"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-ack-frequency-10</span>, <time datetime="2024-08-29" class="refDate">29 August 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-10">https://datatracker.ietf.org/doc/html/draft-ietf-quic-ack-frequency-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-multipath">[I-D.draft-ietf-quic-multipath]</dt>
         <dd>
-<span class="refAuthor">Liu, Y.</span>, <span class="refAuthor">Ma, Y.</span>, <span class="refAuthor">De Coninck, Q.</span>, <span class="refAuthor">Bonaventure, O.</span>, <span class="refAuthor">Huitema, C.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"Multipath Extension for QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-multipath-09</span>, <time datetime="2024-06-21" class="refDate">21 June 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-09">https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-09</a>&gt;</span>. </dd>
+<span class="refAuthor">Liu, Y.</span>, <span class="refAuthor">Ma, Y.</span>, <span class="refAuthor">De Coninck, Q.</span>, <span class="refAuthor">Bonaventure, O.</span>, <span class="refAuthor">Huitema, C.</span>, and <span class="refAuthor">M. Kühlewind</span>, <span class="refTitle">"Multipath Extension for QUIC"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-quic-multipath-10</span>, <time datetime="2024-07-08" class="refDate">8 July 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-10">https://datatracker.ietf.org/doc/html/draft-ietf-quic-multipath-10</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-quic-reliable-stream-reset">[I-D.draft-ietf-quic-reliable-stream-reset]</dt>
         <dd>
@@ -3529,7 +3530,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-wish-whip">[I-D.draft-ietf-wish-whip]</dt>
         <dd>
-<span class="refAuthor">Murillo, S. G.</span> and <span class="refAuthor">A. Gouaillard</span>, <span class="refTitle">"WebRTC-HTTP ingestion protocol (WHIP)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wish-whip-14</span>, <time datetime="2024-05-03" class="refDate">3 May 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wish-whip-14">https://datatracker.ietf.org/doc/html/draft-ietf-wish-whip-14</a>&gt;</span>. </dd>
+<span class="refAuthor">Murillo, S. G.</span> and <span class="refAuthor">A. Gouaillard</span>, <span class="refTitle">"WebRTC-HTTP ingestion protocol (WHIP)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-wish-whip-16</span>, <time datetime="2024-08-21" class="refDate">21 August 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-wish-whip-16">https://datatracker.ietf.org/doc/html/draft-ietf-wish-whip-16</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-smith-quic-receive-ts">[I-D.draft-smith-quic-receive-ts]</dt>
         <dd>
@@ -3839,6 +3840,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 </section>
 </div>
 </section>
+</div>
 <div id="optional-extensions">
 <section id="appendix-A">
       <h2 id="name-list-of-optional-quic-exten">
@@ -4952,7 +4954,7 @@ way as they would be used over any other transport protocol.<a href="#appendix-B
 authors would like to thank Sam Hurst for providing his thoughts about how QUIC
 could be used to carry RTP.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
 <p id="appendix-C-2">The guidance in <a href="#quic-streams" class="auto internal xref">Section 5.2</a> about configuring the number of parallel unidirectional QUIC streams is based on <span><a href="https://rfc-editor.org/rfc/rfc9114#section-6.2" class="relref">Section 6.2</a> of [<a href="#RFC9114" class="cite xref">RFC9114</a>]</span>, with obvious substitutions for RTP.<a href="#appendix-C-2" class="pilcrow">¶</a></p>
-<p id="appendix-C-3">The authors would like to thank Bernard Aboba, David Schinazi, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo,  and Vidhi Goel for their valuable comments and suggestions contributing to this document.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
+<p id="appendix-C-3">The authors would like to thank Bernard Aboba, David Schinazi, Gurtej Singh Chandok, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo,  and Vidhi Goel for their valuable comments and suggestions contributing to this document.<a href="#appendix-C-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
