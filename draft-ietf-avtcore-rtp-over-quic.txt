@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 6 January 2025                                       S. Dawkins
+Expires: 20 April 2025                                        S. Dawkins
                                                      Tencent America LLC
-                                                             5 July 2024
+                                                         17 October 2024
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 6 January 2025.
+   This Internet-Draft will expire on 20 April 2025.
 
 Copyright Notice
 
@@ -2245,9 +2245,9 @@ Table of Contents
               He, Y., Herglotz, C., and E. Francois, "RTP Control
               Protocol (RTCP) Messages for Temporal-Spatial Resolution",
               Work in Progress, Internet-Draft, draft-ietf-avtcore-rtcp-
-              green-metadata-03, 8 April 2024,
+              green-metadata-04, 7 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtcp-green-metadata-03>.
+              rtcp-green-metadata-04>.
 
    [I-D.draft-ietf-avtcore-rtp-over-quic-00]
               Ott, J. and M. Engelbart, "RTP over QUIC", Work in
@@ -2288,16 +2288,16 @@ Table of Contents
    [I-D.draft-ietf-quic-ack-frequency]
               Iyengar, J., Swett, I., and M. Kühlewind, "QUIC
               Acknowledgment Frequency", Work in Progress, Internet-
-              Draft, draft-ietf-quic-ack-frequency-09, 30 April 2024,
+              Draft, draft-ietf-quic-ack-frequency-10, 29 August 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              ack-frequency-09>.
+              ack-frequency-10>.
 
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-09,
-              21 June 2024, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-quic-multipath-09>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-10,
+              8 July 2024, <https://datatracker.ietf.org/doc/html/draft-
+              ietf-quic-multipath-10>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
@@ -2317,9 +2317,9 @@ Table of Contents
    [I-D.draft-ietf-wish-whip]
               Murillo, S. G. and A. Gouaillard, "WebRTC-HTTP ingestion
               protocol (WHIP)", Work in Progress, Internet-Draft, draft-
-              ietf-wish-whip-14, 3 May 2024,
+              ietf-wish-whip-16, 21 August 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-wish-
-              whip-14>.
+              whip-16>.
 
    [I-D.draft-smith-quic-receive-ts]
               Smith, C. and I. Swett, "QUIC Extension for Reporting
@@ -3361,9 +3361,10 @@ Acknowledgments
    unidirectional QUIC streams is based on Section 6.2 of [RFC9114],
    with obvious substitutions for RTP.
 
-   The authors would like to thank Bernard Aboba, David Schinazi, Lucas
-   Pardue, Sam Hurst, Sergio Garcia Murillo, and Vidhi Goel for their
-   valuable comments and suggestions contributing to this document.
+   The authors would like to thank Bernard Aboba, David Schinazi, Gurtej
+   Singh Chandok, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo, and
+   Vidhi Goel for their valuable comments and suggestions contributing
+   to this document.
 
 Authors' Addresses
 
