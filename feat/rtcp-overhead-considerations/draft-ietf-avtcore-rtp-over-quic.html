@@ -1036,7 +1036,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Engelbart, et al.</td>
-<td class="center">Expires 19 April 2025</td>
+<td class="center">Expires 20 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1049,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-10-16" class="published">16 October 2024</time>
+<time datetime="2024-10-17" class="published">17 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-04-19">19 April 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-20">20 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1113,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 19 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -2628,13 +2628,13 @@ the multiplexing with other streams.<a href="#section-9.2.2-3" class="pilcrow">�
           <h4 id="name-mixed-operations">
 <a href="#section-9.2.3" class="section-number selfRef">9.2.3. </a><a href="#name-mixed-operations" class="section-name selfRef">Mixed operations</a>
           </h4>
-<p id="section-9.2.3-1">Applications may, in principle, mix sending RTP and RTCP via streams and as
-datagrams. Doing so has unforeseeable implications on timing and reordering and
+<p id="section-9.2.3-1">As noted in <a href="#s-d-m-guidance" class="auto internal xref">Section 9</a>, applications may use QUIC streams, QUIC DATAGRAMs, or a mixture, and this extends to choices for RTP and RTCP. While applications may, in principle, mix sending RTP and RTCP via QUIC streams and via QUIC DATAGRAMs, doing so has unforeseeable implications on timing and reordering and
 overhead.<a href="#section-9.2.3-1" class="pilcrow">¶</a></p>
 <p id="section-9.2.3-2">Using the same QUIC primitives for both RTP and
-RTCP will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
+RTCP when transporting a single media stream will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
 reliable transmission for some RTP media payloads but not for others, it is strongly suggested that the application developer
-knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in <a href="#RTCP-considerations" class="auto internal xref">Section 9.2</a><a href="#section-9.2.3-2" class="pilcrow">¶</a></p>
+knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in <a href="#RTCP-considerations" class="auto internal xref">Section 9.2</a>.<a href="#section-9.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-9.2.3-3">Even this awareness may not be "safe enough" - for example, <span>[<a href="#RFC9221" class="cite xref">RFC9221</a>]</span> allows QUIC DATAGRAM frames to be coalesced with other QUIC frames, and recommends, but does not require, QUIC DATAGRAMs to be sent as soon as possible, or to be delivered to a receiving application immediately. <span>[<a href="#RFC9221" class="cite xref">RFC9221</a>]</span> also recommends, but does not require, a QUIC implementation to provide an API for prioritization between QUIC streams and QUIC DATAGRAMs.<a href="#section-9.2.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2859,6 +2859,7 @@ of the application.<a href="#section-11-3.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-11-4">One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ, but some information will be valuable. For example, it could be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.<a href="#section-11-4" class="pilcrow">¶</a></p>
+<p id="section-11-5">Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send packets without this delay.<a href="#section-11-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="discussion">
