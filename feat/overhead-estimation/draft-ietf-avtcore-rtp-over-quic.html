@@ -2606,7 +2606,8 @@ because, in addition to adding the IP and UDP headers, the QUIC (short) header
 and the QUIC datagram frame header are to be considered but their sizes vary and
 it is unknown which other frames may be sent along in the same UDP packet. Any
 lower bound that can be determined could be affected by the version of QUIC
-being used.<a href="#section-9.2.1-2" class="pilcrow">¶</a></p>
+being used. An example estimation of the overhead including IP, UDP and QUIC
+headers is given in <a href="#overhead-estimation" class="auto internal xref">Appendix C</a>.<a href="#section-9.2.1-2" class="pilcrow">¶</a></p>
 <p id="section-9.2.1-3">It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in <span>[<a href="#RFC3550" class="cite xref">RFC3550</a>]</span>, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.<a href="#section-9.2.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -5039,7 +5040,7 @@ way as they would be used over any other transport protocol.<a href="#appendix-B
 </div>
 </section>
 </div>
-<div id="header-overhead-considerations">
+<div id="overhead-estimation">
 <section id="appendix-C">
       <h2 id="name-header-overhead-considerati">
 <a href="#appendix-C" class="section-number selfRef">Appendix C. </a><a href="#name-header-overhead-considerati" class="section-name selfRef">Header overhead considerations</a>

@@ -1479,7 +1479,8 @@ Table of Contents
    are to be considered but their sizes vary and it is unknown which
    other frames may be sent along in the same UDP packet.  Any lower
    bound that can be determined could be affected by the version of QUIC
-   being used.
+   being used.  An example estimation of the overhead including IP, UDP
+   and QUIC headers is given in Appendix C.
 
    It is thus suggested that application developers recognize that per-
    RTCP packet overhead will always be an estimate, and include IP, UDP,
