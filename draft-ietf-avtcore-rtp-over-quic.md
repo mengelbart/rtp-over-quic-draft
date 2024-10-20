@@ -958,7 +958,8 @@ because, in addition to adding the IP and UDP headers, the QUIC (short) header
 and the QUIC datagram frame header are to be considered but their sizes vary and
 it is unknown which other frames may be sent along in the same UDP packet. Any
 lower bound that can be determined could be affected by the version of QUIC
-being used.
+being used. An example estimation of the overhead including IP, UDP and QUIC
+headers is given in {{overhead-estimation}}.
 
 It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in {{!RFC3550}}, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.
 
@@ -1797,6 +1798,48 @@ Since QUIC does not provide any kind of application layer control messaging,
 QUIC feedback cannot be mapped into these RTCP packet types. If the RTP
 application needs this information, the RTCP packet types are used in the same
 way as they would be used over any other transport protocol.
+
+# Header overhead considerations {#overhead-estimation}
+
+As discussed in {{RTCP-considerations}}, the header overhead of an RTP packet
+sent over RoQ cannot easily be determined. This section gives an estimation of the
+minimum and maximum header overhead of different combinations of STREAM and
+DATAGRAM frames using either IPv4 or IPv6. However, even this estimation is not
+exactly correct, since it does not take into account, that RTP packets may be
+fragmented over multiple STREAM frames and that QUIC packets may contain more
+than a single FRAME and the overhead could thus be the shared overhead of
+multiple RTP packets being sent in different QUIC frames in the same QUIC
+packet.
+
+* At least 20 Bytes (v4) or 40 Bytes (v6) IP header
+* 8 Bytes UDP header
+* 2-25 Bytes QUIC Short header packets
+  * 1 Byte fixed header
+  * 0-20 Bytes Connection ID
+  * 1-4 Bytes Packet Number
+* 2-25 Bytes STREAM frame header
+  * 1 Byte type
+  * 1-8 Bytes stream ID
+  * Optional 1-8 Bytes Offset
+  * Optional 1-8 Bytes Length
+* 1-9 Bytes DATAGRAM frame header
+  * 1 Byte type
+  * Optional 1-8 Bytes length
+* 1-8 Bytes RoQ Flow ID
+
+* IPv4 with STREAM frames
+  * Minimum: 20+8+2+2+1=33 Bytes
+  * Maximum: 20+8+25+25+8=86 Bytes
+* IPv6 with STREAM frames
+  * Minimum: 40+8+2+2+1=53 Bytes
+  * Maximum: 40+8+25+25+8=106 Bytes
+* IPv4 with DATAGRAM frames
+  * Minimum: 20+8+2+1+1=32 Bytes
+  * Maximum: 20+8+25+9+8=70 Bytes
+* IPv6 with DATAGRAM frames
+  * Minimum: 40+8+2+1+1=52 Bytes
+  * Maximum: 40+8+25+9+8=90 Bytes
+
 
 # Acknowledgments
 {:numbered="false"}
