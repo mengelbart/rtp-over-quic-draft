@@ -1036,7 +1036,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Engelbart, et al.</td>
-<td class="center">Expires 20 April 2025</td>
+<td class="center">Expires 23 April 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1049,12 +1049,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2024-10-17" class="published">17 October 2024</time>
+<time datetime="2024-10-20" class="published">20 October 2024</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-04-20">20 April 2025</time></dd>
+<dd class="expires"><time datetime="2025-04-23">23 April 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1113,7 +1113,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 20 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 23 April 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1251,6 +1251,25 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
             <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-guidance-on-choosing-quic-s" class="internal xref">Guidance on Choosing QUIC Streams, QUIC DATAGRAMs, or a Mixture</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-rtp-considerations" class="internal xref">RTP Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-rtcp-considerations" class="internal xref">RTCP Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2.2.1">
+                    <p id="section-toc.1-1.9.2.2.2.1.1"><a href="#section-9.2.1" class="auto internal xref">9.2.1</a>.  <a href="#name-rtcp-over-quic-datagrams" class="internal xref">RTCP over QUIC datagrams</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2.2.2">
+                    <p id="section-toc.1-1.9.2.2.2.2.1"><a href="#section-9.2.2" class="auto internal xref">9.2.2</a>.  <a href="#name-rtcp-over-quic-streams" class="internal xref">RTCP over QUIC streams</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2.2.3">
+                    <p id="section-toc.1-1.9.2.2.2.3.1"><a href="#section-9.2.3" class="auto internal xref">9.2.3</a>.  <a href="#name-mixed-operations" class="internal xref">Mixed operations</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-replacing-rtcp-and-rtp-head" class="internal xref">Replacing RTCP and RTP Header Extensions with QUIC Feedback</a></p>
@@ -2543,11 +2562,83 @@ the different channels.<a href="#section-8.3-4" class="pilcrow">¶</a></p>
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-guidance-on-choosing-quic-s" class="section-name selfRef">Guidance on Choosing QUIC Streams, QUIC DATAGRAMs, or a Mixture</a>
       </h2>
 <p id="section-9-1">As noted in <a href="#streams-and-datagrams" class="auto internal xref">Section 3.2</a>, this document does not take a position on using QUIC streams, QUIC DATAGRAMs, or a mixture of both, for any particular RoQ use case or application. It does seem useful to include observations that might guide implementers who will need to make choices about that.<a href="#section-9-1" class="pilcrow">¶</a></p>
-<p id="section-9-2">One implementation goal might be to minimize processing overhead, for applications that are migrating from RTP over UDP to RoQ. These applications don't rely on any transport protocol behaviors beyond UDP, which can be described as "IP plus multiplexing". The implementers might be motivated by one or more of the advantages of encapsulating RTP in QUIC that are described in <a href="#motivations" class="auto internal xref">Section 3.1</a>, but they do not need any of the advantages that would apply when encapsulating RTP in QUIC streams. For these applications, simply placing each RTP packet in a QUIC DATAGRAM frame when it becomes available would be sufficient, using no QUIC streams at all.<a href="#section-9-2" class="pilcrow">¶</a></p>
-<p id="section-9-3">Another implementation goal might be to prioritize specific types of video frames over other types. For these applications, placing each type of video frame in a separate QUIC stream would allow the RoQ receiver to focus on the most important video frames more easily. This also allows the implementer to rely on QUIC's "byte stream" abstraction, freeing the application from dealing with MTU size restrictions, in contrast to the need to fit RTP packets into QUIC DATAGRAMs. The application might use QUIC streams for all of the RTP packets carried over this specific QUIC connection, with no QUIC DATAGRAMs at all.<a href="#section-9-3" class="pilcrow">¶</a></p>
-<p id="section-9-4">Some applications might have implementation goals that don't fit neatly into "QUIC streams only" or "QUIC DATAGRAMs only" categories. For example, another implementation goal might be to use QUIC streams to carry RTP video frames, but to use QUIC DATAGRAMs to carry RTP audio frames, which are typically much smaller. Because humans tend to tolerate inconsistent behavior in video better than inconsistent behavior in audio, the application might add Forward Error Correction <span>[<a href="#RFC6363" class="cite xref">RFC6363</a>]</span> to RTP audio packets and encapsulate the result in QUIC DATAGRAMs, while encapsulating RTP video packets in QUIC streams.<a href="#section-9-4" class="pilcrow">¶</a></p>
-<p id="section-9-5">As noted in <a href="#multiplexing" class="auto internal xref">Section 5.1</a>, all RoQ streams and RoQ datagrams begin with a flow identifier. This allows a RoQ sender to begin by encapsulating related RTP packets in QUIC streams and then switch to carrying them in QUIC DATAGRAMs, or vice versa. RoQ receivers need to be prepared to accept any valid RTP packet with a given flow identifier, whether it started by being encapsulated in QUIC streams or in QUIC DATAGRAMs, and RoQ receivers need to be prepared to accept RTP flows that switch from QUIC stream encapsulation to QUIC DATAGRAMs, or vice versa.<a href="#section-9-5" class="pilcrow">¶</a></p>
-<p id="section-9-6">Because QUIC provides a capability to migrate connections for various reasons, including recovering from a path failure (<span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>), when a QUIC connection migrates, a RoQ sender has the opportunity to revisit decisions about which RTP packets are encapsulated in QUIC streams, and which RTP packets are encapsulated in QUIC DATAGRAMs. Again, RoQ receivers need to be prepared for this eventuality.<a href="#section-9-6" class="pilcrow">¶</a></p>
+<div id="rtp-considerations">
+<section id="section-9.1">
+        <h3 id="name-rtp-considerations">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-rtp-considerations" class="section-name selfRef">RTP Considerations</a>
+        </h3>
+<p id="section-9.1-1">One implementation goal might be to minimize processing overhead, for applications that are migrating from RTP over UDP to RoQ. These applications don't rely on any transport protocol behaviors beyond UDP, which can be described as "IP plus multiplexing". The implementers might be motivated by one or more of the advantages of encapsulating RTP in QUIC that are described in <a href="#motivations" class="auto internal xref">Section 3.1</a>, but they do not need any of the advantages that would apply when encapsulating RTP in QUIC streams. For these applications, simply placing each RTP packet in a QUIC DATAGRAM frame when it becomes available would be sufficient, using no QUIC streams at all.<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.1-2">Another implementation goal might be to prioritize specific types of video frames over other types. For these applications, placing each type of video frame in a separate QUIC stream would allow the RoQ receiver to focus on the most important video frames more easily. This also allows the implementer to rely on QUIC's "byte stream" abstraction, freeing the application from dealing with MTU size restrictions, in contrast to the need to fit RTP packets into QUIC DATAGRAMs. The application might use QUIC streams for all of the RTP packets carried over this specific QUIC connection, with no QUIC DATAGRAMs at all.<a href="#section-9.1-2" class="pilcrow">¶</a></p>
+<p id="section-9.1-3">Some applications might have implementation goals that don't fit neatly into "QUIC streams only" or "QUIC DATAGRAMs only" categories. For example, another implementation goal might be to use QUIC streams to carry RTP video frames, but to use QUIC DATAGRAMs to carry RTP audio frames, which are typically much smaller. Because humans tend to tolerate inconsistent behavior in video better than inconsistent behavior in audio, the application might add Forward Error Correction <span>[<a href="#RFC6363" class="cite xref">RFC6363</a>]</span> to RTP audio packets and encapsulate the result in QUIC DATAGRAMs, while encapsulating RTP video packets in QUIC streams.<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<p id="section-9.1-4">As noted in <a href="#multiplexing" class="auto internal xref">Section 5.1</a>, all RoQ streams and RoQ datagrams begin with a flow identifier. This allows a RoQ sender to begin by encapsulating related RTP packets in QUIC streams and then switch to carrying them in QUIC DATAGRAMs, or vice versa. RoQ receivers need to be prepared to accept any valid RTP packet with a given flow identifier, whether it started by being encapsulated in QUIC streams or in QUIC DATAGRAMs, and RoQ receivers need to be prepared to accept RTP flows that switch from QUIC stream encapsulation to QUIC DATAGRAMs, or vice versa.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
+<p id="section-9.1-5">Because QUIC provides a capability to migrate connections for various reasons, including recovering from a path failure (<span><a href="https://rfc-editor.org/rfc/rfc9000#section-9" class="relref">Section 9</a> of [<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>), when a QUIC connection migrates, a RoQ sender has the opportunity to revisit decisions about which RTP packets are encapsulated in QUIC streams, and which RTP packets are encapsulated in QUIC DATAGRAMs. Again, RoQ receivers need to be prepared for this eventuality.<a href="#section-9.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="RTCP-considerations">
+<section id="section-9.2">
+        <h3 id="name-rtcp-considerations">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-rtcp-considerations" class="section-name selfRef">RTCP Considerations</a>
+        </h3>
+<p id="section-9.2-1">RTCP was originally defined to be used with UDP, which implies (1)
+the only buffering present would be at the IP interface level, so that transmission timing is largely under the control of the application, and (2) that the overhead, <em>avg_rtcp_size</em>, used to
+compute the RTCP transmission interval could be deterministically computed by
+adding the IP and UDP headers. Both change when carrying RTCP over QUIC and
+they change in different ways when using QUIC streams vs. QUIC datagrams.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+<div id="rtcp-over-datagrams">
+<section id="section-9.2.1">
+          <h4 id="name-rtcp-over-quic-datagrams">
+<a href="#section-9.2.1" class="section-number selfRef">9.2.1. </a><a href="#name-rtcp-over-quic-datagrams" class="section-name selfRef">RTCP over QUIC datagrams</a>
+          </h4>
+<p id="section-9.2.1-1">When sending RTCP packets in QUIC datagrams this implies that a packet may not
+be immediately transmitted as it is subject to queuing and multiplexing with RTP
+packets and subject to QUIC congestion control. This means that a sending timestamp
+added to an RTCP packet, e.g., in an SR packet, may differ in unforeseeable ways
+from the actual time when the packet gets sent into the network while these are
+usually fairly close to each other for RTP-over-UDP. Effectively, we have a
+application sending timestamp <em>t_a</em> and the network transmission timestamp
+<em>t_n</em>. Applications just have to be aware that RTCP does not measure the network
+level RTT but rather the application layer RTT.<a href="#section-9.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-9.2.1-2">Moreover, the true overhead per RTCP packet cannot easily be determined: this is
+because, in addition to adding the IP and UDP headers, the QUIC (short) header
+and the QUIC datagram frame header are to be considered but their sizes vary and
+it is unknown which other frames may be sent along in the same UDP packet. Any
+lower bound that can be determined could be affected by the version of QUIC
+being used.<a href="#section-9.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-9.2.1-3">It is thus suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and include IP, UDP, QUIC, and DATAGRAM header sizes as a conservative heuristic. While this value may not be precisely accurate, it follows the example of RTP over UDP in <span>[<a href="#RFC3550" class="cite xref">RFC3550</a>]</span>, which includes the RTP and UDP header sizes, and adding the additional QUIC and DATAGRAM header sizes avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.<a href="#section-9.2.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="rtcp-over-streams">
+<section id="section-9.2.2">
+          <h4 id="name-rtcp-over-quic-streams">
+<a href="#section-9.2.2" class="section-number selfRef">9.2.2. </a><a href="#name-rtcp-over-quic-streams" class="section-name selfRef">RTCP over QUIC streams</a>
+          </h4>
+<p id="section-9.2.2-1">The above considerations from <a href="#rtcp-over-datagrams" class="auto internal xref">Section 9.2.1</a> get even more complex when
+transmitting RTCP reliably over QUIC streams: it is unknown if (and how many)
+retransmissions occurred.<a href="#section-9.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-9.2.2-2">For RTT computations, again, this means that the application must consider that
+it observes the application layer RTT including retransmissions, where
+retransmissions also contribute to the observed jitter.<a href="#section-9.2.2-2" class="pilcrow">¶</a></p>
+<p id="section-9.2.2-3">For overhead computation, retransmissions are not explicitly considered nor is
+the multiplexing with other streams.<a href="#section-9.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-9.2.2-4">To keep the complexity under control, it is again suggested that application developers recognize that per-RTCP packet overhead will always be an estimate, and these estimates should include plausible values for IP, UDP, QUIC, and QUIC STREAM frame header sizes. While this value may not be precisely accurate, it follows the example of RoQ over DATAGRAMs in <a href="#rtcp-over-datagrams" class="auto internal xref">Section 9.2.1</a>}, and again avoids the immediate problem of significantly understating avg_rtcp_size, resulting in an underestimate of the cost of sending additional RTCP reports.<a href="#section-9.2.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="mixed-operations">
+<section id="section-9.2.3">
+          <h4 id="name-mixed-operations">
+<a href="#section-9.2.3" class="section-number selfRef">9.2.3. </a><a href="#name-mixed-operations" class="section-name selfRef">Mixed operations</a>
+          </h4>
+<p id="section-9.2.3-1">As noted in <a href="#s-d-m-guidance" class="auto internal xref">Section 9</a>, applications may use QUIC streams, QUIC DATAGRAMs, or a mixture, and this extends to choices for RTP and RTCP. While applications may, in principle, mix sending RTP and RTCP via QUIC streams and via QUIC DATAGRAMs, doing so has unforeseeable implications on timing and reordering and
+overhead.<a href="#section-9.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-9.2.3-2">Using the same QUIC primitives for both RTP and
+RTCP when transporting a single media stream will be safer than mixing QUIC primitives - for example, using QUIC streams to carry RTP media payloads and QUIC DATAGRAMs to carry RTCP, or vice versa. If an application uses both streams and datagrams to selectively obtain
+reliable transmission for some RTP media payloads but not for others, it is strongly suggested that the application developer
+knowingly choose which RTT observations they are interested in, while remaining aware of the advice included in <a href="#RTCP-considerations" class="auto internal xref">Section 9.2</a>.<a href="#section-9.2.3-2" class="pilcrow">¶</a></p>
+<p id="section-9.2.3-3">Even this awareness may not be "safe enough" - for example, <span>[<a href="#RFC9221" class="cite xref">RFC9221</a>]</span> allows QUIC DATAGRAM frames to be coalesced with other QUIC frames, and recommends, but does not require, QUIC DATAGRAMs to be sent as soon as possible, or to be delivered to a receiving application immediately. <span>[<a href="#RFC9221" class="cite xref">RFC9221</a>]</span> also recommends, but does not require, a QUIC implementation to provide an API for prioritization between QUIC streams and QUIC DATAGRAMs.<a href="#section-9.2.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
 </section>
 </div>
 <div id="rtcp-mapping">
@@ -2768,6 +2859,7 @@ of the application.<a href="#section-11-3.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-11-4">One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ, but some information will be valuable. For example, it could be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.<a href="#section-11-4" class="pilcrow">¶</a></p>
+<p id="section-11-5">Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send packets without this delay.<a href="#section-11-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="discussion">
