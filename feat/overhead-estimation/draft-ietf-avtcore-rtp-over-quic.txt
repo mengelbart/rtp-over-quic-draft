@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 23 April 2025                                        S. Dawkins
+Expires: 24 April 2025                                        S. Dawkins
                                                      Tencent America LLC
-                                                         20 October 2024
+                                                         21 October 2024
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 April 2025.
+   This Internet-Draft will expire on 24 April 2025.
 
 Copyright Notice
 
@@ -2404,9 +2404,9 @@ Table of Contents
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-10,
-              8 July 2024, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-quic-multipath-10>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-11,
+              21 October 2024, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-multipath-11>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
@@ -3466,11 +3466,11 @@ Appendix C.  Header overhead considerations
    estimation of the minimum and maximum header overhead of different
    combinations of STREAM and DATAGRAM frames using either IPv4 or IPv6.
    However, even this estimation is not exactly correct, since it does
-   not take into account, that RTP packets may be fragmented over
-   multiple STREAM frames and that QUIC packets may contain more than a
-   single FRAME and the overhead could thus be the shared overhead of
-   multiple RTP packets being sent in different QUIC frames in the same
-   QUIC packet.
+   not take into account additional complications such as that RTP
+   packets may be fragmented over multiple STREAM frames and that QUIC
+   packets may contain more than a single FRAME and the overhead could
+   thus be the shared overhead of multiple RTP packets being sent in
+   different QUIC frames in the same QUIC packet.
 
    *  At least 20 Bytes (v4) or 40 Bytes (v6) IP header
 
