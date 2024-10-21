@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 23 April 2025                                        S. Dawkins
+Expires: 24 April 2025                                        S. Dawkins
                                                      Tencent America LLC
-                                                         20 October 2024
+                                                         21 October 2024
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 23 April 2025.
+   This Internet-Draft will expire on 24 April 2025.
 
 Copyright Notice
 
@@ -157,6 +157,7 @@ Table of Contents
        B.6.2.  Congestion Control Feedback ("CCFB")
        B.6.3.  Extended Report ("XR")
        B.6.4.  Application Layer Repair and other Control Messages
+   Appendix C.  Header overhead considerations
    Acknowledgments
    Authors' Addresses
 
@@ -1478,7 +1479,8 @@ Table of Contents
    are to be considered but their sizes vary and it is unknown which
    other frames may be sent along in the same UDP packet.  Any lower
    bound that can be determined could be affected by the version of QUIC
-   being used.
+   being used.  An example estimation of the overhead including IP, UDP
+   and QUIC headers is given in Appendix C.
 
    It is thus suggested that application developers recognize that per-
    RTCP packet overhead will always be an estimate, and include IP, UDP,
@@ -2402,9 +2404,9 @@ Table of Contents
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-10,
-              8 July 2024, <https://datatracker.ietf.org/doc/html/draft-
-              ietf-quic-multipath-10>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-11,
+              21 October 2024, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-multipath-11>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
@@ -3456,6 +3458,73 @@ B.6.4.  Application Layer Repair and other Control Messages
    types.  If the RTP application needs this information, the RTCP
    packet types are used in the same way as they would be used over any
    other transport protocol.
+
+Appendix C.  Header overhead considerations
+
+   As discussed in Section 9.2, the header overhead of an RTP packet
+   sent over RoQ cannot easily be determined.  This section gives an
+   estimation of the minimum and maximum header overhead of different
+   combinations of STREAM and DATAGRAM frames using either IPv4 or IPv6.
+   However, even this estimation is not exactly correct, since it does
+   not take into account additional complications such as that RTP
+   packets may be fragmented over multiple STREAM frames and that QUIC
+   packets may contain more than a single FRAME, so that the RTCP
+   overhead could thus be the shared overhead of multiple RTP packets
+   being sent in different QUIC frames in the same QUIC packet.
+
+   *  At least 20 Bytes (v4) or 40 Bytes (v6) IP header
+
+   *  8 Bytes UDP header
+
+   *  2-25 Bytes QUIC Short header packets
+
+      -  1 Byte fixed header
+
+      -  0-20 Bytes Connection ID
+
+      -  1-4 Bytes Packet Number
+
+   *  2-25 Bytes STREAM frame header
+
+      -  1 Byte type
+
+      -  1-8 Bytes stream ID
+
+      -  Optional 1-8 Bytes Offset
+
+      -  Optional 1-8 Bytes Length
+
+   *  1-9 Bytes DATAGRAM frame header
+
+      -  1 Byte type
+
+      -  Optional 1-8 Bytes length
+
+   *  1-8 Bytes RoQ Flow ID
+
+   *  IPv4 with STREAM frames
+
+      -  Minimum: 20+8+2+2+1=33 Bytes
+
+      -  Maximum: 20+8+25+25+8=86 Bytes
+
+   *  IPv6 with STREAM frames
+
+      -  Minimum: 40+8+2+2+1=53 Bytes
+
+      -  Maximum: 40+8+25+25+8=106 Bytes
+
+   *  IPv4 with DATAGRAM frames
+
+      -  Minimum: 20+8+2+1+1=32 Bytes
+
+      -  Maximum: 20+8+25+9+8=70 Bytes
+
+   *  IPv6 with DATAGRAM frames
+
+      -  Minimum: 40+8+2+1+1=52 Bytes
+
+      -  Maximum: 40+8+25+9+8=90 Bytes
 
 Acknowledgments
 
