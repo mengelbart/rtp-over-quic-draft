@@ -1805,7 +1805,7 @@ As discussed in {{RTCP-considerations}}, the header overhead of an RTP packet
 sent over RoQ cannot easily be determined. This section gives an estimation of the
 minimum and maximum header overhead of different combinations of STREAM and
 DATAGRAM frames using either IPv4 or IPv6. However, even this estimation is not
-exactly correct, since it does not take into account, that RTP packets may be
+exactly correct, since it does not take into account additional complications such as that RTP packets may be
 fragmented over multiple STREAM frames and that QUIC packets may contain more
 than a single FRAME and the overhead could thus be the shared overhead of
 multiple RTP packets being sent in different QUIC frames in the same QUIC
