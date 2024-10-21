@@ -3468,9 +3468,9 @@ Appendix C.  Header overhead considerations
    However, even this estimation is not exactly correct, since it does
    not take into account additional complications such as that RTP
    packets may be fragmented over multiple STREAM frames and that QUIC
-   packets may contain more than a single FRAME and the overhead could
-   thus be the shared overhead of multiple RTP packets being sent in
-   different QUIC frames in the same QUIC packet.
+   packets may contain more than a single FRAME, so that the RTCP
+   overhead could thus be the shared overhead of multiple RTP packets
+   being sent in different QUIC frames in the same QUIC packet.
 
    *  At least 20 Bytes (v4) or 40 Bytes (v6) IP header
 
