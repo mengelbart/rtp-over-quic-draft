@@ -250,6 +250,9 @@ Early data:
 Frame:
 : A QUIC frame as defined in {{!RFC9000}}.
 
+Packet:
+: The term "packet" is ambiguous. Without a qualifier, "packet" could refer to a UDP packet, or a QUIC packet, or an RTP/RTCP packet encapsulated in QUIC, or a media packet encapsulated in RTP. If not explicitly qualified, the term "packet" in this document refers to a QUIC packet.
+
 Peer:
 : The term "peer" is ambiguous, and without a qualifier could be understood to refer to an RTP endpoint, a RoQ endpoint, or a QUIC endpoint. In this document, a "peer" is "the other RoQ endpoint that a RoQ endpoint is communicating with", and does not have anything to do with "peer-to-peer" operation versus "client-server" operation.
 
