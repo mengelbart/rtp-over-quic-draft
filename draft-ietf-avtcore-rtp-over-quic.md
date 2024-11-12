@@ -742,6 +742,14 @@ RTP retransmissions can be done in the same RTP session or in a
 different RTP session {{!RFC4588}} and the flow identifier MUST be set to the
 flow identifier of the RTP session in which the retransmission happens.
 
+## RTCP
+
+The same encapsulation as described above for RTP packets can also be used to carry RTCP packets back from the receiver to the sender. Similar to the RTP packet RTCP can use datagrams or streams as well.
+If a receiver sends aggregated RTCP reports for multiple RTP streams the flow identifier no longer machtes the flow identifier for a single RTP stream. Thus the sender always needs to inspect the received RTCP packet independent of the flow identifier used to the RTCP flow to determine to which of the RTP flows the received packets apply.
+This is also the reason why bidirectional streams are not recommendend, as the the received RTCP packets would not necessarily apply to the same RTP stream being send on the same flow.
+Further more using a bidirectional stream could result in a situation where the sender has closed its side of the QUIC stream, but the receiver continues to send RTCP in the opposite direction.
+Thus is makes more sense if sender and receiver agree on one or multiple unidictional flows from the receiver to the sender to transport any RTCP messages back to the sender.
+
 # Connection Shutdown
 
 Either endpoint can close the connection for any of a variety of reasons. If one of the
