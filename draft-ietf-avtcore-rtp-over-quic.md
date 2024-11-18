@@ -744,7 +744,7 @@ flow identifier of the RTP session in which the retransmission happens.
 
 ## RTCP
 
-The same encapsulation as described above for RTP packets can also be used to carry RTCP packets back from the receiver to the sender. Similar to the RTP packet RTCP can use datagrams or streams as well.
+The same encapsulation as described above for RTP packets can also be used to carry RTCP packets back from the receiver to the sender. Both RTP and RTCP can be transported in either QUIC DATAGRAM frames or QUIC STREAM frames. 
 If a receiver sends aggregated RTCP reports for multiple RTP streams the flow identifier no longer machtes the flow identifier for a single RTP stream. Thus the sender always needs to inspect the received RTCP packet independent of the flow identifier used to the RTCP flow to determine to which of the RTP flows the received packets apply.
 This is also the reason why bidirectional streams are not recommendend, as the the received RTCP packets would not necessarily apply to the same RTP stream being send on the same flow.
 Further more using a bidirectional stream could result in a situation where the sender has closed its side of the QUIC stream, but the receiver continues to send RTCP in the opposite direction.
