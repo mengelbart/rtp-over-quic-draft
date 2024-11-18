@@ -742,7 +742,7 @@ RTP retransmissions can be done in the same RTP session or in a
 different RTP session {{!RFC4588}} and the flow identifier MUST be set to the
 flow identifier of the RTP session in which the retransmission happens.
 
-## RTCP
+## Encapsulation Considerations for RTCP
 
 The same encapsulation as described above for RTP packets can also be used to carry RTCP packets back from the receiver to the sender. Both RTP and RTCP can be transported in either QUIC DATAGRAM frames or QUIC STREAM frames. 
 If a receiver sends aggregated RTCP reports for multiple RTP streams the flow identifier no longer machtes the flow identifier for a single RTP stream. Thus the sender always needs to inspect the received RTCP packet independent of the flow identifier used to the RTCP flow to determine to which of the RTP flows the received packets apply.
