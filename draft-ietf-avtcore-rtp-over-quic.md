@@ -95,6 +95,10 @@ informative:
     target: https://github.com/quic-go/quic-go
     title: A QUIC implementation in pure Go
 
+  imquic:
+    target: https://github.com/meetecho/imquic
+    title: imquic
+
 --- abstract
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
@@ -1341,7 +1345,7 @@ use since they control the QUIC connection setup and can thus configure the QUIC
 stack they use to their preferences.
 
 Version Compatibility:
-: The library implements {{?I-D.draft-ietf-avtcore-rtp-over-quic-10}}.
+: The library implements {{?I-D.draft-ietf-avtcore-rtp-over-quic-12}}.
 
 Licensing:
 : MIT License
@@ -1357,7 +1361,7 @@ Contact Information:
 : Mathis Engelbart (mathis.engelbart@gmail.com)
 
 Last Updated:
-: 25 May 2024
+: 07 January 2025
 
 ## bbc/gst-roq
 
@@ -1438,6 +1442,44 @@ Contact Information:
 
 Last Updated:
 : 25 May 2024
+
+## meetecho/imquic
+
+Ogranization:
+: Meetecho
+
+Implementation:
+: imquic {{imquic}}
+
+Description:
+: QUIC library with RTP Over QUIC (RoQ) and Media Over QUIC (MoQT) support
+
+Level of Maturity:
+: alpha
+
+Coverage:
+: The library supports sending and receiving RTP and RTCP packets using QUIC
+streams and QUIC DATAGRAMs, and supports multiplexing using flow identifiers.
+Applications using the library are responsible for appropriate signaling,
+setting up QUIC connections, and managing RTP sessions. Applications choose
+whether to send RTP and RTCP packets over streams or DATAGRAMs. Basic client and
+server examples are available as a demo, and the library was used to test
+interoperability with WebRTC via an open source gateway too.
+
+Version Compatibility:
+: {{?I-D.draft-ietf-avtcore-rtp-over-quic-12}}
+
+Licensing:
+: MIT
+
+Implementation Experience:
+:
+
+Contact Information:
+: Lorenzo Miniero (lorenzo@meetecho.com)
+
+Last Updated:
+: 07 January 2025
 
 # Security Considerations {#sec-considerations}
 
