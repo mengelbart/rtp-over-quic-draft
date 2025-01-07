@@ -2018,7 +2018,7 @@ Table of Contents
    can thus configure the QUIC stack they use to their preferences.
 
    Version Compatibility:  The library implements
-      [I-D.draft-ietf-avtcore-rtp-over-quic-10].
+      [I-D.draft-ietf-avtcore-rtp-over-quic-12].
 
    Licensing:  MIT License
 
@@ -2128,7 +2128,7 @@ Table of Contents
 
    Implementation Experience: :
 
-   Contact Information:  Lorenzo Miniero
+   Contact Information:  Lorenzo Miniero (lorenzo@meetecho.com)
 
    Last Updated:  07 January 2024
 
@@ -2403,13 +2403,6 @@ Table of Contents
               avtcore-rtp-over-quic-05, 26 July 2023,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
               rtp-over-quic-05>.
-
-   [I-D.draft-ietf-avtcore-rtp-over-quic-10]
-              Ott, J., Engelbart, M., and S. Dawkins, "RTP over QUIC
-              (RoQ)", Work in Progress, Internet-Draft, draft-ietf-
-              avtcore-rtp-over-quic-10, 8 May 2024,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtp-over-quic-10>.
 
    [I-D.draft-ietf-avtcore-rtp-over-quic-12]
               Engelbart, M., Ott, J., and S. Dawkins, "RTP over QUIC
