@@ -1,6 +1,6 @@
 # RTP over QUIC (RoQ)
 
-This is the working area for the IETF [AVTCORE Working Group](https://datatracker.ietf.org/wg/avtcore/documents/) Internet-Draft, "RTP over QUIC (RoQ)".
+This is the working area for the IETF [AVTCORE Working Group](https://datatracker.ietf.org/group/avtcore/documents/) Internet-Draft, "RTP over QUIC (RoQ)".
 
 * [Editor's Copy](https://mengelbart.github.io/rtp-over-quic-draft/#go.draft-ietf-avtcore-rtp-over-quic.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-ietf-avtcore-rtp-over-quic)
