@@ -612,7 +612,7 @@ more RTP payloads. All RTP payloads sent on a stream MUST belong to
 the RTP session with the same flow identifier.
 
 Each payload begins with a length field indicating the length of the RTP
-packet, followed by the packet itself, see {{fig-rtp-stream-payload}}.
+packet, followed by the RTP packet itself, see {{fig-rtp-stream-payload}}.
 
 ~~~
 RTP Payload {
@@ -641,7 +641,7 @@ A RoQ receiver that is no longer interested in reading a certain portion of
 the media stream can signal this to the sending peer using a STOP\_SENDING
 frame.
 
-If a RoQ sender discovers that a packet is no longer needed and knows that the packet has not yet been successfully and completely transmitted, it can use RESET\_STREAM to tell the RoQ receiver that the RoQ sender is discarding the packet.
+If a RoQ sender discovers that an RTP packet is no longer needed and knows that the RTP packet has not yet been successfully and completely transmitted, it can use RESET\_STREAM to tell the RoQ receiver that the RoQ sender is discarding the RTP packet.
 
 In both cases, the error code of the RESET\_STREAM frame or the STOP\_SENDING
 frame MUST be set to ROQ\_FRAME\_CANCELLED.
@@ -768,7 +768,7 @@ ROQ\_INTERNAL\_ERROR (0x02):
 : An internal error has occurred in the RoQ stack.
 
 ROQ\_PACKET\_ERROR (0x03):
-: Invalid payload format, e.g., length does not match packet, invalid flow id
+: Invalid payload format, e.g., length does not match RTP packet, invalid flow id
 encoding, non-RTP on RTP-flow ID, etc.
 
 ROQ\_STREAM\_CREATION\_ERROR (0x04):
@@ -946,11 +946,11 @@ they change in different ways when using QUIC streams vs. QUIC datagrams.
 
 ### RTCP over QUIC datagrams {#rtcp-over-datagrams}
 
-When sending RTCP packets in QUIC datagrams this implies that a packet may not
+When sending RTCP packets in QUIC datagrams this implies that an RTCP packet may not
 be immediately transmitted as it is subject to queuing and multiplexing with RTP
 packets and subject to QUIC congestion control. This means that a sending timestamp
 added to an RTCP packet, e.g., in an SR packet, may differ in unforeseeable ways
-from the actual time when the packet gets sent into the network while these are
+from the actual time when the RTCP packet gets sent into the network while these are
 usually fairly close to each other for RTP-over-UDP. Effectively, we have a
 application sending timestamp *t_a* and the network transmission timestamp
 *t_n*. Applications just have to be aware that RTCP does not measure the network
@@ -1165,7 +1165,7 @@ functionality exposed by the QUIC implementation.
 
 One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ, but some information will be valuable. For example, it could be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.
 
-Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send packets without this delay.
+Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send RTCP packets without this delay.
 
 # Discussion
 
@@ -1173,7 +1173,7 @@ This section contains topics that are worth mentioning, but don't fit well into 
 
 ## Impact of Connection Migration
 
-RTP sessions are characterized by a continuous flow of packets in either or
+RTP sessions are characterized by a continuous flow of RTP packets in either or
 both directions.  A connection migration might lead to pausing media
 transmission until reachability of the peer under the new address is validated.
 This might lead to short breaks in media delivery in the order of RTT and, if
@@ -1571,11 +1571,11 @@ Each subsection in {{rtcp-analysis}} corresponds to an IANA registry, and includ
 Several but not all of these control packets and their attributes can be mapped
 from QUIC, as described in {{transport-layer-feedback}}. *Mappable from QUIC*
 has one of four values: *yes*, *partly*, *QUIC extension needed*, and *no*.
-*Partly* is used for packet types for which some fields can be mapped from QUIC,
+*Partly* is used for RTCP packet types for which some fields can be mapped from QUIC,
 but not all. *QUIC extension needed* describes packet types which could be
 mapped with help from one or more QUIC extensions.
 
-Examples of how certain packet types could be mapped with the help of QUIC
+Examples of how certain RTCP packet types could be mapped with the help of QUIC
 extensions follow in {{rtcp-quic-ext-examples}}.
 
 ## RTCP Control Packet Types {#control-packets}
@@ -1612,7 +1612,7 @@ The IANA registry for this section is {{IANA-RTCP-XR-BT}}.
 | Packet Receipt Times Report Block | {{?RFC3611}}  | QUIC extension needed / partly | QUIC could provide packet receive timestamps when using a timestamp extension that reports timestamp for every received packet, such as {{?I-D.draft-smith-quic-receive-ts}}. However, QUIC does not provide feedback in RTP timestamp format. |
 | Receiver Reference Time Report Block | {{?RFC3611}}  | QUIC extension needed | Used together with DLRR Report Blocks to calculate RTTs of non-senders. RTT measurements can natively be provided by QUIC. |
 | DLRR Report Block | {{?RFC3611}}  | QUIC extension needed | Used together with Receiver Reference Time Report Blocks to calculate RTTs of non-senders. RTT can natively be provided by QUIC. |
-| Statistics Summary Report Block | {{?RFC3611}}  | QUIC extension needed / partly | Packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see {{?I-D.draft-smith-quic-receive-ts}} or {{?I-D.draft-huitema-quic-ts}}). The remaining fields cannot be mapped to QUIC. |
+| Statistics Summary Report Block | {{?RFC3611}}  | QUIC extension needed / partly | RTP packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see {{?I-D.draft-smith-quic-receive-ts}} or {{?I-D.draft-huitema-quic-ts}}). The remaining fields cannot be mapped to QUIC. |
 | VoIP Metrics Report Block | {{?RFC3611}}  | no | as in other reports above, only loss and RTT available |
 | RTCP XR | {{?RFC5093}} | no | |
 | Texas Instruments Extended VoIP Quality Block | | | |
@@ -1687,7 +1687,7 @@ following Payload-specific RTP Feedback (PSFB) feedback.
 
 ## RTP Header extensions {#rtp-header-extensions}
 
-Like the payload-specific feedback packets, QUIC cannot directly replace the
+Like the payload-specific RTCP feedback packets, QUIC cannot directly replace the
 control information in the following header extensions. RoQ does not place
 restrictions on sending any RTP header extensions. However, some extensions,
 such as Transmission Time offsets {{?RFC5450}} are used to improve network
@@ -1732,9 +1732,9 @@ The IANA registry for this section is {{IANA-RTP-SDES-CHE}}.
 Considerations for mapping QUIC feedback into *Receiver Reports* (`PT=201`,
 `Name=RR`, {{!RFC3550}}) are:
 
-* *Fraction lost*: When RTP packets are carried in DATAGRAMs, the fraction of lost packets can be directly inferred from QUIC's acknowledgments.
-The calculation includes all packets up to the acknowledged RTP packet with the highest RTP sequence number.
-* *Cumulative lost*: Similar to the fraction of lost packets, the cumulative
+* *Fraction lost*: When RTP packets are carried in DATAGRAMs, the fraction of lost RTCP packets can be directly inferred from QUIC's acknowledgments.
+The calculation includes all RTP packets up to the acknowledged RTP packet with the highest RTP sequence number.
+* *Cumulative lost*: Similar to the fraction of lost RTP packets, the cumulative
   loss can be inferred from QUIC's acknowledgments, including all packets up
   to the latest acknowledged packet.
 * *Highest Sequence Number received*: In RTCP, this field is a 32-bit field
@@ -1747,7 +1747,7 @@ The calculation includes all packets up to the acknowledged RTP packet with the 
 * *Interarrival jitter*: If QUIC acknowledgments carry timestamps as described
   in {{?I-D.draft-smith-quic-receive-ts}}, senders can infer the interarrival
   jitter from the arrival timestamps in QUIC acknowledgments.
-* *Last SR*: Similar to lost packets, the NTP timestamp of the last received
+* *Last SR*: Similar to lost RTP packets, the NTP timestamp of the last received
   sender report can be inferred from QUIC acknowledgments.
 * *Delay since last SR*: This field is not required when the receiver reports
   are entirely replaced by QUIC feedback.
@@ -1756,7 +1756,7 @@ The calculation includes all packets up to the acknowledged RTP packet with the 
 
 RTP *Congestion Control Feedback* (`PT=205`, `FMT=11`, `Name=CCFB`,
 {{!RFC8888}}) contains acknowledgments, arrival timestamps, and ECN
-notifications for each received packet. Acknowledgments and ECNs can be inferred
+notifications for each received RTP packet. Acknowledgments and ECNs can be inferred
 from QUIC as described above. Arrival timestamps can be added through extended
 acknowledgment frames as described in {{?I-D.draft-smith-quic-receive-ts}} or
 {{?I-D.draft-huitema-quic-ts}}.
@@ -1781,7 +1781,7 @@ protocol itself.
 
 * *Sender Reports* (`PT=200`, `Name=SR`, {{!RFC3550}}) are similar to *Receiver
   Reports*, as described in {{RR-mappings}}. They are sent by media senders and
-  additionally contain an NTP and an RTP timestamp and the number of packets and
+  additionally contain an NTP and an RTP timestamp and the number of RTP packets and
   octets transmitted by the sender. The timestamps can be used by a receiver to
   synchronize media streams. QUIC cannot provide similar control information since it
   does not know about RTP timestamps. A QUIC receiver cannot calculate the
