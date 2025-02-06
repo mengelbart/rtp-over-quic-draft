@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 24 April 2025                                        S. Dawkins
+Expires: 10 August 2025                                       S. Dawkins
                                                      Tencent America LLC
-                                                         21 October 2024
+                                                         6 February 2025
 
 
                           RTP over QUIC (RoQ)
@@ -52,11 +52,11 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 April 2025.
+   This Internet-Draft will expire on 10 August 2025.
 
 Copyright Notice
 
-   Copyright (c) 2024 IETF Trust and the persons identified as the
+   Copyright (c) 2025 IETF Trust and the persons identified as the
    document authors.  All rights reserved.
 
    This document is subject to BCP 78 and the IETF Trust's Legal
@@ -2404,9 +2404,9 @@ Table of Contents
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-11,
-              21 October 2024, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-quic-multipath-11>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-12,
+              22 January 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-multipath-12>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
