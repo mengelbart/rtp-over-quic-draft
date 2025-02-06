@@ -1474,8 +1474,8 @@ streams and QUIC DATAGRAMs, and supports multiplexing using flow identifiers.
 Applications using the library are responsible for appropriate signaling,
 setting up QUIC connections, and managing RTP sessions. Applications choose
 whether to send RTP and RTCP packets over streams or DATAGRAMs. Basic client and
-server examples are available as a demo, and the library was used to test
-interoperability with WebRTC via an open source gateway too.
+server examples are available as a demo, and the library was also used to test
+interoperability with WebRTC via an open source gateway.
 
 Version Compatibility:
 : {{?I-D.draft-ietf-avtcore-rtp-over-quic-12}}
