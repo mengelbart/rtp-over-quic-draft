@@ -1636,29 +1636,34 @@ This prevents a sender from overwhelming the capacity of a path between a sender
           <p id="section-2-11.6.1">A QUIC frame as defined in <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>.<a href="#section-2-11.6.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-11.7">Peer:</dt>
+<dt id="section-2-11.7">Packet:</dt>
         <dd style="margin-left: 1.5em" id="section-2-11.8">
-          <p id="section-2-11.8.1">The term "peer" is ambiguous, and without a qualifier could be understood to refer to an RTP endpoint, a RoQ endpoint, or a QUIC endpoint. In this document, a "peer" is "the other RoQ endpoint that a RoQ endpoint is communicating with", and does not have anything to do with "peer-to-peer" operation versus "client-server" operation.<a href="#section-2-11.8.1" class="pilcrow">¶</a></p>
+          <p id="section-2-11.8.1">The term "packet" is ambiguous. Without a qualifier, "packet" could refer to a UDP packet, or a QUIC packet, or an RTP/RTCP packet encapsulated in QUIC, or a media packet encapsulated in RTP. If not explicitly qualified, the term "packet" in this document refers to a QUIC packet.<a href="#section-2-11.8.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-11.9">Rate Adaptation:</dt>
+<dt id="section-2-11.9">Peer:</dt>
         <dd style="margin-left: 1.5em" id="section-2-11.10">
-          <p id="section-2-11.10.1">An application-level mechanism that adjusts the sending rate of an application in response to changing path conditions. For example, an application sending video might respond to indications of congestion by adjusting the resolution of the video it is sending.<a href="#section-2-11.10.1" class="pilcrow">¶</a></p>
+          <p id="section-2-11.10.1">The term "peer" is ambiguous, and without a qualifier could be understood to refer to an RTP endpoint, a RoQ endpoint, or a QUIC endpoint. In this document, a "peer" is "the other RoQ endpoint that a RoQ endpoint is communicating with", and does not have anything to do with "peer-to-peer" operation versus "client-server" operation.<a href="#section-2-11.10.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-11.11">Receiver:</dt>
+<dt id="section-2-11.11">Rate Adaptation:</dt>
         <dd style="margin-left: 1.5em" id="section-2-11.12">
-          <p id="section-2-11.12.1">An endpoint that receives media in RTP packets and might send or receive RTCP packets.<a href="#section-2-11.12.1" class="pilcrow">¶</a></p>
+          <p id="section-2-11.12.1">An application-level mechanism that adjusts the sending rate of an application in response to changing path conditions. For example, an application sending video might respond to indications of congestion by adjusting the resolution of the video it is sending.<a href="#section-2-11.12.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-11.13">Sender:</dt>
+<dt id="section-2-11.13">Receiver:</dt>
         <dd style="margin-left: 1.5em" id="section-2-11.14">
-          <p id="section-2-11.14.1">An endpoint that sends media in RTP packets and might send or receive RTCP packets.<a href="#section-2-11.14.1" class="pilcrow">¶</a></p>
+          <p id="section-2-11.14.1">An endpoint that receives media in RTP packets and might send or receive RTCP packets.<a href="#section-2-11.14.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
-<dt id="section-2-11.15">Stream:</dt>
+<dt id="section-2-11.15">Sender:</dt>
         <dd style="margin-left: 1.5em" id="section-2-11.16">
-          <p id="section-2-11.16.1">The term "stream" is ambiguous. Without a qualifier, "stream" could refer to a QUIC stream, as defined in <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>, a series of media samples, or a series of RTP packets. If not explicitly qualified, the term "stream" in this document refers to a QUIC stream and the term "STREAM" refers to a single QUIC STREAM frame. This document also uses the term "RTP stream" or "RTCP streams" as a short form of "a series of RTP packets" or "a series of RTCP packets", the term "RoQ stream" as a short form of "one or more RTP packets encapsulated in QUIC streams" and the term "media stream" as a short form of "a series of one or more media samples".<a href="#section-2-11.16.1" class="pilcrow">¶</a></p>
+          <p id="section-2-11.16.1">An endpoint that sends media in RTP packets and might send or receive RTCP packets.<a href="#section-2-11.16.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-11.17">Stream:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-11.18">
+          <p id="section-2-11.18.1">The term "stream" is ambiguous. Without a qualifier, "stream" could refer to a QUIC stream, as defined in <span>[<a href="#RFC9000" class="cite xref">RFC9000</a>]</span>, a series of media samples, or a series of RTP packets. If not explicitly qualified, the term "stream" in this document refers to a QUIC stream and the term "STREAM" refers to a single QUIC STREAM frame. This document also uses the term "RTP stream" or "RTCP streams" as a short form of "a series of RTP packets" or "a series of RTCP packets", the term "RoQ stream" as a short form of "one or more RTP packets encapsulated in QUIC streams" and the term "media stream" as a short form of "a series of one or more media samples".<a href="#section-2-11.18.1" class="pilcrow">¶</a></p>
 </dd>
       <dd class="break"></dd>
 </dl>
@@ -2219,7 +2224,7 @@ connection.<a href="#section-5.2.1-3.2.1" class="pilcrow">¶</a></p>
 more RTP payloads. All RTP payloads sent on a stream MUST belong to
 the RTP session with the same flow identifier.<a href="#section-5.2.1-4" class="pilcrow">¶</a></p>
 <p id="section-5.2.1-5">Each payload begins with a length field indicating the length of the RTP
-packet, followed by the packet itself, see <a href="#fig-rtp-stream-payload" class="auto internal xref">Figure 2</a>.<a href="#section-5.2.1-5" class="pilcrow">¶</a></p>
+packet, followed by the RTP packet itself, see <a href="#fig-rtp-stream-payload" class="auto internal xref">Figure 2</a>.<a href="#section-5.2.1-5" class="pilcrow">¶</a></p>
 <span id="name-rtp-payload-for-quic-stream"></span><div id="fig-rtp-stream-payload">
 <figure id="figure-2">
             <div class="alignLeft art-text artwork" id="section-5.2.1-6.1">
@@ -2260,7 +2265,7 @@ peer respectively.<a href="#section-5.2.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2.2-2">A RoQ receiver that is no longer interested in reading a certain portion of
 the media stream can signal this to the sending peer using a STOP_SENDING
 frame.<a href="#section-5.2.2-2" class="pilcrow">¶</a></p>
-<p id="section-5.2.2-3">If a RoQ sender discovers that a packet is no longer needed and knows that the packet has not yet been successfully and completely transmitted, it can use RESET_STREAM to tell the RoQ receiver that the RoQ sender is discarding the packet.<a href="#section-5.2.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2.2-3">If a RoQ sender discovers that an RTP packet is no longer needed and knows that the RTP packet has not yet been successfully and completely transmitted, it can use RESET_STREAM to tell the RoQ receiver that the RoQ sender is discarding the RTP packet.<a href="#section-5.2.2-3" class="pilcrow">¶</a></p>
 <p id="section-5.2.2-4">In both cases, the error code of the RESET_STREAM frame or the STOP_SENDING
 frame MUST be set to ROQ_FRAME_CANCELLED.<a href="#section-5.2.2-4" class="pilcrow">¶</a></p>
 <p id="section-5.2.2-5">STOP_SENDING is not a request to the sender to stop sending RTP media, only an indication that a RoQ receiver stopped reading the QUIC stream being used to carry that RTP media.
@@ -2411,7 +2416,7 @@ there is no error to signal.<a href="#section-7-2.2.1" class="pilcrow">¶</a></p
         <dd class="break"></dd>
 <dt id="section-7-2.7">ROQ_PACKET_ERROR (0x03):</dt>
         <dd style="margin-left: 1.5em" id="section-7-2.8">
-          <p id="section-7-2.8.1">Invalid payload format, e.g., length does not match packet, invalid flow id
+          <p id="section-7-2.8.1">Invalid payload format, e.g., length does not match RTP packet, invalid flow id
 encoding, non-RTP on RTP-flow ID, etc.<a href="#section-7-2.8.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
@@ -2612,11 +2617,11 @@ they change in different ways when using QUIC streams vs. QUIC datagrams.<a href
           <h4 id="name-rtcp-over-quic-datagrams">
 <a href="#section-9.2.1" class="section-number selfRef">9.2.1. </a><a href="#name-rtcp-over-quic-datagrams" class="section-name selfRef">RTCP over QUIC datagrams</a>
           </h4>
-<p id="section-9.2.1-1">When sending RTCP packets in QUIC datagrams this implies that a packet may not
+<p id="section-9.2.1-1">When sending RTCP packets in QUIC datagrams this implies that an RTCP packet may not
 be immediately transmitted as it is subject to queuing and multiplexing with RTP
 packets and subject to QUIC congestion control. This means that a sending timestamp
 added to an RTCP packet, e.g., in an SR packet, may differ in unforeseeable ways
-from the actual time when the packet gets sent into the network while these are
+from the actual time when the RTCP packet gets sent into the network while these are
 usually fairly close to each other for RTP-over-UDP. Effectively, we have a
 application sending timestamp <em>t_a</em> and the network transmission timestamp
 <em>t_n</em>. Applications just have to be aware that RTCP does not measure the network
@@ -2883,7 +2888,7 @@ of the application.<a href="#section-11-3.7.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 <p id="section-11-4">One goal for the RoQ protocol is to shield RTP applications from the details of QUIC encapsulation, so the RTP application doesn't need much information about QUIC from RoQ, but some information will be valuable. For example, it could be desirable that the RoQ implementation provides an indication of connection migration to the RTP application.<a href="#section-11-4" class="pilcrow">¶</a></p>
-<p id="section-11-5">Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send packets without this delay.<a href="#section-11-5" class="pilcrow">¶</a></p>
+<p id="section-11-5">Because RTP applications do use the application timestamps contained in RTCP packets in a variety of ways, a RoQ implementation that provides and event-driven API can allow RoQ applications to generate RTCP packets "at the last moment", when the RoQ application is able to send the RTCP packet, and allow RoQ applications to notice that QUIC congestion control is limiting the ability of the RoQ application to send RTCP packets without this delay.<a href="#section-11-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="discussion">
@@ -2897,7 +2902,7 @@ of the application.<a href="#section-11-3.7.1" class="pilcrow">¶</a></p>
         <h3 id="name-impact-of-connection-migrat">
 <a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-impact-of-connection-migrat" class="section-name selfRef">Impact of Connection Migration</a>
         </h3>
-<p id="section-12.1-1">RTP sessions are characterized by a continuous flow of packets in either or
+<p id="section-12.1-1">RTP sessions are characterized by a continuous flow of RTP packets in either or
 both directions.  A connection migration might lead to pausing media
 transmission until reachability of the peer under the new address is validated.
 This might lead to short breaks in media delivery in the order of RTT and, if
@@ -4008,10 +4013,10 @@ considered in the analysis described in <a href="#rtcp-mapping" class="auto inte
 <p id="appendix-B-3">Several but not all of these control packets and their attributes can be mapped
 from QUIC, as described in <a href="#transport-layer-feedback" class="auto internal xref">Section 10.4</a>. <em>Mappable from QUIC</em>
 has one of four values: <em>yes</em>, <em>partly</em>, <em>QUIC extension needed</em>, and <em>no</em>.
-<em>Partly</em> is used for packet types for which some fields can be mapped from QUIC,
+<em>Partly</em> is used for RTCP packet types for which some fields can be mapped from QUIC,
 but not all. <em>QUIC extension needed</em> describes packet types which could be
 mapped with help from one or more QUIC extensions.<a href="#appendix-B-3" class="pilcrow">¶</a></p>
-<p id="appendix-B-4">Examples of how certain packet types could be mapped with the help of QUIC
+<p id="appendix-B-4">Examples of how certain RTCP packet types could be mapped with the help of QUIC
 extensions follow in <a href="#rtcp-quic-ext-examples" class="auto internal xref">Appendix B.6</a>.<a href="#appendix-B-4" class="pilcrow">¶</a></p>
 <div id="control-packets">
 <section id="appendix-B.1">
@@ -4270,7 +4275,7 @@ extensions follow in <a href="#rtcp-quic-ext-examples" class="auto internal xref
                 <span>[<a href="#RFC3611" class="cite xref">RFC3611</a>]</span>
 </td>
               <td class="text-left" rowspan="1" colspan="1">QUIC extension needed / partly</td>
-              <td class="text-left" rowspan="1" colspan="1">Packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see <span>[<a href="#I-D.draft-smith-quic-receive-ts" class="cite xref">I-D.draft-smith-quic-receive-ts</a>]</span> or <span>[<a href="#I-D.draft-huitema-quic-ts" class="cite xref">I-D.draft-huitema-quic-ts</a>]</span>). The remaining fields cannot be mapped to QUIC.</td>
+              <td class="text-left" rowspan="1" colspan="1">RTP packet loss and jitter can be inferred from QUIC acknowledgments, if a timestamp extension is used (see <span>[<a href="#I-D.draft-smith-quic-receive-ts" class="cite xref">I-D.draft-smith-quic-receive-ts</a>]</span> or <span>[<a href="#I-D.draft-huitema-quic-ts" class="cite xref">I-D.draft-huitema-quic-ts</a>]</span>). The remaining fields cannot be mapped to QUIC.</td>
             </tr>
             <tr>
               <td class="text-left" rowspan="1" colspan="1">VoIP Metrics Report Block</td>
@@ -4748,7 +4753,7 @@ following Payload-specific RTP Feedback (PSFB) feedback.<a href="#appendix-B.4-2
         <h3 id="name-rtp-header-extensions">
 <a href="#appendix-B.5" class="section-number selfRef">B.5. </a><a href="#name-rtp-header-extensions" class="section-name selfRef">RTP Header extensions</a>
         </h3>
-<p id="appendix-B.5-1">Like the payload-specific feedback packets, QUIC cannot directly replace the
+<p id="appendix-B.5-1">Like the payload-specific RTCP feedback packets, QUIC cannot directly replace the
 control information in the following header extensions. RoQ does not place
 restrictions on sending any RTP header extensions. However, some extensions,
 such as Transmission Time offsets <span>[<a href="#RFC5450" class="cite xref">RFC5450</a>]</span> are used to improve network
@@ -4955,11 +4960,11 @@ jitter calculation, which can be done in QUIC if a timestamp extension is used.<
 <code>Name=RR</code>, <span>[<a href="#RFC3550" class="cite xref">RFC3550</a>]</span>) are:<a href="#appendix-B.6.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="appendix-B.6.1-2.1">
-              <p id="appendix-B.6.1-2.1.1"><em>Fraction lost</em>: When RTP packets are carried in DATAGRAMs, the fraction of lost packets can be directly inferred from QUIC's acknowledgments.
-The calculation includes all packets up to the acknowledged RTP packet with the highest RTP sequence number.<a href="#appendix-B.6.1-2.1.1" class="pilcrow">¶</a></p>
+              <p id="appendix-B.6.1-2.1.1"><em>Fraction lost</em>: When RTP packets are carried in DATAGRAMs, the fraction of lost RTCP packets can be directly inferred from QUIC's acknowledgments.
+The calculation includes all RTP packets up to the acknowledged RTP packet with the highest RTP sequence number.<a href="#appendix-B.6.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-B.6.1-2.2">
-              <p id="appendix-B.6.1-2.2.1"><em>Cumulative lost</em>: Similar to the fraction of lost packets, the cumulative
+              <p id="appendix-B.6.1-2.2.1"><em>Cumulative lost</em>: Similar to the fraction of lost RTP packets, the cumulative
 loss can be inferred from QUIC's acknowledgments, including all packets up
 to the latest acknowledged packet.<a href="#appendix-B.6.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
@@ -4978,7 +4983,7 @@ in <span>[<a href="#I-D.draft-smith-quic-receive-ts" class="cite xref">I-D.draft
 jitter from the arrival timestamps in QUIC acknowledgments.<a href="#appendix-B.6.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-B.6.1-2.5">
-              <p id="appendix-B.6.1-2.5.1"><em>Last SR</em>: Similar to lost packets, the NTP timestamp of the last received
+              <p id="appendix-B.6.1-2.5.1"><em>Last SR</em>: Similar to lost RTP packets, the NTP timestamp of the last received
 sender report can be inferred from QUIC acknowledgments.<a href="#appendix-B.6.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="appendix-B.6.1-2.6">
@@ -4995,7 +5000,7 @@ are entirely replaced by QUIC feedback.<a href="#appendix-B.6.1-2.6.1" class="pi
           </h4>
 <p id="appendix-B.6.2-1">RTP <em>Congestion Control Feedback</em> (<code>PT=205</code>, <code>FMT=11</code>, <code>Name=CCFB</code>,
 <span>[<a href="#RFC8888" class="cite xref">RFC8888</a>]</span>) contains acknowledgments, arrival timestamps, and ECN
-notifications for each received packet. Acknowledgments and ECNs can be inferred
+notifications for each received RTP packet. Acknowledgments and ECNs can be inferred
 from QUIC as described above. Arrival timestamps can be added through extended
 acknowledgment frames as described in <span>[<a href="#I-D.draft-smith-quic-receive-ts" class="cite xref">I-D.draft-smith-quic-receive-ts</a>]</span> or
 <span>[<a href="#I-D.draft-huitema-quic-ts" class="cite xref">I-D.draft-huitema-quic-ts</a>]</span>.<a href="#appendix-B.6.2-1" class="pilcrow">¶</a></p>
@@ -5029,7 +5034,7 @@ protocol itself.<a href="#appendix-B.6.4-1" class="pilcrow">¶</a></p>
 <li class="normal" id="appendix-B.6.4-2.1">
               <p id="appendix-B.6.4-2.1.1"><em>Sender Reports</em> (<code>PT=200</code>, <code>Name=SR</code>, <span>[<a href="#RFC3550" class="cite xref">RFC3550</a>]</span>) are similar to <em>Receiver
 Reports</em>, as described in <a href="#RR-mappings" class="auto internal xref">Appendix B.6.1</a>. They are sent by media senders and
-additionally contain an NTP and an RTP timestamp and the number of packets and
+additionally contain an NTP and an RTP timestamp and the number of RTP packets and
 octets transmitted by the sender. The timestamps can be used by a receiver to
 synchronize media streams. QUIC cannot provide similar control information since it
 does not know about RTP timestamps. A QUIC receiver cannot calculate the
