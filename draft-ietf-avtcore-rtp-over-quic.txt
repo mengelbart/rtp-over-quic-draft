@@ -136,6 +136,7 @@ Table of Contents
      14.1.  mengelbart/roq
      14.2.  bbc/gst-roq
      14.3.  mengelbart/rtp-over-quic
+     14.4.  meetecho/imquic
    15. Security Considerations
    16. IANA Considerations
      16.1.  Registration of a RoQ Identification String
@@ -2044,7 +2045,7 @@ Table of Contents
    can thus configure the QUIC stack they use to their preferences.
 
    Version Compatibility:  The library implements
-      [I-D.draft-ietf-avtcore-rtp-over-quic-10].
+      [I-D.draft-ietf-avtcore-rtp-over-quic-12].
 
    Licensing:  MIT License
 
@@ -2057,7 +2058,7 @@ Table of Contents
 
    Contact Information:  Mathis Engelbart (mathis.engelbart@gmail.com)
 
-   Last Updated:  25 May 2024
+   Last Updated:  07 January 2025
 
 14.2.  bbc/gst-roq
 
@@ -2126,6 +2127,37 @@ Table of Contents
    Contact Information:  Mathis Engelbart (mathis.engelbart@gmail.com)
 
    Last Updated:  25 May 2024
+
+14.4.  meetecho/imquic
+
+   Ogranization:  Meetecho
+
+   Implementation:  imquic [imquic]
+
+   Description:  QUIC library with RTP Over QUIC (RoQ) and Media Over
+      QUIC (MoQT) support
+
+   Level of Maturity:  alpha
+
+   Coverage:  The library supports sending and receiving RTP and RTCP
+      packets using QUIC streams and QUIC DATAGRAMs, and supports
+      multiplexing using flow identifiers.  Applications using the
+      library are responsible for appropriate signaling, setting up QUIC
+      connections, and managing RTP sessions.  Applications choose
+      whether to send RTP and RTCP packets over streams or DATAGRAMs.
+      Basic client and server examples are available as a demo, and the
+      library was also used to test interoperability with WebRTC via an
+      open source gateway.
+
+   Version Compatibility:  [I-D.draft-ietf-avtcore-rtp-over-quic-12]
+
+   Licensing:  MIT
+
+   Implementation Experience: :
+
+   Contact Information:  Lorenzo Miniero (lorenzo@meetecho.com)
+
+   Last Updated:  07 January 2025
 
 15.  Security Considerations
 
@@ -2399,12 +2431,12 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
               rtp-over-quic-05>.
 
-   [I-D.draft-ietf-avtcore-rtp-over-quic-10]
-              Ott, J., Engelbart, M., and S. Dawkins, "RTP over QUIC
+   [I-D.draft-ietf-avtcore-rtp-over-quic-12]
+              Engelbart, M., Ott, J., and S. Dawkins, "RTP over QUIC
               (RoQ)", Work in Progress, Internet-Draft, draft-ietf-
-              avtcore-rtp-over-quic-10, 8 May 2024,
+              avtcore-rtp-over-quic-12, 21 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtp-over-quic-10>.
+              rtp-over-quic-12>.
 
    [I-D.draft-ietf-avtext-lrr-07]
               Lennox, J., Hong, D., Uberti, J., Holmer, S., and M.
@@ -2505,6 +2537,8 @@ Table of Contents
               "IEEE 1733-2011 Standard for Layer 3 Transport Protocol
               for Time-Sensitive Applications in Local Area Networks",
               n.d., <https://standards.ieee.org/ieee/1733/4748/>.
+
+   [imquic]   "imquic", n.d., <https://github.com/meetecho/imquic>.
 
    [quic-go]  "A QUIC implementation in pure Go", n.d.,
               <https://github.com/quic-go/quic-go>.
