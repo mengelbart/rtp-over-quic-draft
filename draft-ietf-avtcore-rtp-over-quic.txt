@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 10 August 2025                                       S. Dawkins
+Expires: 30 August 2025                                       S. Dawkins
                                                      Tencent America LLC
-                                                         6 February 2025
+                                                        26 February 2025
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 August 2025.
+   This Internet-Draft will expire on 30 August 2025.
 
 Copyright Notice
 
@@ -2413,9 +2413,9 @@ Table of Contents
               He, Y., Herglotz, C., and E. Francois, "RTP Control
               Protocol (RTCP) Messages for Temporal-Spatial Resolution",
               Work in Progress, Internet-Draft, draft-ietf-avtcore-rtcp-
-              green-metadata-04, 7 October 2024,
+              green-metadata-05, 12 February 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtcp-green-metadata-04>.
+              rtcp-green-metadata-05>.
 
    [I-D.draft-ietf-avtcore-rtp-over-quic-00]
               Ott, J. and M. Engelbart, "RTP over QUIC", Work in
@@ -3600,9 +3600,12 @@ Acknowledgments
    with obvious substitutions for RTP.
 
    The authors would like to thank Bernard Aboba, David Schinazi, Gurtej
-   Singh Chandok, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo, and
-   Vidhi Goel for their valuable comments and suggestions contributing
-   to this document.
+   Singh Chandok, Lucas Pardue, Nils Ohlmeier, Sam Hurst, Sergio Garcia
+   Murillo, and Vidhi Goel for their valuable comments and suggestions
+   contributing to this document.
+
+   The authors would also like to thank Sam Hurst and Lorenzo Miniero
+   for implementing RTP over QUIC.
 
 Authors' Addresses
 

@@ -17,12 +17,12 @@ from the QUIC implementation in the endpoints, in order to reduce the need to
 exchange RTCP packets, and describes different options for implementing congestion control and rate
 adaptation for RTP without relying on RTCP feedback. 
     " name="description">
-<meta content="xml2rfc 3.26.0" name="generator">
+<meta content="xml2rfc 3.27.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-ietf-avtcore-rtp-over-quic-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.26.0
-    Python 3.12.8
+  xml2rfc 3.27.0
+    Python 3.12.9
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.1.0
@@ -1056,7 +1056,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Engelbart, et al.</td>
-<td class="center">Expires 10 August 2025</td>
+<td class="center">Expires 30 August 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1069,12 +1069,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-ietf-avtcore-rtp-over-quic-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-02-06" class="published">6 February 2025</time>
+<time datetime="2025-02-26" class="published">26 February 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-08-10">10 August 2025</time></dd>
+<dd class="expires"><time datetime="2025-08-30">30 August 2025</time></dd>
 <dt class="label-authors">Authors:</dt>
 <dd class="authors">
 <div class="author">
@@ -1133,7 +1133,7 @@ adaptation for RTP without relying on RTCP feedback.<a href="#section-abstract-2
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 10 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 30 August 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -3693,7 +3693,7 @@ list a change controller of the IETF and a contact of the AVTCORE working group
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtcp-green-metadata">[I-D.draft-ietf-avtcore-rtcp-green-metadata]</dt>
         <dd>
-<span class="refAuthor">He, Y.</span>, <span class="refAuthor">Herglotz, C.</span>, and <span class="refAuthor">E. Francois</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Messages for Temporal-Spatial Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtcp-green-metadata-04</span>, <time datetime="2024-10-07" class="refDate">7 October 2024</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-04">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-04</a>&gt;</span>. </dd>
+<span class="refAuthor">He, Y.</span>, <span class="refAuthor">Herglotz, C.</span>, and <span class="refAuthor">E. Francois</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Messages for Temporal-Spatial Resolution"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-avtcore-rtcp-green-metadata-05</span>, <time datetime="2025-02-12" class="refDate">12 February 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-05">https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-rtcp-green-metadata-05</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.draft-ietf-avtcore-rtp-over-quic-00">[I-D.draft-ietf-avtcore-rtp-over-quic-00]</dt>
         <dd>
@@ -5274,7 +5274,9 @@ packet.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
 authors would like to thank Sam Hurst for providing his thoughts about how QUIC
 could be used to carry RTP.<a href="#appendix-D-1" class="pilcrow">¶</a></p>
 <p id="appendix-D-2">The guidance in <a href="#quic-streams" class="auto internal xref">Section 5.2</a> about configuring the number of parallel unidirectional QUIC streams is based on <span><a href="https://rfc-editor.org/rfc/rfc9114#section-6.2" class="relref">Section 6.2</a> of [<a href="#RFC9114" class="cite xref">RFC9114</a>]</span>, with obvious substitutions for RTP.<a href="#appendix-D-2" class="pilcrow">¶</a></p>
-<p id="appendix-D-3">The authors would like to thank Bernard Aboba, David Schinazi, Gurtej Singh Chandok, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo,  and Vidhi Goel for their valuable comments and suggestions contributing to this document.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
+<p id="appendix-D-3">The authors would like to thank Bernard Aboba, David Schinazi, Gurtej Singh Chandok, Lucas Pardue, Nils Ohlmeier, Sam Hurst, Sergio Garcia Murillo, and Vidhi Goel for their valuable comments and suggestions contributing to this document.<a href="#appendix-D-3" class="pilcrow">¶</a></p>
+<p id="appendix-D-4">The authors would also like to thank Sam Hurst and Lorenzo Miniero for
+implementing RTP over QUIC.<a href="#appendix-D-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="authors-addresses">
