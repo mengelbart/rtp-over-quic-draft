@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-02-25T00:16:17.049435+00:00",
+  "timestamp": "2025-02-27T00:14:40.281088+00:00",
   "repo": "mengelbart/rtp-over-quic-draft",
   "labels": [
     {
@@ -12155,26 +12155,50 @@
       "id": "PR_kwDOFUmh7s6KViI6",
       "title": "Update acknowledgment section",
       "url": "https://github.com/mengelbart/rtp-over-quic-draft/pull/234",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "mengelbart",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Should we add affiliations to the implementer's acknowledgments?",
       "createdAt": "2025-02-06T21:15:16Z",
-      "updatedAt": "2025-02-06T21:15:20Z",
+      "updatedAt": "2025-02-26T16:25:38Z",
       "baseRepository": "mengelbart/rtp-over-quic-draft",
       "baseRefName": "main",
       "baseRefOid": "2ed179ed49b31151c26ec242182d4e405e7d2588",
       "headRepository": "mengelbart/rtp-over-quic-draft",
       "headRefName": "update-acks",
       "headRefOid": "4946f5d6635802bc4ef4f1ae25108bce874cfe9c",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "closedAt": "2025-02-26T16:25:36Z",
+      "mergedAt": "2025-02-26T16:25:36Z",
+      "mergedBy": "SpencerDawkins",
+      "mergeCommit": {
+        "oid": "25ce467f23a0c81d9de0aeb0b6272b483a0e0b16"
+      },
+      "comments": [
+        {
+          "author": "SpencerDawkins",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Actually, I can just merge this as the other reviewer. Silly me!",
+          "createdAt": "2025-02-26T16:24:27Z",
+          "updatedAt": "2025-02-26T16:24:27Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOFUmh7s6dqRSn",
+          "commit": {
+            "abbreviatedOid": "4946f5d"
+          },
+          "author": "SpencerDawkins",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "Hi, @mengelbart, this looks fine. Please proceed! \r\n\r\nAnd I thought I had responded to say that we probably don't need to add affiliations in the Acks section. We ask for that on blue sheets, but that's only so we can disambiguate five Fred Smiths who are active at any one time, for purposes of NomCom eligibility and (more rarely) investigations on submarine patents. \r\n\r\nIf we were ever going to start doing that in RFCs, we probably shouldn't do that during a tech industry economic downturn! :unamused:",
+          "createdAt": "2025-02-26T16:23:36Z",
+          "updatedAt": "2025-02-26T16:23:36Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
