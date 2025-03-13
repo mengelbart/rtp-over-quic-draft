@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 10 August 2025                                       S. Dawkins
+Expires: 14 September 2025                                    S. Dawkins
                                                      Tencent America LLC
-                                                         6 February 2025
+                                                           13 March 2025
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 August 2025.
+   This Internet-Draft will expire on 14 September 2025.
 
 Copyright Notice
 
@@ -99,6 +99,7 @@ Table of Contents
        5.2.2.  Media Frame Cancellation
        5.2.3.  Flow control and MAX_STREAMS
      5.3.  QUIC DATAGRAMs
+     5.4.  Encapsulation Considerations for RTCP
    6.  Connection Shutdown
    7.  Error Handling
    8.  Congestion Control and Rate Adaptation
@@ -135,6 +136,7 @@ Table of Contents
      14.1.  mengelbart/roq
      14.2.  bbc/gst-roq
      14.3.  mengelbart/rtp-over-quic
+     14.4.  meetecho/imquic
    15. Security Considerations
    16. IANA Considerations
      16.1.  Registration of a RoQ Identification String
@@ -1190,6 +1192,26 @@ Table of Contents
    identifier MUST be set to the flow identifier of the RTP session in
    which the retransmission happens.
 
+5.4.  Encapsulation Considerations for RTCP
+
+   The same encapsulation as described above for RTP packets can also be
+   used to carry RTCP packets back from the receiver to the sender.
+   Both RTP and RTCP can be transported in either QUIC DATAGRAM frames
+   or QUIC STREAM frames.  If a receiver sends aggregated RTCP reports
+   for multiple RTP streams, the flow identifier no longer matches the
+   flow identifier for a single RTP stream.  Thus the sender always
+   needs to inspect the received RTCP packet independent of the flow
+   identifier used to the RTCP flow to determine to which of the RTP
+   flows the received packets apply.  This is also the reason why
+   bidirectional streams are not allowed, as the received RTCP packets
+   would not necessarily apply to the same RTP stream being sent on the
+   same flow.  In addition, allowing a bidirectional stream could result
+   in a situation where the sender has closed its side of the QUIC
+   stream, but the receiver continues to send RTCP in the opposite
+   direction.  Thus it makes more sense if the sender and receiver agree
+   on one or multiple unidirectional streams to transport any RTCP
+   messages.
+
 6.  Connection Shutdown
 
    Either endpoint can close the connection for any of a variety of
@@ -2023,7 +2045,7 @@ Table of Contents
    can thus configure the QUIC stack they use to their preferences.
 
    Version Compatibility:  The library implements
-      [I-D.draft-ietf-avtcore-rtp-over-quic-10].
+      [I-D.draft-ietf-avtcore-rtp-over-quic-12].
 
    Licensing:  MIT License
 
@@ -2036,7 +2058,7 @@ Table of Contents
 
    Contact Information:  Mathis Engelbart (mathis.engelbart@gmail.com)
 
-   Last Updated:  25 May 2024
+   Last Updated:  07 January 2025
 
 14.2.  bbc/gst-roq
 
@@ -2106,6 +2128,37 @@ Table of Contents
 
    Last Updated:  25 May 2024
 
+14.4.  meetecho/imquic
+
+   Ogranization:  Meetecho
+
+   Implementation:  imquic [imquic]
+
+   Description:  QUIC library with RTP Over QUIC (RoQ) and Media Over
+      QUIC (MoQT) support
+
+   Level of Maturity:  alpha
+
+   Coverage:  The library supports sending and receiving RTP and RTCP
+      packets using QUIC streams and QUIC DATAGRAMs, and supports
+      multiplexing using flow identifiers.  Applications using the
+      library are responsible for appropriate signaling, setting up QUIC
+      connections, and managing RTP sessions.  Applications choose
+      whether to send RTP and RTCP packets over streams or DATAGRAMs.
+      Basic client and server examples are available as a demo, and the
+      library was also used to test interoperability with WebRTC via an
+      open source gateway.
+
+   Version Compatibility:  [I-D.draft-ietf-avtcore-rtp-over-quic-12]
+
+   Licensing:  MIT
+
+   Implementation Experience: :
+
+   Contact Information:  Lorenzo Miniero (lorenzo@meetecho.com)
+
+   Last Updated:  07 January 2025
+
 15.  Security Considerations
 
    RoQ is subject to the security considerations of RTP described in
@@ -2151,7 +2204,7 @@ Table of Contents
    This document establishes a registry for RoQ error codes.  The "RTP
    over QUIC (RoQ) Error Codes" registry manages a 62-bit space and is
    listed under the "Real-Time Transport Protocol (RTP) Parameters"
-   heading.
+   registry group.
 
    The new error codes registry created in this document operates under
    the QUIC registration policy documented in Section 22.1 of [RFC9000].
@@ -2360,9 +2413,9 @@ Table of Contents
               He, Y., Herglotz, C., and E. Francois, "RTP Control
               Protocol (RTCP) Messages for Temporal-Spatial Resolution",
               Work in Progress, Internet-Draft, draft-ietf-avtcore-rtcp-
-              green-metadata-04, 7 October 2024,
+              green-metadata-05, 12 February 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtcp-green-metadata-04>.
+              rtcp-green-metadata-05>.
 
    [I-D.draft-ietf-avtcore-rtp-over-quic-00]
               Ott, J. and M. Engelbart, "RTP over QUIC", Work in
@@ -2378,12 +2431,12 @@ Table of Contents
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
               rtp-over-quic-05>.
 
-   [I-D.draft-ietf-avtcore-rtp-over-quic-10]
-              Ott, J., Engelbart, M., and S. Dawkins, "RTP over QUIC
+   [I-D.draft-ietf-avtcore-rtp-over-quic-12]
+              Engelbart, M., Ott, J., and S. Dawkins, "RTP over QUIC
               (RoQ)", Work in Progress, Internet-Draft, draft-ietf-
-              avtcore-rtp-over-quic-10, 8 May 2024,
+              avtcore-rtp-over-quic-12, 21 October 2024,
               <https://datatracker.ietf.org/doc/html/draft-ietf-avtcore-
-              rtp-over-quic-10>.
+              rtp-over-quic-12>.
 
    [I-D.draft-ietf-avtext-lrr-07]
               Lennox, J., Hong, D., Uberti, J., Holmer, S., and M.
@@ -2403,16 +2456,16 @@ Table of Contents
    [I-D.draft-ietf-quic-ack-frequency]
               Iyengar, J., Swett, I., and M. Kühlewind, "QUIC
               Acknowledgment Frequency", Work in Progress, Internet-
-              Draft, draft-ietf-quic-ack-frequency-10, 29 August 2024,
+              Draft, draft-ietf-quic-ack-frequency-11, 28 February 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              ack-frequency-10>.
+              ack-frequency-11>.
 
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-12,
-              22 January 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-quic-multipath-12>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-13,
+              3 March 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-multipath-13>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
@@ -2437,11 +2490,13 @@ Table of Contents
               whip-16>.
 
    [I-D.draft-smith-quic-receive-ts]
-              Smith, C. and I. Swett, "QUIC Extension for Reporting
-              Packet Receive Timestamps", Work in Progress, Internet-
-              Draft, draft-smith-quic-receive-ts-00, 25 October 2021,
+              Smith, C., Swett, I., Beshay, J., Jaiswal, S.,
+              Purushothaman, I., and B. Schlinker, "QUIC Extended
+              Acknowledgement for Reporting Packet Receive Timestamps",
+              Work in Progress, Internet-Draft, draft-smith-quic-
+              receive-ts-01, 3 March 2025,
               <https://datatracker.ietf.org/doc/html/draft-smith-quic-
-              receive-ts-00>.
+              receive-ts-01>.
 
    [I-D.draft-thomson-quic-enough]
               Thomson, M., "Signaling That a QUIC Receiver Has Enough
@@ -2484,6 +2539,8 @@ Table of Contents
               "IEEE 1733-2011 Standard for Layer 3 Transport Protocol
               for Time-Sensitive Applications in Local Area Networks",
               n.d., <https://standards.ieee.org/ieee/1733/4748/>.
+
+   [imquic]   "imquic", n.d., <https://github.com/meetecho/imquic>.
 
    [quic-go]  "A QUIC implementation in pure Go", n.d.,
               <https://github.com/quic-go/quic-go>.
@@ -3545,9 +3602,12 @@ Acknowledgments
    with obvious substitutions for RTP.
 
    The authors would like to thank Bernard Aboba, David Schinazi, Gurtej
-   Singh Chandok, Lucas Pardue, Sam Hurst, Sergio Garcia Murillo, and
-   Vidhi Goel for their valuable comments and suggestions contributing
-   to this document.
+   Singh Chandok, Lucas Pardue, Nils Ohlmeier, Sam Hurst, Sergio Garcia
+   Murillo, and Vidhi Goel for their valuable comments and suggestions
+   contributing to this document.
+
+   The authors would also like to thank Sam Hurst and Lorenzo Miniero
+   for implementing RTP over QUIC.
 
 Authors' Addresses
 
