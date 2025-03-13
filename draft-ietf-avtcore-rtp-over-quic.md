@@ -1538,7 +1538,7 @@ The "roq" string identifies RoQ:
 
 This document establishes a registry for RoQ error codes. The "RTP over QUIC
 (RoQ) Error Codes" registry manages a 62-bit space and is listed under the
-"Real-Time Transport Protocol (RTP) Parameters" heading.
+"Real-Time Transport Protocol (RTP) Parameters" registry group.
 
 The new error codes registry created in this document operates under the QUIC
 registration policy documented in {{Section 22.1 of !RFC9000}}. This registry
