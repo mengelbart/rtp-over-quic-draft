@@ -99,6 +99,10 @@ informative:
     target: https://github.com/meetecho/imquic
     title: imquic
 
+  gst-plugin-quinn:
+    target: https://gitlab.freedesktop.org/gstreamer/gst-plugins-rs/-/tree/main/net/quinn
+    title: gst-plugin-quinn
+
 --- abstract
 
 This document specifies a minimal mapping for encapsulating Real-time Transport
@@ -1491,6 +1495,46 @@ Contact Information:
 
 Last Updated:
 : 07 January 2025
+
+## gst-plugin-quinn
+
+Organization:
+: asymptotic
+
+Implementation:
+: gst-plugin-quinn {{gst-plugin-quinn}}
+
+Description:
+: GStreamer plugin with support for QUIC and RTP Over QUIC (RoQ)
+
+Level of Maturity:
+: alpha
+
+Coverage:
+: The library supports sending and receiving RTP packets using QUIC streams and
+QUIC DATAGRAMs, and supports multiplexing using flow identifiers. Using stream
+per packet is not supported at the moment. Applications using this GStreamer
+plugin are responsible for any required out-of-band signalling, and managing
+RTP sessions. `quinnquicmux` and `quinnquicdemux` provide RoQ functionality with
+the QUIC transport handled by `quinnquicsink` and `quinnquicsrc` plugins.
+Applications can choose whether to send RTP packets over streams or DATAGRAMs.
+Basic examples are available in the repository.
+
+Version Compatibility:
+: {{?I-D.draft-ietf-avtcore-rtp-over-quic-12}}
+
+Licensing:
+: MPL
+
+Implementation Experience:
+:
+
+Contact Information:
+: Sanchayan Maity (sanchayan@asymptotic.io)
+: Arun Raghavan (arun@asymptotic.io)
+
+Last Updated:
+: 19 December 2024
 
 # Security Considerations {#sec-considerations}
 
