@@ -1534,7 +1534,7 @@ Contact Information:
 : Arun Raghavan (arun@asymptotic.io)
 
 Last Updated:
-: 19 December 2024
+: 21 March 2025
 
 # Security Considerations {#sec-considerations}
 
