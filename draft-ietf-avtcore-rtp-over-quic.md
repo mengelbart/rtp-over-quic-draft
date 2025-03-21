@@ -1496,7 +1496,7 @@ Contact Information:
 Last Updated:
 : 07 January 2025
 
-## gst-plugin-quinn
+## gstreamer/gst-plugin-quinn
 
 Organization:
 : asymptotic
