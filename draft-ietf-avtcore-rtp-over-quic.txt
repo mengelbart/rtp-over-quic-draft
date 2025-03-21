@@ -5,9 +5,9 @@
 Audio/Video Transport Core Maintenance                      M. Engelbart
 Internet-Draft                                                    J. Ott
 Intended status: Experimental             Technical University of Munich
-Expires: 30 August 2025                                       S. Dawkins
+Expires: 22 September 2025                                    S. Dawkins
                                                      Tencent America LLC
-                                                        26 February 2025
+                                                           21 March 2025
 
 
                           RTP over QUIC (RoQ)
@@ -52,7 +52,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 August 2025.
+   This Internet-Draft will expire on 22 September 2025.
 
 Copyright Notice
 
@@ -2204,7 +2204,7 @@ Table of Contents
    This document establishes a registry for RoQ error codes.  The "RTP
    over QUIC (RoQ) Error Codes" registry manages a 62-bit space and is
    listed under the "Real-Time Transport Protocol (RTP) Parameters"
-   heading.
+   registry group.
 
    The new error codes registry created in this document operates under
    the QUIC registration policy documented in Section 22.1 of [RFC9000].
@@ -2456,16 +2456,16 @@ Table of Contents
    [I-D.draft-ietf-quic-ack-frequency]
               Iyengar, J., Swett, I., and M. Kühlewind, "QUIC
               Acknowledgment Frequency", Work in Progress, Internet-
-              Draft, draft-ietf-quic-ack-frequency-10, 29 August 2024,
+              Draft, draft-ietf-quic-ack-frequency-11, 28 February 2025,
               <https://datatracker.ietf.org/doc/html/draft-ietf-quic-
-              ack-frequency-10>.
+              ack-frequency-11>.
 
    [I-D.draft-ietf-quic-multipath]
               Liu, Y., Ma, Y., De Coninck, Q., Bonaventure, O., Huitema,
               C., and M. Kühlewind, "Multipath Extension for QUIC", Work
-              in Progress, Internet-Draft, draft-ietf-quic-multipath-12,
-              22 January 2025, <https://datatracker.ietf.org/doc/html/
-              draft-ietf-quic-multipath-12>.
+              in Progress, Internet-Draft, draft-ietf-quic-multipath-13,
+              3 March 2025, <https://datatracker.ietf.org/doc/html/
+              draft-ietf-quic-multipath-13>.
 
    [I-D.draft-ietf-quic-reliable-stream-reset]
               Seemann, M. and K. Oku, "QUIC Stream Resets with Partial
@@ -2490,11 +2490,13 @@ Table of Contents
               whip-16>.
 
    [I-D.draft-smith-quic-receive-ts]
-              Smith, C. and I. Swett, "QUIC Extension for Reporting
-              Packet Receive Timestamps", Work in Progress, Internet-
-              Draft, draft-smith-quic-receive-ts-00, 25 October 2021,
+              Smith, C., Swett, I., Beshay, J., Jaiswal, S.,
+              Purushothaman, I., and B. Schlinker, "QUIC Extended
+              Acknowledgement for Reporting Packet Receive Timestamps",
+              Work in Progress, Internet-Draft, draft-smith-quic-
+              receive-ts-01, 3 March 2025,
               <https://datatracker.ietf.org/doc/html/draft-smith-quic-
-              receive-ts-00>.
+              receive-ts-01>.
 
    [I-D.draft-thomson-quic-enough]
               Thomson, M., "Signaling That a QUIC Receiver Has Enough
